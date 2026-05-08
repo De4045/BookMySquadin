@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Lock } from "lucide-react";
+import { User, Lock } from "lucide-react";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
+import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -42,8 +43,11 @@ export default function Login() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 md:p-24">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <Link href="/" className="font-serif text-2xl font-bold tracking-tight text-foreground flex items-center gap-1 cursor-pointer mb-8">
-              <span className="text-primary italic">B</span>MS
+            <Link href="/" className="flex items-center gap-2 cursor-pointer mb-8">
+              <img src={bmsLogo} alt="Book My Squad" className="h-12 w-12 object-contain" />
+              <span className="font-cormorant text-2xl font-semibold text-foreground">
+                <span className="text-primary italic">Book</span> My Squad
+              </span>
             </Link>
             <h2 className="text-3xl font-bold text-foreground mb-2">Sign In / Sign Up</h2>
             <p className="text-muted-foreground text-sm">

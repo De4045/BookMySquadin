@@ -88,7 +88,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="font-manrope text-white/60 text-base md:text-lg font-light max-w-xl mx-auto mb-12 tracking-wide"
+            className="font-manrope text-white text-base md:text-lg font-light max-w-xl mx-auto mb-12 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.95), 0 1px 4px rgba(0,0,0,0.9)' }}
           >
             Find the best vendors for weddings, events & celebrations — with thousands of trusted reviews
           </motion.p>
