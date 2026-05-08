@@ -1,83 +1,69 @@
-import React from "react";
 import { Link } from "wouter";
-import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-[#1a1a1a] text-white pt-20 pb-8 px-6 md:px-12 font-sans border-t-4 border-primary">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
-          <div className="lg:col-span-2">
-            <Link href="/" className="font-serif text-3xl font-bold text-white mb-4 block">
-              <span className="text-primary italic">B</span>ook My Squad
-            </Link>
-            <p className="text-white/60 text-sm mb-6 max-w-sm">
-              India's Finest Wedding Planning Platform. We help couples discover and book verified wedding vendors across India.
-            </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-primary hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-primary hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-primary hover:text-white transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-primary hover:text-white transition-colors">
-                <Youtube className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
+    <footer className="relative bg-[#050403] text-white overflow-hidden">
+      {/* Background watermark logo */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.02]">
+        <span className="font-cinzel text-[20vw] font-black tracking-wider select-none">BMS</span>
+      </div>
+      
+      {/* Gold top divider line */}
+      <div className="gold-line" />
+      
+      {/* Top glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-primary/40" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-16 blur-3xl bg-primary/10 pointer-events-none" />
 
-          <div>
-            <h4 className="font-serif text-lg font-semibold mb-6 text-white">For Couples</h4>
-            <ul className="space-y-3 text-sm text-white/70">
-              <li><a href="#" className="hover:text-primary transition-colors">Venues</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Vendors</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Real Weddings</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Photos</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-serif text-lg font-semibold mb-6 text-white">For Vendors</h4>
-            <ul className="space-y-3 text-sm text-white/70">
-              <li><a href="#" className="hover:text-primary transition-colors">List Business</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Vendor Login</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Advertise</a></li>
-            </ul>
-            <h4 className="font-serif text-lg font-semibold mb-4 mt-8 text-white">Company</h4>
-            <ul className="space-y-3 text-sm text-white/70">
-              <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Contact Us</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-serif text-lg font-semibold mb-6 text-white">Cities</h4>
-            <ul className="space-y-3 text-sm text-white/70 grid grid-cols-2 gap-x-4 gap-y-3">
-              <li><a href="#" className="hover:text-primary transition-colors">Mumbai</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Delhi</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Bangalore</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Jaipur</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Chennai</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Hyderabad</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Kolkata</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Pune</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Goa</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Udaipur</a></li>
-            </ul>
-          </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-10">
+        {/* Logo and tagline */}
+        <div className="text-center mb-20">
+          <div className="font-cinzel text-[10px] tracking-[0.5em] text-primary/50 uppercase mb-4">✦ Est. 2024 ✦</div>
+          <h2 className="font-cormorant text-5xl md:text-7xl text-white font-light mb-4">
+            <span className="text-primary italic">Book</span> My Squad
+          </h2>
+          <p className="font-manrope text-white/30 text-sm tracking-widest uppercase">India's Finest Event Planning Platform</p>
+          <div className="gold-line w-24 mx-auto mt-8" />
         </div>
 
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/50">
-          <p>© 2025 Book My Squad. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+        {/* Links grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+          {[
+            { title: "Discover", links: ["Venues", "Vendors", "Real Weddings", "Blog", "Photos"] },
+            { title: "Services", links: ["Photography", "Makeup", "Catering", "Decorator", "Entertainment"] },
+            { title: "Company", links: ["About Us", "Careers", "Press", "Contact Us", "Privacy Policy"] },
+            { title: "Cities", links: ["Mumbai", "Delhi", "Jaipur", "Goa", "Udaipur", "Bangalore", "Hyderabad", "Kolkata"] },
+          ].map(col => (
+            <div key={col.title}>
+              <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/60 uppercase mb-6">{col.title}</h4>
+              <ul className="space-y-3">
+                {col.links.map(link => (
+                  <li key={link}>
+                    <a href="#" className="font-manrope text-sm text-white/30 hover:text-primary/80 transition-colors duration-300">{link}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Social icons */}
+        <div className="flex justify-center gap-6 mb-16">
+          {["Facebook", "Instagram", "Twitter", "YouTube"].map(social => (
+            <a key={social} href="#" className="w-10 h-10 border border-white/10 hover:border-primary/40 flex items-center justify-center text-white/30 hover:text-primary transition-all duration-300 text-xs font-cinzel">
+              {social[0]}
+            </a>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="gold-line mb-8" />
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="font-manrope text-[11px] text-white/20 tracking-wider">© 2025 Book My Squad. All rights reserved.</p>
+          <div className="flex gap-8">
+            {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(link => (
+              <a key={link} href="#" className="font-manrope text-[11px] text-white/20 hover:text-white/50 transition-colors">{link}</a>
+            ))}
           </div>
         </div>
       </div>
