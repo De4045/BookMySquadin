@@ -8,6 +8,10 @@ import Home from "@/pages/Home";
 import Vendors from "@/pages/Vendors";
 import Venues from "@/pages/Venues";
 import Login from "@/pages/Login";
+import RealWeddings from "@/pages/RealWeddings";
+import Blog from "@/pages/Blog";
+import Photos from "@/pages/Photos";
+import ListYourBusiness from "@/pages/ListYourBusiness";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -19,6 +23,10 @@ function Router() {
       <Route path="/vendors" component={Vendors} />
       <Route path="/venues" component={Venues} />
       <Route path="/login" component={Login} />
+      <Route path="/real-weddings" component={RealWeddings} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/photos" component={Photos} />
+      <Route path="/list-your-business" component={ListYourBusiness} />
       <Route component={NotFound} />
     </Switch>
   );

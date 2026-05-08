@@ -2,6 +2,64 @@ import { Link } from "wouter";
 import { Facebook, Instagram, Twitter, Youtube, MapPin, Phone } from "lucide-react";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 
+const DISCOVER_LINKS: Record<string, string> = {
+  "Venues": "/venues",
+  "Vendors": "/vendors",
+  "Real Weddings": "/real-weddings",
+  "Blog": "/blog",
+  "Photos": "/photos",
+};
+
+const SERVICE_LINKS: Record<string, string> = {
+  "Photography": "/vendors",
+  "Makeup": "/vendors",
+  "Catering": "/vendors",
+  "Decorator": "/vendors",
+  "Entertainment": "/vendors",
+};
+
+const COMPANY_LINKS: Record<string, string> = {
+  "About Us": "/about",
+  "Careers": "/careers",
+  "Press": "/press",
+  "Contact Us": "/contact",
+  "Privacy Policy": "/privacy",
+};
+
+const CITY_LINKS: Record<string, string> = {
+  "Mumbai": "/venues",
+  "Delhi": "/venues",
+  "Jaipur": "/venues",
+  "Goa": "/venues",
+  "Udaipur": "/venues",
+  "Bangalore": "/venues",
+  "Hyderabad": "/venues",
+  "Kolkata": "/venues",
+};
+
+const SOCIAL = [
+  { icon: <Facebook className="w-4 h-4" />, label: "Facebook", href: "https://facebook.com" },
+  { icon: <Instagram className="w-4 h-4" />, label: "Instagram", href: "https://instagram.com" },
+  { icon: <Twitter className="w-4 h-4" />, label: "Twitter", href: "https://twitter.com" },
+  { icon: <Youtube className="w-4 h-4" />, label: "YouTube", href: "https://youtube.com" },
+];
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const isExternal = href.startsWith("http");
+  if (isExternal) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="font-manrope text-sm text-white/55 hover:text-primary/90 transition-colors duration-300">
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className="font-manrope text-sm text-white/55 hover:text-primary/90 transition-colors duration-300">
+      {children}
+    </Link>
+  );
+}
+
 export function Footer() {
   return (
     <footer className="relative bg-[#050403] text-white overflow-hidden">
@@ -19,7 +77,7 @@ export function Footer() {
         {/* Logo + Tagline */}
         <div className="text-center mb-14 md:mb-20">
           <div className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Est. 2024 ✦</div>
-          <div className="flex flex-col items-center gap-3 mb-4">
+          <Link href="/" className="flex flex-col items-center gap-3 mb-4 cursor-pointer">
             <img
               src={bmsLogo}
               alt="Book My Squad"
@@ -29,7 +87,7 @@ export function Footer() {
             <h2 className="font-cormorant text-4xl md:text-6xl text-white font-light">
               <span className="text-primary italic">Book</span> My Squad
             </h2>
-          </div>
+          </Link>
           <p className="font-manrope text-white/45 text-sm tracking-widest uppercase">Premium Event Planning</p>
           <div className="gold-line w-24 mx-auto mt-8" />
         </div>
@@ -41,9 +99,9 @@ export function Footer() {
           <div>
             <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Discover</h4>
             <ul className="space-y-3">
-              {["Venues", "Vendors", "Real Weddings", "Blog", "Photos"].map(link => (
-                <li key={link}>
-                  <a href="#" className="font-manrope text-sm text-white/55 hover:text-primary/90 transition-colors duration-300">{link}</a>
+              {Object.entries(DISCOVER_LINKS).map(([label, href]) => (
+                <li key={label}>
+                  <FooterLink href={href}>{label}</FooterLink>
                 </li>
               ))}
             </ul>
@@ -53,9 +111,9 @@ export function Footer() {
           <div>
             <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Services</h4>
             <ul className="space-y-3">
-              {["Photography", "Makeup", "Catering", "Decorator", "Entertainment"].map(link => (
-                <li key={link}>
-                  <a href="#" className="font-manrope text-sm text-white/55 hover:text-primary/90 transition-colors duration-300">{link}</a>
+              {Object.entries(SERVICE_LINKS).map(([label, href]) => (
+                <li key={label}>
+                  <FooterLink href={href}>{label}</FooterLink>
                 </li>
               ))}
             </ul>
@@ -65,9 +123,9 @@ export function Footer() {
           <div>
             <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Company</h4>
             <ul className="space-y-3">
-              {["About Us", "Careers", "Press", "Contact Us", "Privacy Policy"].map(link => (
-                <li key={link}>
-                  <a href="#" className="font-manrope text-sm text-white/55 hover:text-primary/90 transition-colors duration-300">{link}</a>
+              {Object.entries(COMPANY_LINKS).map(([label, href]) => (
+                <li key={label}>
+                  <FooterLink href={href}>{label}</FooterLink>
                 </li>
               ))}
             </ul>
@@ -77,9 +135,9 @@ export function Footer() {
           <div>
             <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Cities</h4>
             <ul className="space-y-3">
-              {["Mumbai", "Delhi", "Jaipur", "Goa", "Udaipur", "Bangalore", "Hyderabad", "Kolkata"].map(link => (
-                <li key={link}>
-                  <a href="#" className="font-manrope text-sm text-white/55 hover:text-primary/90 transition-colors duration-300">{link}</a>
+              {Object.entries(CITY_LINKS).map(([label, href]) => (
+                <li key={label}>
+                  <FooterLink href={href}>{label}</FooterLink>
                 </li>
               ))}
             </ul>
@@ -120,21 +178,26 @@ export function Footer() {
                   </p>
                 </div>
               </div>
+
+              {/* List your business */}
+              <Link
+                href="/list-your-business"
+                className="inline-block mt-2 font-cinzel text-[9px] tracking-[0.25em] uppercase border border-primary/40 text-primary px-4 py-2.5 hover:bg-primary hover:text-black transition-all duration-300"
+              >
+                List Your Business
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Social icons */}
         <div className="flex justify-center gap-4 mb-12">
-          {[
-            { icon: <Facebook className="w-4 h-4" />, label: "Facebook" },
-            { icon: <Instagram className="w-4 h-4" />, label: "Instagram" },
-            { icon: <Twitter className="w-4 h-4" />, label: "Twitter" },
-            { icon: <Youtube className="w-4 h-4" />, label: "YouTube" },
-          ].map(s => (
+          {SOCIAL.map(s => (
             <a
               key={s.label}
-              href="#"
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label={s.label}
               className="w-10 h-10 border border-white/15 hover:border-primary/50 flex items-center justify-center text-white/45 hover:text-primary transition-all duration-300"
             >
@@ -151,10 +214,10 @@ export function Footer() {
             <span className="text-primary/70">Namrata Muralidharan</span>
           </p>
           <div className="flex flex-wrap justify-center gap-5">
-            {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(link => (
-              <a key={link} href="#" className="font-manrope text-[11px] text-white/40 hover:text-white/70 transition-colors">
+            {(["Privacy Policy", "Terms of Service", "Cookie Policy"] as const).map(link => (
+              <Link key={link} href={`/${link.toLowerCase().replace(/ /g, "-")}`} className="font-manrope text-[11px] text-white/40 hover:text-white/70 transition-colors">
                 {link}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
