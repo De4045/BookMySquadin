@@ -70,35 +70,19 @@ export default function Home() {
           >
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-px bg-primary/80" />
-              <span className="text-white tracking-[0.2em] text-xs font-semibold uppercase">India's Finest Wedding Platform</span>
+              <span className="text-white tracking-[0.2em] text-xs font-semibold uppercase">India's Finest Event Planning Platform</span>
               <div className="w-12 h-px bg-primary/80" />
             </div>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-6 leading-tight">
-              Your Wedding, <span className="text-primary italic block md:inline mt-2 md:mt-0">Your Way</span>
+              Plan your dream event <span className="text-primary italic block md:inline mt-2 md:mt-0">effortlessly</span>
             </h1>
 
             <p className="text-white/90 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12">
-              Find the best wedding vendors with thousands of trusted reviews
+              Find the best vendors for weddings, events, and celebrations — with thousands of trusted reviews
             </p>
 
-            <div className="w-full max-w-3xl bg-white p-2 rounded-sm flex flex-col md:flex-row gap-2 shadow-2xl">
-              <div className="flex-1 flex items-center bg-gray-50 px-4 py-3 border border-border">
-                <Search className="w-5 h-5 text-muted-foreground mr-3" />
-                <select className="w-full bg-transparent border-none outline-none text-foreground text-sm" data-testid="select-vendor">
-                  <option value="">Select vendor type</option>
-                  <option value="banquet">Banquet Halls</option>
-                  <option value="venues">Wedding Venues</option>
-                  <option value="photographers">Photographers</option>
-                  <option value="makeup">Makeup Artists</option>
-                  <option value="planners">Wedding Planners</option>
-                  <option value="decorators">Decorators</option>
-                  <option value="caterers">Caterers</option>
-                  <option value="mehendi">Mehendi Artists</option>
-                  <option value="djs">DJs & Music</option>
-                  <option value="choreographers">Choreographers</option>
-                </select>
-              </div>
+            <div className="w-full max-w-5xl bg-white p-2 rounded-sm flex flex-col md:flex-row gap-2 shadow-2xl">
               <div className="flex-1 flex items-center bg-gray-50 px-4 py-3 border border-border">
                 <MapPin className="w-5 h-5 text-muted-foreground mr-3" />
                 <select className="w-full bg-transparent border-none outline-none text-foreground text-sm" data-testid="select-city">
@@ -113,6 +97,53 @@ export default function Home() {
                   <option value="pune">Pune</option>
                   <option value="goa">Goa</option>
                   <option value="udaipur">Udaipur</option>
+                  <option value="alwar">Alwar</option>
+                  <option value="ajmer">Ajmer</option>
+                  <option value="jodhpur">Jodhpur</option>
+                  <option value="bikaner">Bikaner</option>
+                </select>
+              </div>
+              <div className="flex-1 flex items-center bg-gray-50 px-4 py-3 border border-border">
+                <Search className="w-5 h-5 text-muted-foreground mr-3" />
+                <select className="w-full bg-transparent border-none outline-none text-foreground text-sm" data-testid="select-event-type">
+                  <option value="">Select event type</option>
+                  <option value="wedding">Wedding</option>
+                  <option value="destination-wedding">Destination Wedding</option>
+                  <option value="live-concert">Live Concert</option>
+                  <option value="devotional-event">Devotional Event</option>
+                  <option value="award-show">Award Show</option>
+                  <option value="fashion-show">Fashion Show</option>
+                  <option value="exhibition-expo">Exhibition/Expo</option>
+                  <option value="party">Party</option>
+                  <option value="baby-shower">Baby Shower</option>
+                  <option value="house-warming">House Warming</option>
+                  <option value="kitty-party">Kitty Party</option>
+                </select>
+              </div>
+              <div className="flex-1 flex items-center bg-gray-50 px-4 py-3 border border-border">
+                <Search className="w-5 h-5 text-muted-foreground mr-3" />
+                <input type="date" className="w-full bg-transparent border-none outline-none text-foreground text-sm" data-testid="input-date" placeholder="Select date" />
+              </div>
+              <div className="flex-1 flex items-center bg-gray-50 px-4 py-3 border border-border">
+                <Search className="w-5 h-5 text-muted-foreground mr-3" />
+                <select className="w-full bg-transparent border-none outline-none text-foreground text-sm" data-testid="select-service">
+                  <option value="">Select service</option>
+                  <option value="venues">Venues</option>
+                  <option value="wedding-planner">Wedding Planner</option>
+                  <option value="decorator">Decorator</option>
+                  <option value="makeup">Makeup</option>
+                  <option value="mehendi">Mehendi</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="singer-bands">Singer/Bands</option>
+                  <option value="catering">Catering</option>
+                  <option value="photography">Photography</option>
+                  <option value="anchors">Anchors</option>
+                  <option value="pandit">Pandit</option>
+                  <option value="gifting">Gifting</option>
+                  <option value="clothing-jewellery">Clothing/Jewellery</option>
+                  <option value="hospitality">Hospitality</option>
+                  <option value="logistics-travel">Logistics/Travel</option>
+                  <option value="printing">Printing</option>
                 </select>
               </div>
               <Button className="bg-primary hover:bg-primary/90 text-white rounded-none py-6 px-8 text-sm uppercase tracking-wider font-semibold w-full md:w-auto" data-testid="btn-get-started">
@@ -122,10 +153,11 @@ export default function Home() {
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-white/80">
               <span className="font-semibold text-white mr-2">POPULAR:</span>
-              <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Wedding Photographers</span>
-              <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Bridal Makeup Artists</span>
-              <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Wedding Cards</span>
               <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Wedding Venues</span>
+              <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Photography</span>
+              <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Bridal Makeup</span>
+              <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Entertainment</span>
+              <span className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 cursor-pointer transition-colors backdrop-blur-sm">Catering</span>
             </div>
           </motion.div>
         </div>
@@ -239,17 +271,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Every Vendor You Need */}
+      {/* 6. Browse by Category */}
       <section className="py-24 px-6 md:px-12 bg-secondary/50">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12">
             <motion.div {...fadeIn} className="flex-1">
-              <SectionHeading label="Browse by Category" title="Every Vendor You Need" highlightedWord="Vendor" />
-            </motion.div>
-            <motion.div {...fadeIn} className="mb-12 md:mb-16">
-              <Button variant="outline" className="rounded-none border-primary text-primary hover:bg-primary hover:text-white transition-colors" data-testid="btn-all-vendors">
-                All Vendors
-              </Button>
+              <SectionHeading label="Browse by Category" title="Explore Categories" highlightedWord="Category" />
             </motion.div>
           </div>
 
@@ -258,27 +285,77 @@ export default function Home() {
             initial="initial"
             whileInView="whileInView"
             viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
+            className="grid grid-cols-2 md:grid-cols-3 gap-6"
           >
             {[
-              { emoji: "🏛️", name: "Venues", count: "1,800+" },
-              { emoji: "📸", name: "Photographers", count: "2,400+" },
-              { emoji: "💄", name: "Makeup Artists", count: "900+" },
-              { emoji: "🎨", name: "Decorators", count: "1,200+" },
-              { emoji: "🍽️", name: "Caterers", count: "1,500+" },
-              { emoji: "🌿", name: "Mehendi", count: "600+" },
-              { emoji: "📋", name: "Planners", count: "750+" },
-              { emoji: "🎵", name: "DJs & Music", count: "450+" },
-              { emoji: "💌", name: "Invitations", count: "320+" },
-              { emoji: "💃", name: "Choreographers", count: "190+" }
+              {
+                emoji: "🏛️",
+                name: "Venues",
+                count: "500+",
+                image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=700&q=80",
+                sub: ["Lawn", "Farmhouse", "Banquet", "Hotel", "Resort"]
+              },
+              {
+                emoji: "💄",
+                name: "Makeup",
+                count: "900+",
+                image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80",
+                sub: ["Bridal Makeup", "Groom Makeup", "Party Makeup"]
+              },
+              {
+                emoji: "🍽️",
+                name: "Catering",
+                count: "1,500+",
+                image: "https://images.unsplash.com/photo-1555244162-803834f70033?w=700&q=80",
+                sub: ["Indian/Traditional", "Chinese", "Jain Food", "Punjabi", "South Indian", "Paan Vendor"]
+              },
+              {
+                emoji: "📸",
+                name: "Photography",
+                count: "2,400+",
+                image: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80",
+                sub: ["Pre-Wedding", "Wedding", "Corporate", "Brand Shoot"]
+              },
+              {
+                emoji: "🎨",
+                name: "Decorator",
+                count: "1,200+",
+                image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=700&q=80",
+                sub: ["Wedding Decorator", "Baby Party", "Balloon", "Theme Decorator"]
+              },
+              {
+                emoji: "🎭",
+                name: "Entertainment",
+                count: "450+",
+                image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=700&q=80",
+                sub: ["DJ", "Comedian", "Magician", "Tarot Card Reader", "Mehndi Wala"]
+              }
             ].map((vendor, i) => (
-              <motion.div key={i} variants={staggerItem} className="bg-white p-6 rounded-sm border border-border hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group flex flex-col items-center text-center">
-                <span className="text-3xl mb-3 group-hover:scale-110 transition-transform">{vendor.emoji}</span>
-                <h4 className="font-semibold text-foreground mb-1">{vendor.name}</h4>
-                <span className="text-xs text-muted-foreground">{vendor.count}</span>
+              <motion.div key={i} variants={staggerItem} data-testid={`card-category-${vendor.name.toLowerCase()}`} className="group relative overflow-hidden rounded-md aspect-[4/5] cursor-pointer">
+                <img src={vendor.image} alt={vendor.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300" />
+                
+                <div className="absolute top-4 left-4 flex flex-col gap-1">
+                  <span className="text-3xl">{vendor.emoji}</span>
+                  <h4 className="font-serif text-2xl font-bold text-white leading-tight">{vendor.name}</h4>
+                  <span className="text-primary font-semibold text-sm">{vendor.count} vendors</span>
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
+                  {vendor.sub.map((sub, j) => (
+                    <span key={j} className="text-[10px] uppercase font-bold text-white/90 bg-white/20 border border-white/30 backdrop-blur-md px-2 py-1 rounded-full">
+                      {sub}
+                    </span>
+                  ))}
+                </div>
               </motion.div>
             ))}
           </motion.div>
+          <div className="mt-12 text-center">
+            <Link href="/vendors" className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
+              View All Categories <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

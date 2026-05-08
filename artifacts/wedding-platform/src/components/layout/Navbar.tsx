@@ -9,7 +9,7 @@ export function Navbar() {
       {/* Top Announcement Bar */}
       <div className="w-full bg-[#1a1a1a] text-white/90 text-xs py-2 px-4 md:px-8 flex justify-between items-center hidden md:flex font-sans">
         <div className="tracking-widest uppercase font-medium text-[10px]">
-          India's Favourite Wedding Planning Platform
+          India's Favourite Event Planning Platform
         </div>
         <div className="flex items-center gap-6">
           <a href="#" className="flex items-center gap-2 hover:text-primary transition-colors">
@@ -50,7 +50,7 @@ export function Navbar() {
         <div className="flex items-center justify-end gap-6 flex-1 text-sm font-medium font-sans">
           <div className="hidden lg:flex items-center gap-6">
             <Link href="/" className="hover:text-primary transition-colors cursor-pointer">Venues</Link>
-            <Link href="/" className="hover:text-primary transition-colors cursor-pointer">Vendors</Link>
+            <Link href="/vendors" className="hover:text-primary transition-colors cursor-pointer">Vendors</Link>
             <Link href="/" className="hover:text-primary transition-colors cursor-pointer">Photos</Link>
             <Link href="/" className="hover:text-primary transition-colors cursor-pointer">Real Weddings</Link>
             <Link href="/" className="hover:text-primary transition-colors cursor-pointer">Blog</Link>
@@ -59,6 +59,7 @@ export function Navbar() {
             <button className="text-foreground hover:text-primary transition-colors">
               <Search className="w-5 h-5" />
             </button>
+            <Link href="/login" className="hover:text-primary transition-colors font-medium">Login</Link>
             <Button className="bg-primary hover:bg-primary/90 text-white rounded-none px-6 hidden sm:flex font-semibold tracking-wide text-xs h-9 uppercase">
               List Free
             </Button>
