@@ -1,11 +1,11 @@
 import { Link } from "wouter";
-import { Facebook, Instagram, Twitter, Youtube, MapPin, Phone } from "lucide-react";
+import { Facebook, Instagram, Twitter, Youtube, MapPin, Phone, AlertCircle } from "lucide-react";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 
 const DISCOVER_LINKS: Record<string, string> = {
   "Venues": "/venues",
   "Vendors": "/vendors",
-  "Real Weddings": "/real-weddings",
+  "Weddings": "/weddings",
   "Blog": "/blog",
   "Photos": "/photos",
 };
@@ -81,8 +81,8 @@ export function Footer() {
             <img
               src={bmsLogo}
               alt="Book My Squad"
-              className="h-20 w-20 object-contain"
-              style={{ mixBlendMode: "screen", filter: "brightness(1.2) saturate(1.1)" }}
+              className="h-24 w-24 object-contain"
+              style={{ mixBlendMode: "screen", filter: "brightness(1.3) saturate(1.2) contrast(1.1)" }}
             />
             <h2 className="font-cormorant text-4xl md:text-6xl text-white font-light">
               <span className="text-primary italic">Book</span> My Squad
@@ -148,13 +148,11 @@ export function Footer() {
             <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Contact Us</h4>
 
             <div className="space-y-5">
-              {/* Phone */}
               <a href="tel:+918796318282" className="flex items-center gap-2 font-manrope text-sm text-white/65 hover:text-primary transition-colors group">
                 <Phone className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary shrink-0" />
                 +91 8796318282
               </a>
 
-              {/* Corporate Office */}
               <div>
                 <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/55 uppercase mb-1.5">Corporate Office</p>
                 <div className="flex items-start gap-2">
@@ -167,7 +165,6 @@ export function Footer() {
                 </div>
               </div>
 
-              {/* Registered Office */}
               <div>
                 <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/55 uppercase mb-1.5">Registered Office</p>
                 <div className="flex items-start gap-2">
@@ -179,7 +176,6 @@ export function Footer() {
                 </div>
               </div>
 
-              {/* List your business */}
               <Link
                 href="/list-your-business"
                 className="inline-block mt-2 font-cinzel text-[9px] tracking-[0.25em] uppercase border border-primary/40 text-primary px-4 py-2.5 hover:bg-primary hover:text-black transition-all duration-300"
@@ -204,6 +200,19 @@ export function Footer() {
               {s.icon}
             </a>
           ))}
+        </div>
+
+        {/* Disclaimer */}
+        <div className="mb-8 p-5 border border-white/8 bg-white/[0.02] rounded-sm">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-4 h-4 text-primary/50 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/60 uppercase mb-2">Disclaimer</p>
+              <p className="font-manrope text-[11px] text-white/35 leading-relaxed">
+                Book My Squad is a marketplace platform connecting event planners, couples, and vendors. All vendor and venue listings are independently operated third parties. Book My Squad does not guarantee the quality, safety, or legality of any listed services. Pricing, availability, and service details are subject to change and must be confirmed directly with the vendor or venue. Book My Squad is not liable for any disputes, damages, or losses arising from bookings or transactions made through this platform. Images used are for illustrative purposes only. By using this platform you agree to our Terms of Service and Privacy Policy.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Bottom bar */}

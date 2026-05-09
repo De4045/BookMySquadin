@@ -269,7 +269,7 @@ export default function Home() {
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Premium Services ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
-              BMS <span className="text-primary italic font-semibold">Inhouse</span> Services
+              <span className="text-primary italic font-semibold">Inhouse</span> Services
             </h2>
           </motion.div>
 
@@ -374,10 +374,10 @@ export default function Home() {
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />
               <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
-                Real <span className="text-primary italic font-semibold">Weddings</span>
+                Dream <span className="text-primary italic font-semibold">Weddings</span>
               </h2>
             </motion.div>
-            <Link href="/real-weddings">
+            <Link href="/weddings">
               <Button variant="outline" className="hidden md:flex rounded-sm border-primary/50 text-primary font-cinzel text-[10px] tracking-[0.2em] uppercase hover:bg-primary hover:text-black transition-colors">
                 View All Galleries
               </Button>
@@ -397,7 +397,7 @@ export default function Home() {
               { img: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=700&q=80", title: "Beach Boho", names: "Neha & Arjun", city: "Goa", tall: true },
               { img: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=700&q=80", title: "Modern Luxury", names: "Shriya & Karan", city: "Mumbai", tall: false }
             ].map((wedding, i) => (
-              <Link key={i} href="/real-weddings">
+              <Link key={i} href="/weddings">
                 <motion.div variants={staggerItem} className="group cursor-pointer break-inside-avoid">
                   <div className={`overflow-hidden rounded-sm mb-4 relative ${wedding.tall ? 'aspect-[3/4]' : 'aspect-square'} border border-transparent group-hover:border-primary/40 transition-colors duration-500`}>
                     <img src={wedding.img} alt={wedding.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
@@ -417,7 +417,7 @@ export default function Home() {
           </motion.div>
 
           <div className="mt-12 text-center md:hidden">
-            <Link href="/real-weddings">
+            <Link href="/weddings">
               <Button variant="outline" className="rounded-sm border-primary/50 text-primary font-cinzel text-[10px] tracking-[0.2em] uppercase hover:bg-primary hover:text-black transition-colors w-full">
                 View All Galleries
               </Button>

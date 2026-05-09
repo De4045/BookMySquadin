@@ -6,9 +6,9 @@ import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-pr
 const navLinks = [
   { label: "Venues", href: "/venues" },
   { label: "Vendors", href: "/vendors" },
-  { label: "Photos", href: "/" },
-  { label: "Real Weddings", href: "/" },
-  { label: "Blog", href: "/" },
+  { label: "Photos", href: "/photos" },
+  { label: "Weddings", href: "/weddings" },
+  { label: "Blog", href: "/blog" },
 ];
 
 export function Navbar() {
@@ -45,18 +45,19 @@ export function Navbar() {
           className={`w-full ${
             scrolled
               ? "bg-black/95 backdrop-blur-xl border-b border-white/8"
-              : "bg-black/20 backdrop-blur-sm"
-          } h-16 px-4 md:px-8 flex items-center justify-between transition-all duration-500`}
+              : "bg-black/30 backdrop-blur-sm"
+          } h-18 px-4 md:px-8 flex items-center justify-between transition-all duration-500`}
+          style={{ height: "72px" }}
         >
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 cursor-pointer flex-shrink-0">
+          <Link href="/" className="flex items-center gap-3 cursor-pointer flex-shrink-0">
             <img
               src={bmsLogo}
               alt="Book My Squad"
-              className="h-10 w-10 object-contain"
-              style={{ mixBlendMode: "screen", filter: "brightness(1.15) saturate(1.1)" }}
+              className="h-16 w-16 object-contain"
+              style={{ mixBlendMode: "screen", filter: "brightness(1.3) saturate(1.2) contrast(1.1)" }}
             />
-            <span className="font-cormorant text-xl md:text-2xl font-semibold tracking-wide text-white hidden sm:block">
+            <span className="font-cormorant text-2xl md:text-3xl font-semibold tracking-wide text-white hidden sm:block">
               <span className="text-primary italic">Book</span> My Squad
             </span>
           </Link>
@@ -84,6 +85,12 @@ export function Navbar() {
               className="hidden md:block font-cinzel text-[10px] tracking-[0.2em] uppercase text-white/75 hover:text-primary transition-colors"
             >
               Login
+            </Link>
+            <Link
+              href="/list-your-business"
+              className="hidden lg:block font-cinzel text-[9px] tracking-[0.15em] uppercase bg-primary text-black px-4 py-2 hover:bg-primary/85 transition-colors font-bold"
+            >
+              List Business
             </Link>
             {/* Mobile hamburger */}
             <button
@@ -113,12 +120,17 @@ export function Navbar() {
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/8">
-          <img
-            src={bmsLogo}
-            alt="BMS"
-            className="h-10 w-10 object-contain"
-            style={{ mixBlendMode: "screen" }}
-          />
+          <div className="flex items-center gap-3">
+            <img
+              src={bmsLogo}
+              alt="BMS"
+              className="h-12 w-12 object-contain"
+              style={{ mixBlendMode: "screen", filter: "brightness(1.3) saturate(1.2)" }}
+            />
+            <span className="font-cormorant text-xl text-white font-semibold">
+              <span className="text-primary italic">Book</span> My Squad
+            </span>
+          </div>
           <button
             className="text-white/60 hover:text-primary transition-colors"
             onClick={() => setMobileOpen(false)}
@@ -143,10 +155,17 @@ export function Navbar() {
           ))}
           <Link
             href="/login"
-            className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors"
+            className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors border-b border-white/5 pb-5"
             onClick={() => setMobileOpen(false)}
           >
             Login
+          </Link>
+          <Link
+            href="/list-your-business"
+            className="font-cinzel text-sm tracking-[0.25em] uppercase text-primary hover:text-white transition-colors"
+            onClick={() => setMobileOpen(false)}
+          >
+            ✦ List Your Business
           </Link>
         </nav>
 

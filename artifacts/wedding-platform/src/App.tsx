@@ -4,11 +4,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CursorGlow } from "@/components/CursorGlow";
+import { ChatBot } from "@/components/ChatBot";
 import Home from "@/pages/Home";
 import Vendors from "@/pages/Vendors";
 import Venues from "@/pages/Venues";
 import Login from "@/pages/Login";
-import RealWeddings from "@/pages/RealWeddings";
+import Weddings from "@/pages/Weddings";
 import Blog from "@/pages/Blog";
 import Photos from "@/pages/Photos";
 import ListYourBusiness from "@/pages/ListYourBusiness";
@@ -23,7 +24,8 @@ function Router() {
       <Route path="/vendors" component={Vendors} />
       <Route path="/venues" component={Venues} />
       <Route path="/login" component={Login} />
-      <Route path="/real-weddings" component={RealWeddings} />
+      <Route path="/weddings" component={Weddings} />
+      <Route path="/real-weddings" component={Weddings} />
       <Route path="/blog" component={Blog} />
       <Route path="/photos" component={Photos} />
       <Route path="/list-your-business" component={ListYourBusiness} />
@@ -40,6 +42,7 @@ function App() {
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <CursorGlow />
             <Router />
+            <ChatBot />
           </WouterRouter>
         </SmoothScroll>
         <Toaster />
