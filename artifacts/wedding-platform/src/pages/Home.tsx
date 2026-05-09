@@ -203,38 +203,84 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Bento grid */}
+          {/* Bento grid — large left card (2 rows) + 4 right cards (2×2) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Large card */}
+            {/* Large card spanning 2 rows */}
             <Link href="/venues">
-              <motion.div className="lg:row-span-2 relative overflow-hidden group cursor-pointer luxury-card" style={{minHeight: '600px'}} whileHover={{scale:1.01}} transition={{duration:0.4}}>
+              <motion.div
+                className="lg:row-span-2 relative overflow-hidden group cursor-pointer luxury-card h-[340px] lg:h-full"
+                style={{ minHeight: '600px' }}
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.4 }}
+              >
                 <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" alt="Hotels" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.08]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                 <div className="absolute inset-0 border border-transparent group-hover:border-primary/30 transition-all duration-500" />
                 <div className="absolute bottom-8 left-8 right-8">
                   <span className="font-cinzel text-[10px] tracking-[0.3em] text-primary/70 uppercase">Hotels</span>
                   <h3 className="font-cormorant text-3xl text-white mt-2 mb-3 font-semibold">4 Star & Above Hotels</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {["Mumbai", "Bangalore", "Pune", "Delhi"].map(c => <span key={c} className="text-xs text-white/50 font-manrope border-b border-white/20 pb-1">{c}</span>)}
+                  <p className="font-manrope text-sm text-white/50 font-light leading-relaxed mb-4">Grand ballrooms and stunning pool-side lawns in India's finest luxury hotel properties.</p>
+                  <div className="flex flex-wrap gap-3">
+                    {["Mumbai", "Bangalore", "Pune", "Delhi", "Hyderabad"].map(c => (
+                      <span key={c} className="text-[10px] text-white/50 font-manrope border-b border-white/20 pb-0.5 hover:text-primary hover:border-primary/40 transition-colors">{c}</span>
+                    ))}
                   </div>
                 </div>
               </motion.div>
             </Link>
 
-            {/* Three smaller cards */}
+            {/* Four smaller cards filling the 2×2 right side */}
             {[
-              {img:"https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=700&q=80", type:"Banquet", title:"Banquet Halls"},
-              {img:"https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=700&q=80", type:"Garden", title:"Marriage Garden / Lawns"},
-              {img:"https://images.unsplash.com/photo-1582719508461-905c673771fd?w=700&q=80", type:"Resort", title:"Destination Resorts"},
+              {
+                img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=700&q=80",
+                type: "Banquet",
+                title: "Banquet Halls",
+                desc: "Elegant indoor spaces for up to 2,000 guests with world-class catering.",
+                cities: ["Mumbai", "Delhi", "Jaipur"],
+              },
+              {
+                img: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=700&q=80",
+                type: "Garden",
+                title: "Marriage Garden & Lawns",
+                desc: "Lush open-air venues perfect for a dreamy outdoor celebration.",
+                cities: ["Bangalore", "Pune", "Ahmedabad"],
+              },
+              {
+                img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=700&q=80",
+                type: "Resort",
+                title: "Destination Resorts",
+                desc: "Weekend getaway venues with private villas and spa retreats.",
+                cities: ["Goa", "Udaipur", "Shimla"],
+              },
+              {
+                img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=700&q=80",
+                type: "Farmhouse",
+                title: "Heritage Farmhouses",
+                desc: "Rustic yet opulent farmhouse estates blending charm with modernity.",
+                cities: ["Delhi NCR", "Jaipur", "Chandigarh"],
+              },
             ].map((card, i) => (
               <Link key={i} href="/venues">
-                <motion.div className="relative overflow-hidden group cursor-pointer luxury-card" style={{minHeight: '280px'}} whileHover={{scale:1.01}} transition={{duration:0.4}}>
+                <motion.div
+                  className="relative overflow-hidden group cursor-pointer luxury-card"
+                  style={{ minHeight: '280px' }}
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ duration: 0.4 }}
+                >
                   <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                   <div className="absolute inset-0 border border-transparent group-hover:border-primary/30 transition-all duration-500" />
                   <div className="absolute bottom-6 left-6 right-6">
                     <span className="font-cinzel text-[9px] tracking-[0.3em] text-primary/70 uppercase">{card.type}</span>
-                    <h3 className="font-cormorant text-xl text-white mt-1 font-semibold">{card.title}</h3>
+                    <h3 className="font-cormorant text-xl text-white mt-1 mb-2 font-semibold">{card.title}</h3>
+                    <p className="font-manrope text-xs text-white/40 font-light leading-relaxed mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 max-h-0 group-hover:max-h-16 overflow-hidden">
+                      {card.desc}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {card.cities.map(c => (
+                        <span key={c} className="text-[9px] text-white/40 font-manrope border-b border-white/15 pb-0.5">{c}</span>
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               </Link>
