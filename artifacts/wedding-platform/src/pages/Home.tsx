@@ -14,9 +14,16 @@ export default function Home() {
 
   const handleSearch = () => {
     if (service === "venues") {
-      navigate("/venues");
+      const params = new URLSearchParams();
+      if (city) params.set("city", city.toUpperCase());
+      const qs = params.toString();
+      navigate(`/venues${qs ? `?${qs}` : ""}`);
     } else {
-      navigate("/vendors");
+      const params = new URLSearchParams();
+      if (city) params.set("city", city);
+      if (service) params.set("category", service);
+      const qs = params.toString();
+      navigate(`/vendors${qs ? `?${qs}` : ""}`);
     }
   };
 

@@ -6,6 +6,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { CursorGlow } from "@/components/CursorGlow";
 import { ChatBot } from "@/components/ChatBot";
 import { AuthProvider } from "@/context/AuthContext";
+import { ShortlistProvider } from "@/context/ShortlistContext";
 import Home from "@/pages/Home";
 import Vendors from "@/pages/Vendors";
 import Venues from "@/pages/Venues";
@@ -40,13 +41,15 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <SmoothScroll>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <CursorGlow />
-              <Router />
-              <ChatBot />
-            </WouterRouter>
-          </SmoothScroll>
+          <ShortlistProvider>
+            <SmoothScroll>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <CursorGlow />
+                <Router />
+                <ChatBot />
+              </WouterRouter>
+            </SmoothScroll>
+          </ShortlistProvider>
         </AuthProvider>
         <Toaster />
       </TooltipProvider>

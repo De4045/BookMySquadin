@@ -26,6 +26,18 @@ const TESTIMONIALS = [
   { text: "The beach wedding in Goa was intimate and magical — exactly what we envisioned.", name: "Neha & Arjun", location: "Goa" },
 ];
 
+const TIMELINE = [
+  { time: "12 Months Before", title: "Set Your Vision & Budget", desc: "Define your wedding style, guest count, and overall budget. Start exploring venues on BMS." },
+  { time: "9 Months Before", title: "Book Venue & Planner", desc: "Lock in your dream venue and hire a wedding planner. Popular dates book fast!" },
+  { time: "6 Months Before", title: "Vendor Bookings", desc: "Finalise photographer, caterer, decorator, makeup artist, and entertainment." },
+  { time: "3 Months Before", title: "Finalise Details", desc: "Confirm guest list, send invites, finalise menus, conduct venue walk-throughs." },
+  { time: "1 Month Before", title: "Final Preparations", desc: "Rehearsal, bridal trial, confirm all vendor timelines and payments." },
+];
+
+function fadeUp(delay = 0) {
+  return { initial: { opacity: 0, y: 30 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.7, delay } };
+}
+
 export default function Weddings() {
   return (
     <div className="min-h-screen bg-[#080604] text-white font-sans flex flex-col">
@@ -37,7 +49,7 @@ export default function Weddings() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.07)_0%,transparent_65%)]" />
           <div className="absolute inset-0 opacity-5 pointer-events-none"
             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1920&q=80')", backgroundSize: "cover", backgroundPosition: "center" }} />
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }} className="relative z-10">
+          <motion.div {...fadeUp()} className="relative z-10">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Inspiration & Stories ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h1 className="font-cormorant text-5xl md:text-7xl font-light mb-6">
@@ -60,7 +72,7 @@ export default function Weddings() {
         {/* Wedding Styles */}
         <section className="py-20 px-6 md:px-12 bg-[#0a0806] border-t border-white/5">
           <div className="max-w-7xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12 text-center">
+            <motion.div {...fadeUp(0.1)} className="mb-12 text-center">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-3">✦ Browse By Style ✦</p>
               <h2 className="font-cormorant text-4xl md:text-5xl text-white font-light">
                 Wedding <span className="text-primary italic font-semibold">Styles</span>
@@ -68,7 +80,7 @@ export default function Weddings() {
             </motion.div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {STYLES.map((s, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                <motion.div key={i} {...fadeUp(0.15 + i * 0.07)}
                   className="group relative overflow-hidden cursor-pointer h-64 luxury-card"
                 >
                   <img src={s.img} alt={s.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -86,7 +98,7 @@ export default function Weddings() {
         {/* Wedding Cards Grid */}
         <section className="py-20 px-6 md:px-12 bg-[#080604]">
           <div className="max-w-7xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12 flex flex-col md:flex-row justify-between items-end">
+            <motion.div {...fadeUp(0.1)} className="mb-12 flex flex-col md:flex-row justify-between items-end">
               <div>
                 <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-3">✦ Real Stories ✦</p>
                 <h2 className="font-cormorant text-4xl md:text-5xl text-white font-light">
@@ -100,7 +112,7 @@ export default function Weddings() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {WEDDINGS.map((w, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
+                <motion.div key={i} {...fadeUp(0.15 + i * 0.08)}
                   className="luxury-card group cursor-pointer overflow-hidden"
                 >
                   <div className="relative h-72 overflow-hidden">
@@ -131,10 +143,10 @@ export default function Weddings() {
                       </div>
                     </div>
                     <p className="font-manrope text-sm text-white/60 leading-relaxed mb-4">{w.desc}</p>
-                    <div className="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors">
+                    <Link href="/photos" className="flex items-center gap-2 text-primary/60 hover:text-primary transition-colors">
                       <Camera className="w-3.5 h-3.5" />
                       <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase">View Gallery</span>
-                    </div>
+                    </Link>
                   </div>
                 </motion.div>
               ))}
@@ -145,7 +157,7 @@ export default function Weddings() {
         {/* Planning Timeline */}
         <section className="py-20 px-6 md:px-12 bg-[#0a0806] border-t border-white/5">
           <div className="max-w-5xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-14 text-center">
+            <motion.div {...fadeUp(0.1)} className="mb-14 text-center">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-3">✦ Your Journey ✦</p>
               <h2 className="font-cormorant text-4xl md:text-5xl text-white font-light">
                 Wedding <span className="text-primary italic font-semibold">Planning Timeline</span>
@@ -153,14 +165,8 @@ export default function Weddings() {
             </motion.div>
             <div className="relative">
               <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-primary/20" />
-              {[
-                { time: "12 Months Before", title: "Set Your Vision & Budget", desc: "Define your wedding style, guest count, and overall budget. Start exploring venues on BMS." },
-                { time: "9 Months Before", title: "Book Venue & Planner", desc: "Lock in your dream venue and hire a wedding planner. Popular dates book fast!" },
-                { time: "6 Months Before", title: "Vendor Bookings", desc: "Finalise photographer, caterer, decorator, makeup artist, and entertainment." },
-                { time: "3 Months Before", title: "Finalise Details", desc: "Confirm guest list, send invites, finalise menus, conduct venue walk-throughs." },
-                { time: "1 Month Before", title: "Final Preparations", desc: "Rehearsal, bridal trial, confirm all vendor timelines and payments." },
-              ].map((step, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+              {TIMELINE.map((step, i) => (
+                <motion.div key={i} {...fadeUp(0.1 + i * 0.1)}
                   className={`relative flex items-start gap-6 mb-10 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"} pl-14 md:pl-0`}
                 >
                   <div className="absolute left-4 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-primary border-2 border-[#0a0806] md:-translate-x-1/2 z-10 shadow-[0_0_12px_rgba(212,175,55,0.6)]" />
@@ -178,7 +184,7 @@ export default function Weddings() {
         {/* Testimonials */}
         <section className="py-20 px-6 md:px-12 bg-[#050403]">
           <div className="max-w-7xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-14 text-center">
+            <motion.div {...fadeUp(0.1)} className="mb-14 text-center">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-3">✦ Love Notes ✦</p>
               <h2 className="font-cormorant text-4xl md:text-5xl text-white font-light">
                 What Couples <span className="text-primary italic font-semibold">Say</span>
@@ -186,7 +192,7 @@ export default function Weddings() {
             </motion.div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {TESTIMONIALS.map((t, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
+                <motion.div key={i} {...fadeUp(0.15 + i * 0.12)}
                   className="luxury-card p-8 text-center relative"
                 >
                   <div className="font-cormorant text-7xl text-primary/15 absolute top-3 left-5 leading-none">"</div>
@@ -206,7 +212,7 @@ export default function Weddings() {
         {/* CTA */}
         <section className="py-20 px-6 md:px-12 bg-[#080604] border-t border-white/5">
           <div className="max-w-3xl mx-auto text-center">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <motion.div {...fadeUp(0.1)}>
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Start Your Story ✦</p>
               <div className="gold-line w-16 mx-auto mb-6" />
               <h2 className="font-cormorant text-4xl md:text-6xl text-white font-light mb-6">
