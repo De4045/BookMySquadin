@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
-import { Link } from "wouter";
-import { Search, Menu, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "wouter";
+import { Search, Menu, X, ChevronDown, User, LogOut, Heart, Settings } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "Venues", href: "/venues" },
@@ -11,9 +13,26 @@ const navLinks = [
   { label: "Blog", href: "/blog" },
 ];
 
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map(w => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function getFirstName(name: string) {
+  return name.split(" ")[0];
+}
+
 export function Navbar() {
+  const { user, logout } = useAuth();
+  const [, navigate] = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -22,31 +41,44 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (mobileOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    await logout();
+    navigate("/");
+  };
 
   return (
     <>
       <header className="w-full fixed top-0 left-0 z-50 flex flex-col">
-        {/* Top Announcement Bar */}
+        {/* Announcement Bar */}
         <div className="w-full bg-[#050403] py-2 flex justify-center items-center px-4">
           <div className="font-cinzel text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.3em] uppercase text-primary/80 text-center">
             ✦ India's Finest Event Planning Platform ✦
           </div>
         </div>
 
-        {/* Main Navigation */}
+        {/* Main Nav */}
         <div
           className={`w-full ${
             scrolled
               ? "bg-black/95 backdrop-blur-xl border-b border-white/8"
               : "bg-black/30 backdrop-blur-sm"
-          } h-18 px-4 md:px-8 flex items-center justify-between transition-all duration-500`}
+          } px-4 md:px-8 flex items-center justify-between transition-all duration-500`}
           style={{ height: "72px" }}
         >
           {/* Logo */}
@@ -76,23 +108,99 @@ export function Navbar() {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-3 md:gap-4">
             <button className="hidden md:flex text-white/70 hover:text-primary transition-colors">
               <Search className="w-4 h-4" />
             </button>
-            <Link
-              href="/login"
-              className="hidden md:block font-cinzel text-[10px] tracking-[0.2em] uppercase text-white/75 hover:text-primary transition-colors"
-            >
-              Login
-            </Link>
+
+            {user ? (
+              /* Logged-in user avatar + dropdown */
+              <div ref={userMenuRef} className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(o => !o)}
+                  className="flex items-center gap-2.5 group"
+                  aria-label="User menu"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/50 flex items-center justify-center group-hover:border-primary transition-colors">
+                    <span className="font-cinzel text-[11px] text-primary font-bold">{getInitials(user.name)}</span>
+                  </div>
+                  <div className="hidden md:flex items-center gap-1.5">
+                    <span className="font-cinzel text-[10px] tracking-[0.1em] text-white/80 max-w-[100px] truncate">
+                      {getFirstName(user.name)}
+                    </span>
+                    <ChevronDown className={`w-3 h-3 text-white/50 transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`} />
+                  </div>
+                </button>
+
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-3 w-60 bg-[#0d0a07] border border-white/10 shadow-2xl z-50"
+                    >
+                      {/* User info */}
+                      <div className="px-4 py-4 border-b border-white/8">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/40 flex items-center justify-center">
+                            <span className="font-cinzel text-sm text-primary font-bold">{getInitials(user.name)}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-cinzel text-[11px] text-white font-semibold truncate">{user.name}</p>
+                            <p className="font-manrope text-[10px] text-white/40 truncate">{user.email}</p>
+                            <span className="font-cinzel text-[8px] text-primary/70 uppercase tracking-wider">{user.role}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu items */}
+                      <div className="py-1.5">
+                        <button className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left">
+                          <User className="w-3.5 h-3.5 text-primary/60" />
+                          My Profile
+                        </button>
+                        <button className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left">
+                          <Heart className="w-3.5 h-3.5 text-primary/60" />
+                          Saved Vendors
+                        </button>
+                        <button className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left">
+                          <Settings className="w-3.5 h-3.5 text-primary/60" />
+                          Settings
+                        </button>
+                      </div>
+
+                      <div className="border-t border-white/8 py-1.5">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-red-400/80 hover:text-red-400 hover:bg-red-500/5 transition-colors text-left"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              /* Not logged in */
+              <Link
+                href="/login"
+                className="hidden md:block font-cinzel text-[10px] tracking-[0.2em] uppercase text-white/75 hover:text-primary transition-colors"
+              >
+                Login
+              </Link>
+            )}
+
             <Link
               href="/list-your-business"
               className="hidden lg:block font-cinzel text-[9px] tracking-[0.15em] uppercase bg-primary text-black px-4 py-2 hover:bg-primary/85 transition-colors font-bold"
             >
               List Business
             </Link>
-            {/* Mobile hamburger */}
+
             <button
               className="lg:hidden text-white/80 hover:text-primary transition-colors p-1"
               onClick={() => setMobileOpen(true)}
@@ -104,7 +212,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Overlay */}
       {mobileOpen && (
         <div
           className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
@@ -112,13 +220,12 @@ export function Navbar() {
         />
       )}
 
-      {/* Mobile Slide-in Drawer */}
+      {/* Mobile Drawer */}
       <div
         className={`fixed top-0 right-0 z-[101] h-full w-[80vw] max-w-sm bg-[#0a0806] border-l border-white/8 flex flex-col transition-transform duration-400 ease-out ${
           mobileOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* Drawer header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/8">
           <div className="flex items-center gap-3">
             <img
@@ -134,13 +241,24 @@ export function Navbar() {
           <button
             className="text-white/60 hover:text-primary transition-colors"
             onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Drawer links */}
+        {/* User info in mobile drawer */}
+        {user && (
+          <div className="px-6 py-4 border-b border-white/8 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/40 flex items-center justify-center">
+              <span className="font-cinzel text-sm text-primary font-bold">{getInitials(user.name)}</span>
+            </div>
+            <div>
+              <p className="font-cinzel text-xs text-white font-semibold">{user.name}</p>
+              <p className="font-manrope text-[10px] text-white/40">{user.email}</p>
+            </div>
+          </div>
+        )}
+
         <nav className="flex flex-col px-6 py-8 gap-6 flex-1">
           {navLinks.map((link, i) => (
             <Link
@@ -153,13 +271,22 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/login"
-            className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors border-b border-white/5 pb-5"
-            onClick={() => setMobileOpen(false)}
-          >
-            Login
-          </Link>
+          {user ? (
+            <button
+              onClick={async () => { setMobileOpen(false); await handleLogout(); }}
+              className="font-cinzel text-sm tracking-[0.25em] uppercase text-red-400/70 hover:text-red-400 transition-colors text-left"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors border-b border-white/5 pb-5"
+              onClick={() => setMobileOpen(false)}
+            >
+              Login
+            </Link>
+          )}
           <Link
             href="/list-your-business"
             className="font-cinzel text-sm tracking-[0.25em] uppercase text-primary hover:text-white transition-colors"
@@ -169,14 +296,9 @@ export function Navbar() {
           </Link>
         </nav>
 
-        {/* Drawer footer */}
         <div className="px-6 py-6 border-t border-white/8">
-          <p className="font-manrope text-[11px] text-white/35 leading-relaxed">
-            ✦ India's Finest Event Planning Platform ✦
-          </p>
-          <p className="font-manrope text-[10px] text-white/25 mt-2">
-            📞 +91 8796318282
-          </p>
+          <p className="font-manrope text-[11px] text-white/35">✦ India's Finest Event Planning Platform ✦</p>
+          <p className="font-manrope text-[10px] text-white/25 mt-2">📞 +91 8796318282</p>
         </div>
       </div>
     </>
