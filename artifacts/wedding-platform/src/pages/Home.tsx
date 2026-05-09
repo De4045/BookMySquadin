@@ -20,25 +20,6 @@ export default function Home() {
     }
   };
 
-  const fadeIn = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { duration: 0.6 }
-  };
-
-  const staggerContainer = {
-    initial: { opacity: 0 },
-    whileInView: { opacity: 1 },
-    viewport: { once: true, margin: "-100px" },
-    transition: { staggerChildren: 0.1 }
-  };
-
-  const staggerItem = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    transition: { duration: 0.5 }
-  };
 
   return (
     <div className="min-h-screen bg-[#080604] w-full overflow-x-hidden font-sans">
@@ -214,13 +195,13 @@ export default function Home() {
       {/* SECTION 3: POPULAR VENUE SEARCHES */}
       <section className="py-28 px-6 md:px-12" style={{background: '#080604'}}>
         <div className="max-w-7xl mx-auto">
-          <motion.div className="mb-16 text-center" whileInView={{opacity:1, y:0}} initial={{opacity:0, y:40}} viewport={{once:true}} transition={{duration:0.8}}>
+          <div className="mb-16 text-center">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Curated For You ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
               Popular <span className="text-primary italic font-semibold">Venue</span> Searches
             </h2>
-          </motion.div>
+          </div>
 
           {/* Bento grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -265,36 +246,33 @@ export default function Home() {
       {/* SECTION 4: INHOUSE SERVICES */}
       <section className="py-24 px-6 md:px-12 bg-[#0a0804]">
         <div className="max-w-7xl mx-auto">
-          <motion.div className="mb-16 text-center" whileInView={{opacity:1, y:0}} initial={{opacity:0, y:40}} viewport={{once:true}} transition={{duration:0.8}}>
+          <div className="mb-16 text-center">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Premium Services ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
               <span className="text-primary italic font-semibold">Inhouse</span> Services
             </h2>
-          </motion.div>
+          </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-          >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {[
-              { img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80", title: "Wedding Planning", href: "/vendors" },
-              { img: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80", title: "Photography & Films", href: "/vendors" },
-              { img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80", title: "Bridal Artistry", href: "/vendors" },
+              { img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80", title: "Wedding Planning", desc: "End-to-end meticulous planning by our luxury expert team", href: "/vendors" },
+              { img: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80", title: "Photography & Films", desc: "Cinematic captures of your most treasured moments", href: "/vendors" },
+              { img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80", title: "Bridal Artistry", desc: "Top makeup artists curating your flawless special day look", href: "/vendors" },
             ].map((service, i) => (
               <Link key={i} href={service.href}>
-                <motion.div variants={staggerItem} className="luxury-card p-6 flex flex-col group cursor-pointer hover:gold-glow rounded-sm">
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: i * 0.12 }}
+                  className="luxury-card p-6 flex flex-col group cursor-pointer hover:gold-glow rounded-sm"
+                >
                   <div className="w-full aspect-square mb-6 overflow-hidden border border-primary/20 group-hover:border-primary/50 transition-colors">
                     <img src={service.img} alt={service.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   </div>
                   <div className="flex flex-col flex-1 text-center items-center justify-center">
                     <h3 className="text-white font-cormorant text-3xl font-semibold mb-3">{service.title}</h3>
-                    <p className="font-manrope text-white/60 font-light text-sm mb-6">
-                      {i === 0 ? "End-to-end meticulous planning by our luxury expert team" : i === 1 ? "Cinematic captures of your most treasured moments" : "Top makeup artists curating your flawless special day look"}
-                    </p>
+                    <p className="font-manrope text-white/60 font-light text-sm mb-6">{service.desc}</p>
                     <span className="mt-auto font-cinzel text-primary text-[10px] tracking-[0.2em] font-semibold flex items-center gap-2 group-hover:gap-3 transition-all uppercase">
                       Discover More <ArrowRight className="w-3 h-3" />
                     </span>
@@ -302,7 +280,7 @@ export default function Home() {
                 </motion.div>
               </Link>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -310,35 +288,34 @@ export default function Home() {
       <section className="py-28 px-6 md:px-12 bg-[#080604] border-t border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-            <motion.div whileInView={{opacity:1, y:0}} initial={{opacity:0, y:40}} viewport={{once:true}} transition={{duration:0.8}} className="flex-1">
+            <div className="flex-1">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Vendor Categories ✦</p>
               <div className="gold-line w-16 mb-6" />
               <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
                 Explore <span className="text-primary italic font-semibold">Categories</span>
               </h2>
-            </motion.div>
+            </div>
             <Link href="/vendors" className="hidden md:inline-flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold hover:text-white transition-colors mt-8 md:mt-0">
               Explore All 19 Categories <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { name: "Venues", num: "01", image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=700&q=80", sub: ["Lawn", "Farmhouse", "Banquet", "Hotel", "Resort"], href: "/venues" },
-              { name: "Makeup", num: "02", image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80", sub: ["Bridal Makeup", "Groom Makeup", "Party Makeup"], href: "/vendors" },
-              { name: "Catering", num: "03", image: "https://images.unsplash.com/photo-1555244162-803834f70033?w=700&q=80", sub: ["Indian/Traditional", "Chinese", "Jain Food", "Punjabi", "South Indian"], href: "/vendors" },
-              { name: "Photography", num: "04", image: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80", sub: ["Pre-Wedding", "Wedding", "Corporate", "Brand Shoot"], href: "/vendors" },
-              { name: "Decorator", num: "05", image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=700&q=80", sub: ["Wedding Decorator", "Baby Party", "Balloon", "Theme Decorator"], href: "/vendors" },
-              { name: "Entertainment", num: "06", image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=700&q=80", sub: ["DJ", "Comedian", "Magician", "Tarot Card Reader"], href: "/vendors" },
+              { name: "Venues",        num: "01", image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=700&q=80", sub: ["Lawn", "Farmhouse", "Banquet", "Hotel", "Resort"],                   href: "/venues" },
+              { name: "Makeup",        num: "02", image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80", sub: ["Bridal Makeup", "Groom Makeup", "Party Makeup"],                     href: "/vendors" },
+              { name: "Catering",      num: "03", image: "https://images.unsplash.com/photo-1555244162-803834f70033?w=700&q=80", sub: ["Indian/Traditional", "Chinese", "Jain Food", "Punjabi", "South Indian"], href: "/vendors" },
+              { name: "Photography",   num: "04", image: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80", sub: ["Pre-Wedding", "Wedding", "Corporate", "Brand Shoot"],                href: "/vendors" },
+              { name: "Decorator",     num: "05", image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=700&q=80", sub: ["Wedding Decorator", "Baby Party", "Balloon", "Theme Decorator"],    href: "/vendors" },
+              { name: "Entertainment", num: "06", image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=700&q=80", sub: ["DJ", "Comedian", "Magician", "Tarot Card Reader"],                   href: "/vendors" },
             ].map((vendor, i) => (
               <Link key={i} href={vendor.href}>
-                <motion.div variants={staggerItem} className="group relative overflow-hidden rounded-sm h-[400px] cursor-pointer border border-transparent hover:gold-border-glow transition-all duration-500">
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: i * 0.08 }}
+                  className="group relative overflow-hidden rounded-sm h-[400px] cursor-pointer border border-transparent hover:gold-border-glow transition-all duration-500"
+                >
                   <img src={vendor.image} alt={vendor.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 group-hover:from-black/95 transition-colors duration-500" />
                   <div className="absolute top-6 right-6 font-cinzel text-xl text-primary/80 font-bold opacity-80 group-hover:opacity-100 group-hover:text-primary transition-all">
@@ -357,7 +334,7 @@ export default function Home() {
                 </motion.div>
               </Link>
             ))}
-          </motion.div>
+          </div>
           <div className="mt-12 text-center md:hidden">
             <Link href="/vendors" className="inline-flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold hover:text-white transition-colors">
               Explore All 19 Categories <ArrowRight className="w-4 h-4" />
@@ -366,17 +343,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 6: REAL WEDDINGS */}
+      {/* SECTION 6: DREAM WEDDINGS */}
       <section className="py-28 px-6 md:px-12 bg-[#0d0a07]">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-            <motion.div whileInView={{opacity:1, y:0}} initial={{opacity:0, y:40}} viewport={{once:true}} transition={{duration:0.8}} className="flex-1">
+            <div className="flex-1">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />
               <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
                 Dream <span className="text-primary italic font-semibold">Weddings</span>
               </h2>
-            </motion.div>
+            </div>
             <Link href="/weddings">
               <Button variant="outline" className="hidden md:flex rounded-sm border-primary/50 text-primary font-cinzel text-[10px] tracking-[0.2em] uppercase hover:bg-primary hover:text-black transition-colors">
                 View All Galleries
@@ -384,39 +361,90 @@ export default function Home() {
             </Link>
           </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true }}
-            className="columns-1 md:columns-2 lg:columns-4 gap-6 space-y-6"
-          >
+          {/* 2-column featured + 2-column grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { img: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=700&q=80", title: "Royal Rajasthani", names: "Priya & Rahul", city: "Udaipur", tall: true },
-              { img: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=80", title: "Pink City Magic", names: "Ananya & Vikram", city: "Jaipur", tall: false },
-              { img: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=700&q=80", title: "Beach Boho", names: "Neha & Arjun", city: "Goa", tall: true },
-              { img: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=700&q=80", title: "Modern Luxury", names: "Shriya & Karan", city: "Mumbai", tall: false }
+              {
+                img: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=85",
+                title: "Royal Rajasthani",
+                names: "Priya & Rahul",
+                city: "Udaipur",
+                style: "Destination",
+                span: "lg:col-span-2 lg:row-span-2",
+                aspect: "aspect-[4/5]",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=700&q=85",
+                title: "Pink City Magic",
+                names: "Ananya & Vikram",
+                city: "Jaipur",
+                style: "Traditional",
+                span: "",
+                aspect: "aspect-square",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=700&q=85",
+                title: "Beachside Boho",
+                names: "Neha & Arjun",
+                city: "Goa",
+                style: "Bohemian",
+                span: "",
+                aspect: "aspect-square",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=700&q=85",
+                title: "Modern Luxury",
+                names: "Shriya & Karan",
+                city: "Mumbai",
+                style: "Contemporary",
+                span: "",
+                aspect: "aspect-square",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=85",
+                title: "Garden Soirée",
+                names: "Riya & Dev",
+                city: "Bangalore",
+                style: "Garden",
+                span: "",
+                aspect: "aspect-square",
+              },
             ].map((wedding, i) => (
-              <Link key={i} href="/weddings">
-                <motion.div variants={staggerItem} className="group cursor-pointer break-inside-avoid">
-                  <div className={`overflow-hidden rounded-sm mb-4 relative ${wedding.tall ? 'aspect-[3/4]' : 'aspect-square'} border border-transparent group-hover:border-primary/40 transition-colors duration-500`}>
-                    <img src={wedding.img} alt={wedding.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
-                    <div className="absolute top-4 left-4 font-cormorant text-4xl text-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500">"</div>
-                  </div>
-                  <div className="text-center px-4">
-                    <h3 className="font-cinzel text-xs tracking-[0.2em] text-white/50 uppercase mb-2">{wedding.title}</h3>
-                    <p className="font-cormorant italic text-2xl text-primary mb-1">{wedding.names}</p>
-                    <p className="font-manrope font-light text-xs text-white/40 flex items-center justify-center gap-1">
-                      <MapPin className="w-3 h-3 text-primary/50" /> {wedding.city}
-                    </p>
+              <Link key={i} href="/weddings" className={wedding.span}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  className="group cursor-pointer h-full"
+                >
+                  <div className={`overflow-hidden relative ${wedding.aspect} ${wedding.span ? 'h-full min-h-[480px]' : ''} border border-white/5 group-hover:border-primary/40 transition-colors duration-500`}>
+                    <img
+                      src={wedding.img}
+                      alt={wedding.title}
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    {/* Style tag */}
+                    <div className="absolute top-4 left-4">
+                      <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase text-primary bg-black/50 border border-primary/30 px-2 py-1 backdrop-blur-sm">
+                        {wedding.style}
+                      </span>
+                    </div>
+                    {/* Bottom info */}
+                    <div className="absolute bottom-5 left-5 right-5">
+                      <h3 className="font-cinzel text-[10px] tracking-[0.15em] text-white/50 uppercase mb-1">{wedding.title}</h3>
+                      <p className="font-cormorant italic text-xl md:text-2xl text-primary mb-1 leading-tight">{wedding.names}</p>
+                      <p className="font-manrope text-xs text-white/40 flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-primary/50 shrink-0" /> {wedding.city}
+                      </p>
+                    </div>
                   </div>
                 </motion.div>
               </Link>
             ))}
-          </motion.div>
+          </div>
 
-          <div className="mt-12 text-center md:hidden">
+          <div className="mt-10 text-center md:hidden">
             <Link href="/weddings">
               <Button variant="outline" className="rounded-sm border-primary/50 text-primary font-cinzel text-[10px] tracking-[0.2em] uppercase hover:bg-primary hover:text-black transition-colors w-full">
                 View All Galleries
@@ -439,9 +467,8 @@ export default function Home() {
             ].map((stat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
                 className="flex-1 py-8 md:py-0 text-center flex flex-col items-center justify-center"
               >
@@ -453,66 +480,119 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 8: WEDDING BLOG */}
+      {/* SECTION 8: WEDDING MAGAZINE */}
       <section className="py-28 px-6 md:px-12 bg-[#080604]">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-            <motion.div whileInView={{opacity:1, y:0}} initial={{opacity:0, y:40}} viewport={{once:true}} transition={{duration:0.8}} className="flex-1">
+            <div className="flex-1">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ The Editorial ✦</p>
               <div className="gold-line w-16 mb-6" />
               <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
                 Wedding <span className="text-primary italic font-semibold">Magazine</span>
               </h2>
-            </motion.div>
+            </div>
             <Link href="/blog" className="hidden md:inline-flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold hover:text-white transition-colors">
               All Articles <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Featured Post */}
-            <Link href="/blog">
+            {/* Featured Post — spans 2 columns */}
+            <Link href="/blog" className="lg:col-span-2">
               <motion.div
-                initial={{opacity:0, y:20}} whileInView={{opacity:1, y:0}} viewport={{once:true}} transition={{duration:0.6}}
-                className="lg:col-span-2 group cursor-pointer"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="group cursor-pointer h-full flex flex-col"
               >
-                <div className="luxury-card overflow-hidden h-[500px] mb-6 relative border border-transparent group-hover:border-primary/40 transition-all duration-500">
-                  <img src="https://images.unsplash.com/photo-1583396618422-c6cf3b31e30c?w=1000&q=80" alt="Featured blog" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                <div className="overflow-hidden h-[420px] mb-6 relative border border-white/5 group-hover:border-primary/40 transition-all duration-500">
+                  <img
+                    src="https://images.unsplash.com/photo-1583396618422-c6cf3b31e30c?w=1000&q=85"
+                    alt="Featured"
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute top-4 left-4">
+                    <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase text-primary bg-black/60 border border-primary/30 px-2.5 py-1 backdrop-blur-sm">
+                      Cover Story
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-4 mb-4">
-                  <span className="font-cinzel text-[10px] tracking-[0.2em] text-primary uppercase border border-primary/30 px-3 py-1 rounded-sm">Bridal Fashion</span>
+                  <span className="font-cinzel text-[10px] tracking-[0.2em] text-primary uppercase border border-primary/30 px-3 py-1">Bridal Fashion</span>
                   <span className="font-manrope font-light text-xs text-white/40">5 min read</span>
+                  <span className="font-manrope font-light text-xs text-white/30">May 2026</span>
                 </div>
-                <h3 className="font-cormorant text-4xl text-white font-medium mb-4 group-hover:text-primary transition-colors">15 Stunning Lehenga Trends for 2025 Brides</h3>
+                <h3 className="font-cormorant text-4xl text-white font-medium mb-3 group-hover:text-primary transition-colors leading-tight">
+                  15 Stunning Lehenga Trends for 2026 Brides
+                </h3>
+                <p className="font-manrope text-white/50 text-sm font-light leading-relaxed mb-5 flex-grow">
+                  From hand-embroidered Banarasi silk to contemporary mirror-work silhouettes — our fashion editors curate this season's most coveted bridal looks.
+                </p>
                 <div className="flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold">
                   Read Article <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
                 </div>
               </motion.div>
             </Link>
 
-            {/* Side posts */}
-            <div className="flex flex-col gap-8">
+            {/* Side articles */}
+            <div className="flex flex-col gap-7">
               {[
-                { img: "https://images.unsplash.com/photo-1554774853-719586f82d77?w=600&q=80", tag: "Planning", title: "How to Plan Your Wedding Budget Without Stress", time: "7 min read" },
-                { img: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=600&q=80", tag: "Decor", title: "Minimalist Decor Ideas That Look Expensive", time: "4 min read" }
+                {
+                  img: "https://images.unsplash.com/photo-1554774853-719586f82d77?w=600&q=85",
+                  tag: "Planning",
+                  title: "How to Plan Your Wedding Budget Without Stress",
+                  excerpt: "A practical guide to allocating your wedding budget across venues, catering, décor and photography.",
+                  time: "7 min read",
+                },
+                {
+                  img: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=600&q=85",
+                  tag: "Décor",
+                  title: "Minimalist Décor Ideas That Look Expensive",
+                  excerpt: "Less is more — discover how restrained colour palettes and quality florals create a luxury atmosphere.",
+                  time: "4 min read",
+                },
+                {
+                  img: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=85",
+                  tag: "Photography",
+                  title: "Golden Hour Portraits: Tips From Top Wedding Photographers",
+                  excerpt: "India's leading wedding photographers share their secrets for capturing those unforgettable moments.",
+                  time: "6 min read",
+                },
               ].map((post, i) => (
                 <Link key={i} href="/blog">
                   <motion.div
-                    initial={{opacity:0, y:20}} whileInView={{opacity:1, y:0}} viewport={{once:true}} transition={{duration:0.6, delay: 0.2 + i * 0.1}}
-                    className="group cursor-pointer flex flex-col"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.15 + i * 0.1 }}
+                    className="group cursor-pointer flex gap-4"
                   >
-                    <div className="luxury-card overflow-hidden h-48 mb-4 relative border border-transparent group-hover:border-primary/40 transition-all duration-500">
-                      <img src={post.img} alt={post.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                    <div className="w-24 h-24 shrink-0 overflow-hidden border border-white/5 group-hover:border-primary/40 transition-colors duration-500">
+                      <img
+                        src={post.img}
+                        alt={post.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
                     </div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="font-cinzel text-[9px] tracking-[0.2em] text-primary uppercase">{post.tag}</span>
-                      <span className="w-1 h-1 rounded-full bg-white/20" />
-                      <span className="font-manrope font-light text-[10px] text-white/40">{post.time}</span>
+                    <div className="flex flex-col justify-center">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="font-cinzel text-[9px] tracking-[0.2em] text-primary uppercase">{post.tag}</span>
+                        <span className="w-0.5 h-0.5 rounded-full bg-white/20" />
+                        <span className="font-manrope text-[10px] text-white/35">{post.time}</span>
+                      </div>
+                      <h3 className="font-cormorant text-lg text-white font-medium leading-snug group-hover:text-primary transition-colors">
+                        {post.title}
+                      </h3>
                     </div>
-                    <h3 className="font-cormorant text-2xl text-white font-medium mb-3 group-hover:text-primary transition-colors leading-tight">{post.title}</h3>
                   </motion.div>
                 </Link>
               ))}
+
+              <Link href="/blog" className="mt-2">
+                <div className="flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary/70 hover:text-primary transition-colors font-semibold">
+                  Browse all articles <ArrowRight className="w-3 h-3" />
+                </div>
+              </Link>
             </div>
           </div>
 
@@ -529,13 +609,13 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <motion.div className="mb-20 text-center" whileInView={{opacity:1, y:0}} initial={{opacity:0, y:40}} viewport={{once:true}} transition={{duration:0.8}}>
+          <div className="mb-20 text-center">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Love Stories ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
               Words of <span className="text-primary italic font-semibold">Praise</span>
             </h2>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -545,10 +625,9 @@ export default function Home() {
             ].map((review, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.2 }}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
                 className="luxury-card p-10 flex flex-col items-center text-center rounded-sm relative"
               >
                 <div className="font-cormorant text-8xl text-primary/20 absolute top-4 left-6 leading-none">"</div>
