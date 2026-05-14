@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ChevronDown, User, LogOut, Heart, Settings } from "lucide-react";
+import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 import { useAuth } from "@/context/AuthContext";
@@ -13,13 +13,14 @@ const navLinks = [
   { label: "Blog", href: "/blog" },
 ];
 
+const PORTAL_META: Record<string, { label: string; href: string; icon: React.ElementType; color: string }> = {
+  admin:  { label: "Admin Portal",  href: "/portal/admin",  icon: ShieldCheck, color: "text-red-400" },
+  vendor: { label: "Vendor Portal", href: "/portal/vendor", icon: Briefcase,   color: "text-blue-400" },
+  venue:  { label: "Venue Portal",  href: "/portal/venue",  icon: Building2,   color: "text-purple-400" },
+};
+
 function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map(w => w[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  return name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
 }
 
 function getFirstName(name: string) {
@@ -61,6 +62,8 @@ export function Navbar() {
     await logout();
     navigate("/");
   };
+
+  const portalMeta = user ? PORTAL_META[user.role] : null;
 
   return (
     <>
@@ -139,7 +142,7 @@ export function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.96 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-3 w-60 bg-[#0d0a07] border border-white/10 shadow-2xl z-50"
+                      className="absolute right-0 top-full mt-3 w-64 bg-[#0d0a07] border border-white/10 shadow-2xl z-50"
                     >
                       {/* User info */}
                       <div className="px-4 py-4 border-b border-white/8">
@@ -157,18 +160,48 @@ export function Navbar() {
 
                       {/* Menu items */}
                       <div className="py-1.5">
-                        <button className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left">
-                          <User className="w-3.5 h-3.5 text-primary/60" />
-                          My Profile
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left">
-                          <Heart className="w-3.5 h-3.5 text-primary/60" />
-                          Saved Vendors
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left">
-                          <Settings className="w-3.5 h-3.5 text-primary/60" />
-                          Settings
-                        </button>
+                        {/* Role-specific portal link */}
+                        {portalMeta && (
+                          <Link href={portalMeta.href}>
+                            <button
+                              onClick={() => setUserMenuOpen(false)}
+                              className={`w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm hover:bg-white/5 transition-colors text-left border-b border-white/5 ${portalMeta.color}`}
+                            >
+                              <portalMeta.icon className="w-3.5 h-3.5 opacity-70" />
+                              {portalMeta.label}
+                            </button>
+                          </Link>
+                        )}
+
+                        <Link href="/portal/profile">
+                          <button
+                            onClick={() => setUserMenuOpen(false)}
+                            className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
+                          >
+                            <User className="w-3.5 h-3.5 text-primary/60" />
+                            My Profile
+                          </button>
+                        </Link>
+
+                        <Link href="/portal/profile">
+                          <button
+                            onClick={() => setUserMenuOpen(false)}
+                            className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
+                          >
+                            <Heart className="w-3.5 h-3.5 text-primary/60" />
+                            Saved Favourites
+                          </button>
+                        </Link>
+
+                        <Link href="/portal/profile">
+                          <button
+                            onClick={() => setUserMenuOpen(false)}
+                            className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
+                          >
+                            <LayoutDashboard className="w-3.5 h-3.5 text-primary/60" />
+                            Dashboard
+                          </button>
+                        </Link>
                       </div>
 
                       <div className="border-t border-white/8 py-1.5">
@@ -255,11 +288,12 @@ export function Navbar() {
             <div>
               <p className="font-cinzel text-xs text-white font-semibold">{user.name}</p>
               <p className="font-manrope text-[10px] text-white/40">{user.email}</p>
+              <span className="font-cinzel text-[8px] text-primary/60 uppercase tracking-wider">{user.role}</span>
             </div>
           </div>
         )}
 
-        <nav className="flex flex-col px-6 py-8 gap-6 flex-1">
+        <nav className="flex flex-col px-6 py-6 gap-5 flex-1 overflow-y-auto">
           {navLinks.map((link, i) => (
             <Link
               key={link.label}
@@ -271,13 +305,28 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+
           {user ? (
-            <button
-              onClick={async () => { setMobileOpen(false); await handleLogout(); }}
-              className="font-cinzel text-sm tracking-[0.25em] uppercase text-red-400/70 hover:text-red-400 transition-colors text-left"
-            >
-              Sign Out
-            </button>
+            <>
+              {/* Portal link for non-customer roles */}
+              {portalMeta && (
+                <Link href={portalMeta.href} onClick={() => setMobileOpen(false)}
+                  className={`font-cinzel text-sm tracking-[0.25em] uppercase border-b border-white/5 pb-5 flex items-center gap-2 ${portalMeta.color}`}>
+                  <portalMeta.icon className="w-4 h-4 opacity-70" />
+                  {portalMeta.label}
+                </Link>
+              )}
+              <Link href="/portal/profile" onClick={() => setMobileOpen(false)}
+                className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors border-b border-white/5 pb-5">
+                My Profile
+              </Link>
+              <button
+                onClick={async () => { setMobileOpen(false); await handleLogout(); }}
+                className="font-cinzel text-sm tracking-[0.25em] uppercase text-red-400/70 hover:text-red-400 transition-colors text-left"
+              >
+                Sign Out
+              </button>
+            </>
           ) : (
             <Link
               href="/login"
@@ -287,6 +336,7 @@ export function Navbar() {
               Login
             </Link>
           )}
+
           <Link
             href="/list-your-business"
             className="font-cinzel text-sm tracking-[0.25em] uppercase text-primary hover:text-white transition-colors"

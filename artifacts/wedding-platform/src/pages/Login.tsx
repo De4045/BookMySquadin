@@ -71,6 +71,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"user" | "vendor" | "venue">("user");
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -82,18 +83,22 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
+      let userData;
       if (isSignUp) {
         if (password.length < 8) {
           throw new Error("Password must be at least 8 characters");
         }
-        const userData = await register(name.trim(), email.trim(), password);
-        setSuccessName(userData.name.split(" ")[0]);
+        userData = await register(name.trim(), email.trim(), password, role);
       } else {
-        const userData = await login(email.trim(), password);
-        setSuccessName(userData.name.split(" ")[0]);
+        userData = await login(email.trim(), password);
       }
+      setSuccessName(userData.name.split(" ")[0]);
       setSuccess(true);
-      setTimeout(() => navigate("/"), 2000);
+      const redirectTo =
+        userData.role === "admin"  ? "/portal/admin" :
+        userData.role === "vendor" ? "/portal/vendor" :
+        userData.role === "venue"  ? "/portal/venue"  : "/";
+      setTimeout(() => navigate(redirectTo), 2000);
     } catch (err) {
       toast({
         title: isSignUp ? "Registration Failed" : "Sign In Failed",
@@ -283,6 +288,37 @@ export default function Login() {
                     value={name} onChange={setName}
                     icon={User} required={isSignUp}
                   />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {isSignUp && (
+                <motion.div key="role-field" variants={fieldVariants} initial="initial" animate="animate" exit="exit">
+                  <label className="block font-cinzel text-[10px] tracking-[0.3em] text-primary/70 uppercase mb-3">
+                    I am a…
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { value: "user",   label: "Couple",       sub: "Planning a wedding" },
+                      { value: "vendor", label: "Vendor",       sub: "Photographer, makeup…" },
+                      { value: "venue",  label: "Venue Manager",sub: "Hotel, resort, hall…" },
+                    ] as const).map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setRole(opt.value)}
+                        className={`flex flex-col items-center text-center px-2 py-3 border rounded-sm transition-all duration-200 ${
+                          role === opt.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-white/10 bg-white/[0.03] text-white/45 hover:border-primary/30 hover:text-white/65"
+                        }`}
+                      >
+                        <span className="font-cinzel text-[9px] tracking-[0.15em] uppercase leading-tight">{opt.label}</span>
+                        <span className="font-manrope text-[9px] text-white/30 mt-1 leading-tight">{opt.sub}</span>
+                      </button>
+                    ))}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

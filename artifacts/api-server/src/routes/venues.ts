@@ -2,18 +2,6 @@ import { Router, type IRouter } from "express";
 
 const router: IRouter = Router();
 
-interface Venue {
-  id: number;
-  property_name: string;
-  type: string;
-  city_sheet: string;
-  location: string;
-  contact_number: string;
-  max_rooms?: number;
-  max_banquet_capacity?: number;
-}
-
-// In-memory store — replace with DB in production
 const enquiries: Array<{
   id: number;
   name: string;
@@ -23,6 +11,7 @@ const enquiries: Array<{
   venueName?: string;
   eventDate?: string;
   message: string;
+  status: "new" | "contacted" | "booked";
   createdAt: string;
 }> = [];
 
@@ -34,6 +23,16 @@ router.get("/venues/stats", (_req, res) => {
     cities: 24,
     types: ["HOTEL", "RESORT", "FARMHOUSE", "BANQUET"],
   });
+});
+
+router.get("/venues/enquiries", (req, res) => {
+  const session = req.session as Record<string, unknown>;
+  const userId = session["userId"];
+  if (!userId) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
+  res.json({ enquiries, total: enquiries.length });
 });
 
 router.post("/venues/enquiry", (req, res) => {
@@ -61,6 +60,7 @@ router.post("/venues/enquiry", (req, res) => {
     venueName,
     eventDate,
     message: message?.trim() || "",
+    status: "new" as const,
     createdAt: new Date().toISOString(),
   };
 
