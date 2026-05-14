@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Phone, Users, Bed, UtensilsCrossed, Heart, CheckCircle2, ChevronRight } from "lucide-react";
+import { X, MapPin, Phone, Users, Bed, UtensilsCrossed, Heart, CheckCircle2, ChevronRight, Lock, BadgeCheck } from "lucide-react";
 import { type Venue } from "@/data/venues";
 import { useShortlist } from "@/context/ShortlistContext";
+import { useAuth } from "@/context/AuthContext";
+import { isVenueVerified } from "@/data/subscriptions";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
@@ -23,6 +25,7 @@ interface Props {
 
 export function VenueDetailModal({ venue, onClose }: Props) {
   const { has, toggle } = useShortlist();
+  const { user } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", phone: "", date: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -34,6 +37,7 @@ export function VenueDetailModal({ venue, onClose }: Props) {
   const coverImg = TYPE_IMAGES[typeKey] || TYPE_IMAGES.BANQUET;
   const shortlistId = `venue-${venue.property_name}-${venue.city_sheet}`;
   const isShortlisted = has(shortlistId);
+  const isVerified = isVenueVerified(venue.property_name);
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -93,10 +97,16 @@ export function VenueDetailModal({ venue, onClose }: Props) {
           <img src={coverImg} alt={venue.property_name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a07] via-black/50 to-transparent" />
 
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
             <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase text-primary bg-black/60 border border-primary/30 px-2.5 py-1 backdrop-blur-sm">
               {typeKey || "VENUE"}
             </span>
+            {isVerified && (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/15 border border-primary/40 backdrop-blur-sm self-start">
+                <BadgeCheck className="w-3 h-3 text-primary" />
+                <span className="font-cinzel text-[7px] tracking-[0.15em] text-primary uppercase">Verified</span>
+              </div>
+            )}
           </div>
 
           <div className="absolute top-4 right-4 flex gap-2">
@@ -176,19 +186,36 @@ export function VenueDetailModal({ venue, onClose }: Props) {
           {(venue.contact_number || venue.concerned_person_name) && (
             <div className="border-t border-white/8 pt-6 space-y-3">
               <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/50 uppercase">Direct Contact</p>
-              {venue.concerned_person_name && (
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-[11px] text-primary font-cinzel font-bold">
-                    {venue.concerned_person_name.charAt(0)}
-                  </div>
-                  <span className="font-manrope text-sm text-white/60">{venue.concerned_person_name}</span>
-                </div>
-              )}
-              {venue.contact_number && (
-                <div className="flex items-center gap-3">
-                  <Phone className="w-3.5 h-3.5 text-primary/50 shrink-0" />
-                  <a href={`tel:${venue.contact_number}`} className="font-mono text-sm text-white/60 hover:text-primary transition-colors">
-                    {venue.contact_number}
+              {user ? (
+                <>
+                  {venue.concerned_person_name && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-[11px] text-primary font-cinzel font-bold">
+                        {venue.concerned_person_name.charAt(0)}
+                      </div>
+                      <span className="font-manrope text-sm text-white/60">{venue.concerned_person_name}</span>
+                    </div>
+                  )}
+                  {venue.contact_number && (
+                    <div className="flex items-center gap-3">
+                      <Phone className="w-3.5 h-3.5 text-primary/50 shrink-0" />
+                      <a href={`tel:${venue.contact_number}`} className="font-mono text-sm text-white/60 hover:text-primary transition-colors">
+                        {venue.contact_number}
+                      </a>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-3 p-5 bg-primary/5 border border-primary/15 rounded-sm text-center">
+                  <Lock className="w-5 h-5 text-primary/40" />
+                  <p className="font-manrope text-sm text-white/50 leading-relaxed">
+                    Contact details are available to <strong className="text-white/70">members only</strong>.
+                  </p>
+                  <a
+                    href={`${BASE}/login`}
+                    className="px-4 py-2 bg-primary text-black font-cinzel text-[9px] tracking-[0.2em] uppercase rounded-sm hover:bg-primary/90 transition-colors"
+                  >
+                    Sign In to View
                   </a>
                 </div>
               )}

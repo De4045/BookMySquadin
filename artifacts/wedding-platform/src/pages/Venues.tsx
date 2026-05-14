@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { VENUES } from "@/data/venues";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { MapPin, Phone, Users, Bed, Search, ChevronDown, X, ArrowUpDown, UtensilsCrossed, Heart } from "lucide-react";
+import { MapPin, Phone, Users, Bed, Search, ChevronDown, X, ArrowUpDown, UtensilsCrossed, Heart, Lock, BadgeCheck } from "lucide-react";
 import { VenueDetailModal } from "@/components/VenueDetailModal";
 import { useShortlist } from "@/context/ShortlistContext";
 import { type Venue } from "@/data/venues";
+import { useAuth } from "@/context/AuthContext";
+import { isVenueVerified } from "@/data/subscriptions";
 
 const TYPE_COLOR: Record<string, string> = {
   HOTEL: "#4a90e2",
@@ -30,6 +32,7 @@ function normalizeType(t: string) {
 
 export default function Venues() {
   const { has, toggle } = useShortlist();
+  const { user } = useAuth();
   const [search, setSearch]         = useState("");
   const [cityFilter, setCityFilter]  = useState("");
   const [typeFilter, setTypeFilter]  = useState("");
@@ -235,21 +238,34 @@ export default function Venues() {
                         </div>
                       </div>
 
-                      <h3 className="text-xl font-cormorant font-bold text-white mb-1.5 leading-tight group-hover:text-primary transition-colors duration-300">
+                      <h3 className="text-xl font-cormorant font-bold text-white mb-1 leading-tight group-hover:text-primary transition-colors duration-300">
                         {venue.property_name}
                       </h3>
+                      {isVenueVerified(venue.property_name) && (
+                        <div className="flex items-center gap-1 mb-1.5">
+                          <BadgeCheck className="w-3 h-3 text-primary" />
+                          <span className="font-cinzel text-[6.5px] tracking-[0.15em] text-primary uppercase">Verified Partner</span>
+                        </div>
+                      )}
                       {venue.location && venue.location !== venue.city_sheet && (
                         <p className="font-manrope text-white/40 text-xs mb-4">{venue.location}</p>
                       )}
 
                       <div className="mt-auto pt-4 space-y-2.5 font-manrope text-xs text-white/60">
                         {hasPhone && (
-                          <div className="flex items-center gap-2.5">
-                            <Phone className="w-3.5 h-3.5 text-primary/50 shrink-0" />
-                            <span className="font-mono truncate">{venue.contact_number}</span>
-                          </div>
+                          user ? (
+                            <div className="flex items-center gap-2.5">
+                              <Phone className="w-3.5 h-3.5 text-primary/50 shrink-0" />
+                              <span className="font-mono truncate">{venue.contact_number}</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Lock className="w-3.5 h-3.5 text-white/25 shrink-0" />
+                              <span className="font-manrope text-[11px] text-white/30 italic">Members only</span>
+                            </div>
+                          )
                         )}
-                        {hasPerson && (
+                        {hasPerson && user && (
                           <div className="flex items-center gap-2.5">
                             <span className="w-3.5 h-3.5 flex items-center justify-center text-primary/50 shrink-0 text-[10px]">👤</span>
                             <span className="truncate">{venue.concerned_person_name}</span>

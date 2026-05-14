@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Phone, Heart, CheckCircle2, ChevronRight, Building2 } from "lucide-react";
+import { X, MapPin, Phone, Heart, CheckCircle2, ChevronRight, Building2, Lock, BadgeCheck } from "lucide-react";
 import { useShortlist } from "@/context/ShortlistContext";
+import { useAuth } from "@/context/AuthContext";
+import { isVendorVerified } from "@/data/subscriptions";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -52,6 +54,7 @@ function normalizeCategory(raw: string): string {
 
 export function VendorDetailModal({ vendor, onClose }: Props) {
   const { has, toggle } = useShortlist();
+  const { user } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", phone: "", date: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -65,6 +68,7 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
   const initials = vendor.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   const shortlistId = `vendor-${vendor.name}-${vendor.city || ""}`;
   const isShortlisted = has(shortlistId);
+  const isVerified = isVendorVerified(vendor.name);
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -154,12 +158,20 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
               {initials}
             </div>
             <div className="pb-1">
-              <span
-                className="font-cinzel text-[9px] tracking-[0.2em] uppercase font-bold mb-1 block"
-                style={{ color: accentColor }}
-              >
-                {cat}
-              </span>
+              <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                <span
+                  className="font-cinzel text-[9px] tracking-[0.2em] uppercase font-bold"
+                  style={{ color: accentColor }}
+                >
+                  {cat}
+                </span>
+                {isVerified && (
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-primary/10 border border-primary/35 rounded-sm">
+                    <BadgeCheck className="w-2.5 h-2.5 text-primary" />
+                    <span className="font-cinzel text-[6.5px] tracking-[0.15em] text-primary uppercase">Verified</span>
+                  </div>
+                )}
+              </div>
               <h2 className="font-cormorant text-2xl text-white font-semibold leading-tight">{vendor.name}</h2>
               {vendor.company && (
                 <p className="font-manrope text-sm text-white/50">{vendor.company}</p>
@@ -188,12 +200,24 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
               </div>
             )}
             {vendor.contact && (
-              <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-primary/50 shrink-0" />
-                <a href={`tel:${vendor.contact}`} className="font-mono text-sm text-white/65 hover:text-primary transition-colors">
-                  {vendor.contact}
-                </a>
-              </div>
+              user ? (
+                <div className="flex items-center gap-3">
+                  <Phone className="w-4 h-4 text-primary/50 shrink-0" />
+                  <a href={`tel:${vendor.contact}`} className="font-mono text-sm text-white/65 hover:text-primary transition-colors">
+                    {vendor.contact}
+                  </a>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/15 rounded-sm">
+                  <Lock className="w-4 h-4 text-primary/40 shrink-0" />
+                  <div>
+                    <p className="font-manrope text-xs text-white/50 leading-snug">Contact visible to members</p>
+                    <a href={`${BASE}/login`} className="font-cinzel text-[9px] tracking-[0.15em] text-primary uppercase hover:text-primary/80 transition-colors">
+                      Sign in →
+                    </a>
+                  </div>
+                </div>
+              )
             )}
           </div>
 

@@ -1,11 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star } from "lucide-react";
+import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star, Lock, BadgeCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VENDORS } from "@/data/vendors";
 import { VendorDetailModal, type VendorLike } from "@/components/VendorDetailModal";
 import { useShortlist } from "@/context/ShortlistContext";
+import { useAuth } from "@/context/AuthContext";
+import { isVendorVerified } from "@/data/subscriptions";
 
 function normalizeCategory(raw: string): string {
   const s = (raw || "").trim().toUpperCase();
@@ -113,6 +115,7 @@ const SORT_OPTIONS = [
 
 export default function Vendors() {
   const { has, toggle } = useShortlist();
+  const { user } = useAuth();
   const [search, setSearch]             = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [cityFilter, setCityFilter]     = useState("");
@@ -331,15 +334,23 @@ export default function Vendors() {
                         <p className="font-manrope text-white/50 text-sm mb-3">{vendor.company}</p>
                       )}
 
-                      {/* Star rating */}
-                      {vendor.rating !== undefined && (
-                        <div className="flex items-center gap-1 mb-3">
-                          {[1,2,3,4,5].map(s => (
-                            <Star key={s} className="w-3 h-3" fill={s <= vendor.rating! ? "#d4af37" : "none"} stroke={s <= vendor.rating! ? "#d4af37" : "#d4af3740"} />
-                          ))}
-                          <span className="font-manrope text-[10px] text-primary/70 ml-1">{vendor.rating}.0</span>
-                        </div>
-                      )}
+                      {/* Star rating + Verified badge */}
+                      <div className="flex items-center gap-2 flex-wrap mb-3">
+                        {vendor.rating !== undefined && (
+                          <div className="flex items-center gap-1">
+                            {[1,2,3,4,5].map(s => (
+                              <Star key={s} className="w-3 h-3" fill={s <= vendor.rating! ? "#d4af37" : "none"} stroke={s <= vendor.rating! ? "#d4af37" : "#d4af3740"} />
+                            ))}
+                            <span className="font-manrope text-[10px] text-primary/70 ml-1">{vendor.rating}.0</span>
+                          </div>
+                        )}
+                        {isVendorVerified(vendor.name) && (
+                          <div className="flex items-center gap-1 px-1.5 py-0.5 bg-primary/10 border border-primary/35 rounded-sm">
+                            <BadgeCheck className="w-2.5 h-2.5 text-primary" />
+                            <span className="font-cinzel text-[6.5px] tracking-[0.15em] text-primary uppercase">Verified</span>
+                          </div>
+                        )}
+                      </div>
 
                       <div className="mt-auto pt-4 border-t border-white/5 space-y-2 font-manrope text-xs text-white/60">
                         {(hasCity || hasState) && (
@@ -349,10 +360,17 @@ export default function Vendors() {
                           </div>
                         )}
                         {hasPhone && (
-                          <div className="flex items-center gap-2.5">
-                            <Phone className="w-3.5 h-3.5 text-primary/50 shrink-0" />
-                            <span className="font-mono">{vendor.contact}</span>
-                          </div>
+                          user ? (
+                            <div className="flex items-center gap-2.5">
+                              <Phone className="w-3.5 h-3.5 text-primary/50 shrink-0" />
+                              <span className="font-mono">{vendor.contact}</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Lock className="w-3.5 h-3.5 text-white/25 shrink-0" />
+                              <span className="font-manrope text-[11px] text-white/30 italic">Members only</span>
+                            </div>
+                          )
                         )}
                         {!hasCity && !hasState && !hasPhone && (
                           <p className="text-white/25 italic text-xs">Contact info not available</p>
