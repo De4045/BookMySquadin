@@ -289,31 +289,92 @@ function GstVerificationPanel({
 
       {/* ERROR — Inactive / Cancelled / Suspended */}
       <AnimatePresence>
-        {(gstStatus === "inactive") && (
+        {gstStatus === "inactive" && gstData && (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="relative overflow-hidden rounded-sm border border-red-500/30"
-            style={{ background: "linear-gradient(145deg, #1a0808 0%, #100505 100%)" }}
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="relative overflow-hidden rounded-sm border border-red-500/40"
+            style={{ background: "linear-gradient(145deg, #1f0808 0%, #130404 55%, #0e0303 100%)" }}
           >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/60 to-transparent" />
-            <div className="p-6 flex gap-4">
-              <div className="w-9 h-9 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center shrink-0">
-                <XCircle className="w-5 h-5 text-red-400" />
-              </div>
-              <div>
-                <p className="font-cinzel text-[10px] tracking-[0.25em] uppercase text-red-400/80 mb-1">GST Status: {gstData?.status}</p>
-                <p className="font-cormorant text-xl text-red-300 font-semibold mb-2">Registration Not Active</p>
-                <p className="font-manrope text-sm text-white/55 leading-relaxed">
-                  Only vendors with an <strong className="text-white/75">Active GST status</strong> can be listed on Book My Squad.
-                  Your GSTIN shows as <strong className="text-red-400/80">{gstData?.status}</strong>.
-                  Please reactivate your GST registration or contact the GST helpdesk before applying.
-                </p>
-                <div className="mt-3 font-mono text-[10px] text-red-400/40 tracking-widest">{gstData?.gstin}</div>
+            {/* Top stripe */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+            {/* "APPLICATION BLOCKED" stamp */}
+            <div className="absolute top-5 right-5 rotate-[-8deg] opacity-20 pointer-events-none select-none">
+              <div className="border-2 border-red-500 px-3 py-1 rounded-sm">
+                <span className="font-cinzel text-[11px] tracking-[0.3em] uppercase text-red-500 font-bold">Blocked</span>
               </div>
             </div>
+
+            <div className="p-6">
+              {/* Header row */}
+              <div className="flex items-start gap-4 mb-5">
+                <div className="w-10 h-10 rounded-full bg-red-500/15 border border-red-500/40 flex items-center justify-center shrink-0 mt-0.5">
+                  <XCircle className="w-5 h-5 text-red-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 flex-wrap mb-1">
+                    <p className="font-cinzel text-[9px] tracking-[0.3em] uppercase text-red-400/70">GST Status</p>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-500/15 border border-red-500/30 rounded-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                      <span className="font-cinzel text-[9px] tracking-[0.15em] uppercase text-red-400 font-bold">{gstData.status}</span>
+                    </span>
+                  </div>
+                  <p className="font-cormorant text-2xl text-red-300 font-semibold leading-tight">Application Cannot Proceed</p>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5 pl-14">
+                <div>
+                  <p className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-white/25 mb-1">Business Name</p>
+                  <p className="font-manrope text-sm text-white/55">{gstData.businessName}</p>
+                </div>
+                <div>
+                  <p className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-white/25 mb-1">GSTIN</p>
+                  <p className="font-mono text-sm text-red-400/50 tracking-widest">{gstData.gstin}</p>
+                </div>
+              </div>
+
+              {/* Explanation */}
+              <div className="pl-14 mb-5 p-4 bg-red-500/8 border border-red-500/20 rounded-sm">
+                <p className="font-manrope text-sm text-white/60 leading-relaxed">
+                  Only vendors with an <strong className="text-white/80">Active GST status</strong> can register and be listed on Book My Squad.
+                  Your GSTIN is currently <strong className="text-red-400">{gstData.status}</strong> — this means your registration has been{" "}
+                  {gstData.status === "Cancelled" ? "permanently cancelled" : "temporarily suspended"} by the GST authorities.
+                </p>
+                <p className="font-manrope text-xs text-white/35 mt-3 leading-relaxed">
+                  Please {gstData.status === "Cancelled" ? "obtain a new GST registration" : "contact the GST helpdesk to reactivate your registration"}{" "}
+                  before applying. You may visit{" "}
+                  <a
+                    href="https://services.gst.gov.in/services/searchtp"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary/60 hover:text-primary underline underline-offset-2 transition-colors"
+                  >
+                    services.gst.gov.in
+                  </a>{" "}
+                  to check your current status.
+                </p>
+              </div>
+
+              {/* Try different GSTIN */}
+              <div className="pl-14">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onGstinChange("");
+                  }}
+                  className="flex items-center gap-2 font-cinzel text-[9px] tracking-[0.2em] uppercase text-red-400/70 hover:text-red-300 border border-red-500/25 hover:border-red-500/50 px-4 py-2 transition-all duration-300"
+                >
+                  <XCircle className="w-3.5 h-3.5" />
+                  Try a Different GSTIN
+                </button>
+              </div>
+            </div>
+            {/* Bottom line */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -736,19 +797,39 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
         <ConsentBox checked={consent} onChange={setConsent} />
 
         {/* Verification gate message */}
-        {!isVerified && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-start gap-3 p-4 bg-primary/5 border border-primary/20 rounded-sm"
-          >
-            <ShieldCheck className="w-4 h-4 text-primary/60 shrink-0 mt-0.5" />
-            <p className="font-manrope text-sm text-white/45 leading-relaxed">
-              The <strong className="text-white/65">Submit Application</strong> button will unlock once your GSTIN is verified as Active.
-              GST verification is mandatory for all vendor registrations on Book My Squad.
-            </p>
-          </motion.div>
-        )}
+        <AnimatePresence mode="wait">
+          {gstStatus === "inactive" ? (
+            <motion.div
+              key="blocked"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex items-start gap-3 p-4 bg-red-500/8 border border-red-500/30 rounded-sm"
+            >
+              <XCircle className="w-4 h-4 text-red-400/70 shrink-0 mt-0.5" />
+              <p className="font-manrope text-sm text-white/50 leading-relaxed">
+                <strong className="text-red-400/80">Registration blocked.</strong>{" "}
+                Your GSTIN has an inactive GST status. Only vendors with an{" "}
+                <strong className="text-white/70">Active GST registration</strong> can complete this application.
+                Please resolve your GST status before reapplying.
+              </p>
+            </motion.div>
+          ) : !isVerified ? (
+            <motion.div
+              key="pending"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-start gap-3 p-4 bg-primary/5 border border-primary/20 rounded-sm"
+            >
+              <ShieldCheck className="w-4 h-4 text-primary/60 shrink-0 mt-0.5" />
+              <p className="font-manrope text-sm text-white/45 leading-relaxed">
+                The <strong className="text-white/65">Submit Application</strong> button will unlock once your GSTIN is verified as Active.
+                GST verification is mandatory for all vendor registrations on Book My Squad.
+              </p>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
 
         <button
           type="submit"
