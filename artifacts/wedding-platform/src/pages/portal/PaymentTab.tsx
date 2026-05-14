@@ -2,8 +2,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check, CreditCard, Zap, Crown, X, Smartphone,
-  CheckCircle2, Star, BadgeCheck, ShieldCheck, Sparkles,
+  CheckCircle2, Star, BadgeCheck, ShieldCheck, Sparkles, Download,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 /* ─── Plan definitions ─────────────────────────────────────────── */
 const BUSINESS_PLANS = [
@@ -116,13 +117,161 @@ function fmtExpiry(v: string) {
   return d.length >= 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
 }
 
+/* ─── Receipt generator ─────────────────────────────────────────── */
+type TxnRow = { id: string; date: string; plan: string; amount: number; status: string; method: string };
+
+function downloadReceipt(txn: TxnRow, userName: string, userEmail: string) {
+  const gstRate = 0.18;
+  const base   = Math.round(txn.amount / (1 + gstRate));
+  const gst    = txn.amount - base;
+  const fmtAmt = (n: number) =>
+    n.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Receipt ${txn.id} — Book My Squad</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #fff; color: #1a1a1a; padding: 48px; max-width: 720px; margin: 0 auto; }
+  .logo-line { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+  .logo { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 700; color: #1a1a1a; letter-spacing: 0.02em; }
+  .logo span { color: #b8960c; font-style: italic; }
+  .badge { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #b8960c; border: 1px solid #b8960c40; padding: 4px 10px; }
+  .gold-rule { height: 2px; background: linear-gradient(90deg, transparent, #d4af37, transparent); margin-bottom: 36px; }
+  .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+  .invoice-title { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 400; color: #1a1a1a; }
+  .invoice-meta { text-align: right; }
+  .invoice-meta p { font-size: 12px; color: #555; margin-bottom: 4px; }
+  .invoice-meta strong { color: #1a1a1a; font-weight: 600; }
+  .status-badge { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; background: #16a34a15; color: #16a34a; border: 1px solid #16a34a30; margin-top: 6px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px; }
+  .section-label { font-size: 9px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: #999; margin-bottom: 8px; }
+  .section-value { font-size: 14px; color: #1a1a1a; line-height: 1.6; }
+  .section-value strong { font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  thead tr { background: #f5f0e8; }
+  th { padding: 10px 14px; font-size: 9px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #777; text-align: left; }
+  tbody td { padding: 14px 14px; font-size: 13px; border-bottom: 1px solid #f0ebe2; }
+  .amount-col { text-align: right; font-weight: 600; font-size: 14px; }
+  .subtotal-block { margin-top: 4px; border-top: 1px solid #e8e0d0; }
+  .subtotal-row { display: flex; justify-content: space-between; padding: 8px 14px; font-size: 12px; color: #555; }
+  .subtotal-row.total { font-size: 16px; font-weight: 700; color: #1a1a1a; background: #f5f0e8; padding: 12px 14px; }
+  .subtotal-row.total span:last-child { color: #b8960c; }
+  .method-row { display: flex; align-items: center; gap: 8px; margin-top: 24px; padding: 12px 14px; background: #f9f6ef; border: 1px solid #e8e0d0; }
+  .method-row p { font-size: 11px; color: #666; }
+  .method-row strong { color: #1a1a1a; font-weight: 600; }
+  .footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid #e8e0d0; display: flex; justify-content: space-between; align-items: flex-end; }
+  .footer-brand { font-family: 'Playfair Display', Georgia, serif; font-size: 13px; color: #999; }
+  .footer-brand span { color: #b8960c; font-style: italic; }
+  .footer-note { font-size: 10px; color: #aaa; text-align: right; line-height: 1.6; }
+  @media print {
+    body { padding: 32px; }
+    @page { margin: 0.6in; size: A4; }
+  }
+</style>
+</head>
+<body>
+  <div class="logo-line">
+    <div class="logo"><span>Book</span> My Squad</div>
+    <div class="badge">Tax Invoice</div>
+  </div>
+  <div class="gold-rule"></div>
+
+  <div class="invoice-header">
+    <div>
+      <div class="invoice-title">Invoice</div>
+      <p style="font-size:13px;color:#555;margin-top:4px;">India's Finest Event Planning Platform</p>
+    </div>
+    <div class="invoice-meta">
+      <p>Invoice No: <strong>${txn.id}</strong></p>
+      <p>Date: <strong>${txn.date}</strong></p>
+      <p>GSTIN: <strong>27AABCU9603R1ZX</strong></p>
+      <span class="status-badge">${txn.status === "success" ? "Paid" : txn.status}</span>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <div class="section-label">Billed To</div>
+      <div class="section-value">
+        <strong>${userName}</strong><br/>
+        ${userEmail}<br/>
+        India
+      </div>
+    </div>
+    <div>
+      <div class="section-label">From</div>
+      <div class="section-value">
+        <strong>Book My Squad Pvt. Ltd.</strong><br/>
+        Mumbai, Maharashtra 400001<br/>
+        support@bookmysquad.in
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:50%">Description</th>
+        <th>Period</th>
+        <th class="amount-col">Amount (excl. GST)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>${txn.plan}</strong><br/><span style="font-size:11px;color:#777">Book My Squad Platform Subscription</span></td>
+        <td style="font-size:12px;color:#555">${txn.date}</td>
+        <td class="amount-col">${fmtAmt(base)}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="subtotal-block">
+    <div class="subtotal-row"><span>Subtotal</span><span>${fmtAmt(base)}</span></div>
+    <div class="subtotal-row"><span>GST @ 18% (SAC 998314)</span><span>${fmtAmt(gst)}</span></div>
+    <div class="subtotal-row total"><span>Total Amount Payable</span><span>${fmtAmt(txn.amount)}</span></div>
+  </div>
+
+  <div class="method-row">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8960c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <p>Payment via: <strong>${txn.method}</strong></p>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand"><span>Book</span> My Squad</div>
+    <div class="footer-note">
+      This is a computer-generated invoice. No signature required.<br/>
+      For queries: support@bookmysquad.in · +91 98765 43210
+    </div>
+  </div>
+
+  <script>window.onload = function() { window.print(); }<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const url  = URL.createObjectURL(blob);
+  const win  = window.open(url, "_blank", "width=800,height=900,scrollbars=yes");
+  if (!win) {
+    const a = document.createElement("a");
+    a.href = url; a.download = `Receipt-${txn.id}.html`; a.click();
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
 /* ─── Component ─────────────────────────────────────────────────── */
 interface Props { role: "vendor" | "venue" | "user" }
 
 export function PaymentTab({ role }: Props) {
+  const { user } = useAuth();
   const isCustomer = role === "user";
   const plans = isCustomer ? CUSTOMER_PLANS : BUSINESS_PLANS;
   const history = isCustomer ? CUSTOMER_HISTORY : MOCK_HISTORY;
+  const userName  = user?.name  ?? "Valued Customer";
+  const userEmail = user?.email ?? "";
 
   const [billing, setBilling]           = useState<"monthly" | "annual">("monthly");
   const [currentPlan, setCurrentPlan]   = useState(isCustomer ? "guest" : "basic");
@@ -325,7 +474,7 @@ export function PaymentTab({ role }: Props) {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/8">
-                    {["Transaction ID", "Date", "Plan", "Amount", "Method", "Status"].map(h => (
+                    {["Transaction ID", "Date", "Plan", "Amount", "Method", "Status", ""].map(h => (
                       <th key={h} className="py-3 px-4 font-cinzel text-[8px] tracking-[0.2em] text-white/30 uppercase text-left whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -346,6 +495,20 @@ export function PaymentTab({ role }: Props) {
                           : t.status === "free" ? "text-white/30 border-white/15 bg-white/3"
                           : "text-red-400 border-red-400/30 bg-red-400/8"
                         }`}>{t.status}</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        {t.amount > 0 && t.status === "success" ? (
+                          <button
+                            onClick={() => downloadReceipt(t, userName, userEmail)}
+                            title="Download PDF receipt"
+                            className="group flex items-center gap-1.5 font-cinzel text-[8px] tracking-[0.15em] uppercase text-white/25 hover:text-primary transition-colors"
+                          >
+                            <Download className="w-3 h-3 group-hover:translate-y-[1px] transition-transform" />
+                            <span className="hidden sm:inline">Receipt</span>
+                          </button>
+                        ) : (
+                          <span className="text-white/10 text-xs">—</span>
+                        )}
                       </td>
                     </tr>
                   ))}
