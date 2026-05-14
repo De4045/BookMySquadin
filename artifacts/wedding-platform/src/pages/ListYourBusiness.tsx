@@ -45,19 +45,23 @@ interface GstData {
 /* ─── Reusable UI ─── */
 function FIELD({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="font-cinzel text-[10px] tracking-[0.3em] text-primary/80 uppercase">{label}</label>
+    <div className="flex flex-col gap-2">
+      <label className="font-cinzel text-xs tracking-[0.25em] text-primary uppercase font-semibold">{label}</label>
       {children}
-      {hint && <p className="font-manrope text-[11px] text-white/35 leading-snug">{hint}</p>}
+      {hint && <p className="font-manrope text-xs text-white/40 leading-snug">{hint}</p>}
     </div>
   );
 }
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="font-cormorant text-2xl text-white mb-6 pb-3 border-b border-white/10 flex items-baseline gap-3 flex-wrap">
-      {children}
-    </h3>
+    <div className="flex items-stretch gap-4 mb-8">
+      <div className="w-1 rounded-full shrink-0" style={{ background: "linear-gradient(180deg, #d4af37 0%, #b8943a 100%)" }} />
+      <h3 className="font-cormorant text-3xl md:text-4xl font-semibold pb-3 border-b border-primary/20 flex-1 flex items-baseline gap-4 flex-wrap"
+        style={{ color: "#fff", textShadow: "0 0 40px rgba(212,175,55,0.15)" }}>
+        {children}
+      </h3>
+    </div>
   );
 }
 
@@ -533,15 +537,40 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm(f => ({ ...f, [k]: e.target.value }));
 
+  // Match GST address string to one of our known cities
+  const extractCityFromAddress = (address: string): string => {
+    const lower = address.toLowerCase();
+    // Alias map handles alternate spellings in addresses
+    const ALIASES: Record<string, string> = {
+      bengaluru: "Bangalore", bangalore: "Bangalore",
+      bombay: "Mumbai", mumbai: "Mumbai",
+      calcutta: "Kolkata", kolkata: "Kolkata",
+      madras: "Chennai", chennai: "Chennai",
+      delhi: "Delhi", "new delhi": "Delhi",
+      hyderabad: "Hyderabad", jaipur: "Jaipur",
+      udaipur: "Udaipur", goa: "Goa", pune: "Pune",
+      ahmedabad: "Ahmedabad", lucknow: "Lucknow",
+      chandigarh: "Chandigarh", rishikesh: "Rishikesh",
+      mussoorie: "Mussoorie", dehradun: "Dehradun",
+      agra: "Agra", varanasi: "Varanasi", amritsar: "Amritsar",
+      kochi: "Kochi", coimbatore: "Coimbatore", bhubaneswar: "Bhubaneswar",
+      nagpur: "Nagpur", indore: "Indore",
+    };
+    for (const [alias, city] of Object.entries(ALIASES)) {
+      if (lower.includes(alias)) return city;
+    }
+    return "";
+  };
+
   const handleGstinChange = (val: string) => {
     const upper = val.toUpperCase();
     setGstin(upper);
-    // Reset verification when user changes the GSTIN
+    // Reset ALL GST-prefilled fields when user changes the GSTIN
     if (gstStatus !== "idle") {
       setGstStatus("idle");
       setGstData(null);
       setGstError("");
-      setForm(f => ({ ...f, businessName: "" }));
+      setForm(f => ({ ...f, businessName: "", businessAddress: "", city: "" }));
     }
   };
 
@@ -566,7 +595,7 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
         valid: boolean; error?: string;
         status?: string; businessName?: string;
         taxpayerType?: string; registrationDate?: string;
-        address?: string; stateName?: string; verifiedAt?: string;
+        address?: string; stateName?: string; stateCode?: string; verifiedAt?: string;
       };
 
       if (!data.valid) {
@@ -589,14 +618,14 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
 
       if (data.status === "Active") {
         setGstStatus("verified");
-        // Auto-fill business name if empty
-        if (!form.businessName && gst.businessName) {
-          setForm(f => ({ ...f, businessName: gst.businessName }));
-        }
-        // Auto-fill address if empty
-        if (!form.businessAddress && gst.address) {
-          setForm(f => ({ ...f, businessAddress: gst.address }));
-        }
+        // Auto-fill all available fields from GST records (always overwrite with authoritative data)
+        const detectedCity = extractCityFromAddress(gst.address);
+        setForm(f => ({
+          ...f,
+          businessName: gst.businessName || f.businessName,
+          businessAddress: gst.address || f.businessAddress,
+          city: detectedCity || f.city,
+        }));
       } else {
         setGstStatus("inactive");
       }
@@ -605,7 +634,7 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
       setGstStatus("error");
       setGstError("Unable to reach the verification service. Please check your connection and try again.");
     }
-  }, [gstin, form.businessName, form.businessAddress]);
+  }, [gstin]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -669,12 +698,22 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
           <FIELD label="Primary City *">
             <div className="relative">
               <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
-              <select className={SELECT_CLS + " pl-10"} value={form.city} onChange={set("city")} required>
+              <select
+                className={SELECT_CLS + " pl-10 " + (isVerified && form.city ? "border-green-500/30" : "")}
+                value={form.city}
+                onChange={set("city")}
+                required
+              >
                 <option value="" className="bg-[#0d0b08]">Select city</option>
                 {CITIES.map(c => <option key={c} value={c} className="bg-[#0d0b08]">{c}</option>)}
               </select>
               <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
             </div>
+            {isVerified && form.city && (
+              <p className="font-manrope text-xs text-green-400/60 flex items-center gap-1.5">
+                <BadgeCheck className="w-3 h-3 shrink-0" /> Auto-detected from GST registered address
+              </p>
+            )}
           </FIELD>
         </div>
       </div>
@@ -877,29 +916,35 @@ export default function ListYourBusiness() {
   return (
     <div className="min-h-screen bg-[#080604] text-white font-sans flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow pt-28">
         {/* Hero */}
-        <section className="relative py-24 px-6 md:px-12 text-center overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.07)_0%,transparent_65%)]" />
-          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }} className="relative z-10 max-w-3xl mx-auto">
-            <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Join The Network ✦</p>
-            <div className="gold-line w-16 mx-auto mb-6" />
-            <h1 className="font-cormorant text-5xl md:text-7xl font-light mb-6 text-white leading-[1.1]">
-              List Your <span className="text-primary italic font-semibold">Business</span>
+        <section className="relative py-28 px-6 md:px-12 text-center overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.10)_0%,transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(212,175,55,0.04)_0%,transparent_70%)]" />
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }} className="relative z-10 max-w-4xl mx-auto">
+            <p className="font-cinzel text-xs tracking-[0.6em] text-primary uppercase mb-5">✦ Join The Network ✦</p>
+            <div className="gold-line w-20 mx-auto mb-8" />
+            <h1 className="font-cormorant text-6xl md:text-8xl font-semibold mb-6 leading-[1.05]"
+              style={{ color: "#fff", textShadow: "0 4px 60px rgba(212,175,55,0.20)" }}>
+              List Your{" "}
+              <span className="italic" style={{ color: "#d4af37", textShadow: "0 0 80px rgba(212,175,55,0.40)" }}>
+                Business
+              </span>
             </h1>
-            <p className="font-manrope text-white/60 text-base md:text-lg font-light max-w-xl mx-auto leading-relaxed">
+            <p className="font-manrope text-white/65 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
               Join India's most trusted wedding & event marketplace. Reach thousands of couples planning their dream celebrations.
             </p>
           </motion.div>
         </section>
 
         {/* Stats strip */}
-        <section className="bg-primary/8 border-y border-primary/15 py-8 px-6">
-          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+        <section className="bg-primary/8 border-y border-primary/20 py-10 px-6">
+          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
             {[{ n: "50,000+", l: "Monthly Couples" }, { n: "255+", l: "Verified Vendors" }, { n: "76+", l: "Cities" }, { n: "Free", l: "Basic Listing" }].map(s => (
               <div key={s.l} className="text-center">
-                <div className="font-cormorant text-3xl text-primary font-semibold">{s.n}</div>
-                <div className="font-manrope text-xs text-white/50 uppercase tracking-wider mt-1">{s.l}</div>
+                <div className="font-cormorant text-4xl md:text-5xl text-primary font-semibold"
+                  style={{ textShadow: "0 0 30px rgba(212,175,55,0.3)" }}>{s.n}</div>
+                <div className="font-cinzel text-[10px] text-white/50 uppercase tracking-widest mt-2">{s.l}</div>
               </div>
             ))}
           </div>

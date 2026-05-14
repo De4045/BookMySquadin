@@ -99,17 +99,17 @@ export function Navbar() {
               ? "bg-black/95 backdrop-blur-xl border-b border-white/8"
               : "bg-black/30 backdrop-blur-sm"
           } px-4 md:px-8 flex items-center justify-between transition-all duration-500`}
-          style={{ height: "72px" }}
+          style={{ height: "88px" }}
         >
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 cursor-pointer flex-shrink-0">
             <img
               src={bmsLogo}
               alt="Book My Squad"
-              className="h-16 w-16 object-contain"
-              style={{ mixBlendMode: "screen", filter: "brightness(1.3) saturate(1.2) contrast(1.1)" }}
+              className="h-20 w-20 object-contain drop-shadow-lg"
+              style={{ mixBlendMode: "screen", filter: "brightness(1.4) saturate(1.3) contrast(1.15)" }}
             />
-            <span className="font-cormorant text-2xl md:text-3xl font-semibold tracking-wide text-white hidden sm:block">
+            <span className="font-cormorant text-3xl md:text-4xl font-semibold tracking-wide text-white hidden sm:block">
               <span className="text-primary italic">Book</span> My Squad
             </span>
           </Link>
