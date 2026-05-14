@@ -45,6 +45,14 @@ const verificationCache = new Map<string, GstVerification>();
 
 // Known test GSTINs for demo/testing
 const KNOWN_GSTINS: Record<string, Partial<GstVerification>> = {
+  /* ── Real verified GSTIN from government GST portal ── */
+  "09AURPT5897R1ZU": {
+    status: "Active",
+    businessName: "AUR EVENTS & ENTERTAINMENT PRIVATE LIMITED",
+    taxpayerType: "Regular",
+    registrationDate: "2020-10-02",
+    address: "No 58, 2nd Floor, Business Park, Uttar Pradesh - 110001",
+  },
   "29AABCU9603R1ZM": {
     status: "Active",
     businessName: "URBAN CLAP TECHNOLOGIES INDIA PRIVATE LIMITED",

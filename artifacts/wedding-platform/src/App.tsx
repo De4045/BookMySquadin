@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -5,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CursorGlow } from "@/components/CursorGlow";
 import { ChatBot } from "@/components/ChatBot";
+import { SplashScreen } from "@/components/SplashScreen";
 import { AuthProvider } from "@/context/AuthContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
 import Home from "@/pages/Home";
@@ -49,11 +51,24 @@ function Router() {
 }
 
 function App() {
+  const [splashDone, setSplashDone] = useState<boolean>(() => {
+    try { return sessionStorage.getItem("bms_splash") === "1"; }
+    catch { return false; }
+  });
+
+  const handleSplashComplete = () => {
+    try { sessionStorage.setItem("bms_splash", "1"); } catch { /* noop */ }
+    setSplashDone(true);
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
           <ShortlistProvider>
+            {/* Logo splash — shown once per session */}
+            {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
+
             <SmoothScroll>
               <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
                 <CursorGlow />
