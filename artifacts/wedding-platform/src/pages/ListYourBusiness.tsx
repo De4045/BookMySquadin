@@ -802,7 +802,6 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
 
 /* ─── Main Page ─── */
 export default function ListYourBusiness() {
-  const [formType, setFormType] = useState<"individual" | "vendor">("individual");
   const [submitted, setSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
   const [gstVerified, setGstVerified] = useState(false);
@@ -973,27 +972,6 @@ export default function ListYourBusiness() {
               </motion.div>
             ) : (
               <>
-                {/* Tab switcher */}
-                <div className="mb-10">
-                  <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/60 uppercase text-center mb-5">Select registration type</p>
-                  <div className="flex rounded-sm bg-white/[0.03] border border-white/10 p-1.5 gap-1.5 max-w-md mx-auto">
-                    {([
-                      { key: "individual" as const, label: "Individual", sub: "Offering Services" },
-                      { key: "vendor" as const, label: "Vendor / Business", sub: "Offering services" },
-                    ]).map(t => (
-                      <button
-                        key={t.key}
-                        type="button"
-                        onClick={() => setFormType(t.key)}
-                        className={`flex-1 py-3 px-4 rounded-sm transition-all duration-300 flex flex-col items-center gap-0.5 ${formType === t.key ? "bg-primary text-black" : "text-white/45 hover:text-white/70 hover:bg-white/5"}`}
-                      >
-                        <span className={`font-cinzel text-[10px] tracking-[0.2em] uppercase font-bold ${formType === t.key ? "text-black" : ""}`}>{t.label}</span>
-                        <span className={`font-manrope text-[9px] ${formType === t.key ? "text-black/60" : "text-white/30"}`}>{t.sub}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Premium GST disclaimer card */}
                 <div className="mb-8 relative overflow-hidden rounded-sm"
                   style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 50%, rgba(212,175,55,0.05) 100%)" }}>
@@ -1015,7 +993,7 @@ export default function ListYourBusiness() {
                 </div>
 
                 <AnimatePresence mode="wait">
-                  <VendorForm key={formType} onSuccess={handleSuccess} />
+                  <VendorForm onSuccess={handleSuccess} />
                 </AnimatePresence>
               </>
             )}
