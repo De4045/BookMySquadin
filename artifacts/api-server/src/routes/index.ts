@@ -5,6 +5,7 @@ import vendorsRouter from "./vendors.js";
 import venuesRouter from "./venues.js";
 import enquiryRouter from "./enquiry.js";
 import chatRouter from "./chat.js";
+import gstRouter from "./gst.js";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(vendorsRouter);
 router.use(venuesRouter);
 router.use(enquiryRouter);
 router.use(chatRouter);
+router.use(gstRouter);
 
 export default router;

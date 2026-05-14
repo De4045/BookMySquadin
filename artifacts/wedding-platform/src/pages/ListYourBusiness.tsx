@@ -1,34 +1,48 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import {
-  MapPin, Phone, Mail, User, Building2, ChevronDown,
-  CheckCircle2, ArrowRight, FileText, ExternalLink, AlertCircle,
+  MapPin, Phone, Mail, User, Building2, ChevronDown, CheckCircle2,
+  ArrowRight, FileText, AlertCircle, ShieldCheck, BadgeCheck, Loader2,
+  Calendar, Hash, Globe, XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+/* ─── Constants ─── */
 const CATEGORIES = [
   "Wedding Planner", "Photographer", "Videographer", "Makeup Artist",
   "Mehendi Artist", "Decorator", "Caterer", "DJ / Music", "Venue / Banquet",
   "Bridal Wear", "Groom Wear", "Jewellery", "Pandit / Priest", "Anchor / MC",
   "Entertainer", "Choreographer", "Florist", "Transportation", "Other",
 ];
-
 const CITIES = [
   "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata",
   "Jaipur", "Udaipur", "Goa", "Pune", "Ahmedabad", "Lucknow",
   "Chandigarh", "Rishikesh", "Mussoorie", "Dehradun", "Agra", "Varanasi",
   "Amritsar", "Kochi", "Coimbatore", "Bhubaneswar", "Nagpur", "Indore",
 ];
-
-const GSTIN_PORTAL = "https://services.gst.gov.in/services/searchtp";
 const GSTIN_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 
+/* ─── Styles ─── */
 const INPUT_CLS =
-  "w-full bg-white/5 border border-white/15 focus:border-primary/50 outline-none px-4 py-3.5 font-manrope text-sm text-white/85 placeholder:text-white/30 transition-colors duration-300 rounded-sm focus:bg-white/8";
+  "w-full bg-white/5 border border-white/15 focus:border-primary/50 outline-none px-4 py-3.5 font-manrope text-sm text-white/85 placeholder:text-white/30 transition-colors duration-300 rounded-sm focus:bg-white/[0.07]";
 const SELECT_CLS = INPUT_CLS + " cursor-pointer appearance-none";
 
+/* ─── GST Verification Types ─── */
+type GstStatus = "idle" | "loading" | "verified" | "inactive" | "error";
+interface GstData {
+  gstin: string;
+  status: "Active" | "Cancelled" | "Suspended";
+  businessName: string;
+  taxpayerType: string;
+  registrationDate: string;
+  address: string;
+  stateName: string;
+  verifiedAt: string;
+}
+
+/* ─── Reusable UI ─── */
 function FIELD({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -41,7 +55,7 @@ function FIELD({ label, children, hint }: { label: string; children: React.React
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="font-cormorant text-2xl text-white mb-6 pb-3 border-b border-white/10 flex items-baseline gap-3">
+    <h3 className="font-cormorant text-2xl text-white mb-6 pb-3 border-b border-white/10 flex items-baseline gap-3 flex-wrap">
       {children}
     </h3>
   );
@@ -49,34 +63,300 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 function ConsentBox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <label className="flex gap-4 items-start cursor-pointer group">
-      <div className={`mt-0.5 w-5 h-5 shrink-0 border flex items-center justify-center rounded-sm transition-all duration-200 ${checked ? "bg-primary border-primary" : "border-white/25 bg-white/5 group-hover:border-primary/50"}`}
-        onClick={() => onChange(!checked)}>
+    <div
+      className="flex gap-4 items-start cursor-pointer group select-none"
+      onClick={() => onChange(!checked)}
+      role="checkbox"
+      aria-checked={checked}
+      tabIndex={0}
+      onKeyDown={e => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); onChange(!checked); } }}
+    >
+      <div
+        className={`mt-0.5 w-5 h-5 shrink-0 border flex items-center justify-center rounded-sm transition-all duration-200 ${
+          checked ? "bg-primary border-primary" : "border-white/25 bg-white/5 group-hover:border-primary/50"
+        }`}
+      >
         {checked && (
           <svg className="w-3 h-3 text-black" fill="none" viewBox="0 0 12 12">
             <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </div>
-      <input type="checkbox" className="sr-only" checked={checked} onChange={e => onChange(e.target.checked)} required />
       <p className="font-manrope text-sm text-white/55 leading-relaxed">
         I have read and agree to the{" "}
-        <a href="/terms-of-service" className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors">Terms of Service</a>
+        <a
+          href="/terms-of-service"
+          className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors"
+          onClick={e => e.stopPropagation()}
+        >Terms of Service</a>
         {" "}and{" "}
-        <a href="/privacy-policy" className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors">Privacy Policy</a>
+        <a
+          href="/privacy-policy"
+          className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors"
+          onClick={e => e.stopPropagation()}
+        >Privacy Policy</a>
         {" "}of Book My Squad. I confirm that all information provided is accurate and I consent to being contacted by the BMS team.{" "}
         <span className="text-primary/70 font-semibold">This consent is mandatory to proceed.</span>
       </p>
-    </label>
+    </div>
+  );
+}
+
+/* ─── GST Verification Panel ─── */
+function GstVerificationPanel({
+  gstin, onGstinChange, gstStatus, gstData, gstError, onVerify,
+}: {
+  gstin: string;
+  onGstinChange: (v: string) => void;
+  gstStatus: GstStatus;
+  gstData: GstData | null;
+  gstError: string;
+  onVerify: () => void;
+}) {
+  const formatValid = gstin.length === 15 && GSTIN_REGEX.test(gstin);
+
+  const borderCls =
+    gstStatus === "verified" ? "border-green-500/60 focus:border-green-500/80" :
+    gstStatus === "inactive" || gstStatus === "error" ? "border-red-500/50 focus:border-red-500/70" :
+    formatValid ? "border-primary/50 focus:border-primary/70" :
+    gstin.length > 0 && !formatValid ? "border-red-500/40 focus:border-red-500/60" :
+    "border-white/15 focus:border-primary/50";
+
+  return (
+    <div className="space-y-5">
+      {/* Header info box */}
+      <div className="p-4 bg-[#1a1208] border border-primary/25 rounded-sm flex gap-3">
+        <ShieldCheck className="w-5 h-5 text-primary/70 shrink-0 mt-0.5" />
+        <div>
+          <p className="font-manrope text-sm text-white/70 leading-relaxed">
+            GST verification is required to ensure trusted and verified vendor listings on Book My Squad.{" "}
+            <strong className="text-white/85">Only vendors with an Active GST status</strong> can complete registration.
+          </p>
+        </div>
+      </div>
+
+      {/* GSTIN Input */}
+      <FIELD label="GSTIN — GST Identification Number *">
+        <div className="relative">
+          <FileText className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="e.g. 27AAPFU0939F1ZV"
+            maxLength={15}
+            value={gstin}
+            onChange={e => onGstinChange(e.target.value.toUpperCase())}
+            onBlur={() => { if (formatValid && gstStatus === "idle") onVerify(); }}
+            disabled={gstStatus === "loading"}
+            className={`${INPUT_CLS} pl-10 pr-4 tracking-widest font-mono uppercase ${borderCls} ${gstStatus === "loading" ? "opacity-60 cursor-wait" : ""}`}
+          />
+        </div>
+        {/* Inline format feedback */}
+        {gstin.length > 0 && gstin.length < 15 && (
+          <p className="font-manrope text-[11px] text-white/35 flex items-center gap-1.5">
+            <span className="tabular-nums">{gstin.length}/15</span> characters entered
+          </p>
+        )}
+        {gstin.length === 15 && !formatValid && (
+          <p className="font-manrope text-[11px] text-red-400/80 flex items-center gap-1.5">
+            <AlertCircle className="w-3 h-3 shrink-0" />
+            Invalid GSTIN format. Ensure it follows the pattern: 2 digits + 5 letters + 4 digits + 1 letter + 1 alphanumeric + Z + 1 alphanumeric.
+          </p>
+        )}
+      </FIELD>
+
+      {/* Verify button — shown when format is valid and not yet verified */}
+      {formatValid && gstStatus !== "verified" && (
+        <motion.button
+          type="button"
+          onClick={onVerify}
+          disabled={gstStatus === "loading"}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2.5 px-6 py-3 border border-primary/40 hover:border-primary/70 bg-primary/8 hover:bg-primary/15 text-primary font-cinzel text-[10px] tracking-[0.25em] uppercase transition-all duration-300 disabled:opacity-50 disabled:cursor-wait rounded-sm"
+        >
+          {gstStatus === "loading" ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Verifying GST details…
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="w-4 h-4" />
+              Verify GST Status
+            </>
+          )}
+        </motion.button>
+      )}
+
+      {/* Loading animation */}
+      <AnimatePresence>
+        {gstStatus === "loading" && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="p-5 border border-primary/20 bg-[#110e04] rounded-sm flex items-center gap-4">
+              <div className="relative w-10 h-10 shrink-0">
+                <div className="absolute inset-0 rounded-full border-2 border-primary/20" />
+                <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin" />
+              </div>
+              <div>
+                <p className="font-cinzel text-[11px] tracking-[0.25em] uppercase text-primary/80">Verifying GST Details</p>
+                <p className="font-manrope text-xs text-white/35 mt-0.5">Checking registration status with GST records…</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* SUCCESS — Verified Active */}
+      <AnimatePresence>
+        {gstStatus === "verified" && gstData && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="relative overflow-hidden rounded-sm border border-green-500/30"
+            style={{ background: "linear-gradient(145deg, #081a0d 0%, #061208 100%)" }}
+          >
+            {/* Top line */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-green-400/70 to-transparent" />
+            <div className="p-6">
+              {/* Verified badge header */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center">
+                    <BadgeCheck className="w-5 h-5 text-green-400" />
+                  </div>
+                  <div>
+                    <p className="font-cinzel text-[9px] tracking-[0.3em] uppercase text-green-400/80">GST Verified</p>
+                    <p className="font-cormorant text-lg text-green-300 font-semibold leading-tight">{gstData.status}</p>
+                  </div>
+                </div>
+                <div className="font-mono text-[10px] text-green-400/50 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-sm tracking-widest">
+                  {gstData.gstin}
+                </div>
+              </div>
+
+              {/* Business details grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">Business Name</p>
+                  <p className="font-manrope text-sm text-white/80 font-medium leading-snug">{gstData.businessName}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">Taxpayer Type</p>
+                  <p className="font-manrope text-sm text-white/80">{gstData.taxpayerType}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
+                    <Calendar className="w-2.5 h-2.5" /> Registration Date
+                  </p>
+                  <p className="font-manrope text-sm text-white/80">
+                    {new Date(gstData.registrationDate).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
+                    <Globe className="w-2.5 h-2.5" /> State
+                  </p>
+                  <p className="font-manrope text-sm text-white/80">{gstData.stateName}</p>
+                </div>
+                <div className="space-y-1 md:col-span-2">
+                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
+                    <MapPin className="w-2.5 h-2.5" /> Registered Address
+                  </p>
+                  <p className="font-manrope text-sm text-white/65 leading-relaxed">{gstData.address}</p>
+                </div>
+              </div>
+
+              {/* Verified timestamp */}
+              <div className="mt-4 pt-4 border-t border-green-500/15 flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-green-400/60 shrink-0" />
+                <p className="font-manrope text-[10px] text-green-400/50">
+                  Verified on {new Date(gstData.verifiedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                </p>
+              </div>
+            </div>
+            {/* Bottom line */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ERROR — Inactive / Cancelled / Suspended */}
+      <AnimatePresence>
+        {(gstStatus === "inactive") && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="relative overflow-hidden rounded-sm border border-red-500/30"
+            style={{ background: "linear-gradient(145deg, #1a0808 0%, #100505 100%)" }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500/60 to-transparent" />
+            <div className="p-6 flex gap-4">
+              <div className="w-9 h-9 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center shrink-0">
+                <XCircle className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <p className="font-cinzel text-[10px] tracking-[0.25em] uppercase text-red-400/80 mb-1">GST Status: {gstData?.status}</p>
+                <p className="font-cormorant text-xl text-red-300 font-semibold mb-2">Registration Not Active</p>
+                <p className="font-manrope text-sm text-white/55 leading-relaxed">
+                  Only vendors with an <strong className="text-white/75">Active GST status</strong> can be listed on Book My Squad.
+                  Your GSTIN shows as <strong className="text-red-400/80">{gstData?.status}</strong>.
+                  Please reactivate your GST registration or contact the GST helpdesk before applying.
+                </p>
+                <div className="mt-3 font-mono text-[10px] text-red-400/40 tracking-widest">{gstData?.gstin}</div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* API / Network Error */}
+      <AnimatePresence>
+        {gstStatus === "error" && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="p-4 border border-yellow-500/25 bg-yellow-500/5 rounded-sm flex gap-3"
+          >
+            <AlertCircle className="w-4 h-4 text-yellow-400/70 shrink-0 mt-0.5" />
+            <p className="font-manrope text-sm text-white/50 leading-relaxed">
+              {gstError || "Verification service is temporarily unavailable. Please try again."}{" "}
+              <button type="button" onClick={onVerify} className="text-primary/70 hover:text-primary underline underline-offset-2 transition-colors">
+                Retry verification
+              </button>
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Trust badge */}
+      <div className="flex items-center gap-2.5 pt-1">
+        <div className="flex items-center gap-2 px-3 py-1.5 border border-primary/20 bg-primary/5 rounded-sm">
+          <ShieldCheck className="w-3.5 h-3.5 text-primary/60" />
+          <span className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-primary/60">Government GST Verification Enabled</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Hash className="w-2.5 h-2.5 text-white/20" />
+          <span className="font-manrope text-[10px] text-white/20">Secured &amp; Encrypted</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
 /* ─── Individual Form ─── */
 function IndividualForm({ onSuccess }: { onSuccess: (name: string) => void }) {
   const { toast } = useToast();
-  const [form, setForm] = useState({
-    name: "", phone: "", email: "", city: "", category: "", description: "",
-  });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", city: "", category: "", description: "" });
   const [consent, setConsent] = useState(false);
 
   const set = (k: keyof typeof form) =>
@@ -86,7 +366,7 @@ function IndividualForm({ onSuccess }: { onSuccess: (name: string) => void }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!consent) {
-      toast({ title: "Consent Required", description: "You must agree to our Terms & Privacy Policy to continue.", variant: "destructive" });
+      toast({ title: "Consent Required", description: "Please agree to our Terms & Privacy Policy to continue.", variant: "destructive" });
       return;
     }
     onSuccess(form.name);
@@ -109,31 +389,25 @@ function IndividualForm({ onSuccess }: { onSuccess: (name: string) => void }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FIELD label="Full Name *">
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-              <input type="text" placeholder="Your full name" className={INPUT_CLS + " pl-10"}
-                value={form.name} onChange={set("name")} required />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+              <input type="text" placeholder="Your full name" className={INPUT_CLS + " pl-10"} value={form.name} onChange={set("name")} required />
             </div>
           </FIELD>
-
           <FIELD label="Phone Number *">
             <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-              <input type="tel" placeholder="+91 XXXXX XXXXX" className={INPUT_CLS + " pl-10"}
-                value={form.phone} onChange={set("phone")} required />
+              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+              <input type="tel" placeholder="+91 XXXXX XXXXX" className={INPUT_CLS + " pl-10"} value={form.phone} onChange={set("phone")} required />
             </div>
           </FIELD>
-
           <FIELD label="Email Address *">
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-              <input type="email" placeholder="your@email.com" className={INPUT_CLS + " pl-10"}
-                value={form.email} onChange={set("email")} required />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+              <input type="email" placeholder="your@email.com" className={INPUT_CLS + " pl-10"} value={form.email} onChange={set("email")} required />
             </div>
           </FIELD>
-
           <FIELD label="City *">
             <div className="relative">
-              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
+              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
               <select className={SELECT_CLS + " pl-10"} value={form.city} onChange={set("city")} required>
                 <option value="" className="bg-[#0d0b08]">Select your city</option>
                 {CITIES.map(c => <option key={c} value={c} className="bg-[#0d0b08]">{c}</option>)}
@@ -156,11 +430,8 @@ function IndividualForm({ onSuccess }: { onSuccess: (name: string) => void }) {
               <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
             </div>
           </FIELD>
-
           <FIELD label="Tell Us More">
-            <textarea rows={3} placeholder="Briefly describe what you're looking for…"
-              className={INPUT_CLS + " resize-none"}
-              value={form.description} onChange={set("description")} />
+            <textarea rows={3} placeholder="Briefly describe what you're looking for…" className={INPUT_CLS + " resize-none"} value={form.description} onChange={set("description")} />
           </FIELD>
         </div>
       </div>
@@ -180,42 +451,122 @@ function IndividualForm({ onSuccess }: { onSuccess: (name: string) => void }) {
 }
 
 /* ─── Vendor Form ─── */
-function VendorForm({ onSuccess }: { onSuccess: (name: string) => void }) {
+function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: boolean) => void }) {
   const { toast } = useToast();
   const [form, setForm] = useState({
     businessName: "", ownerName: "", phone: "", email: "",
-    businessAddress: "", billingAddress: "", gstin: "",
-    category: "", city: "", website: "", experience: "", description: "",
+    businessAddress: "", billingAddress: "", category: "", city: "",
+    website: "", experience: "", description: "",
   });
   const [billingSame, setBillingSame] = useState(false);
   const [consent, setConsent] = useState(false);
-  const [gstinValid, setGstinValid] = useState<null | boolean>(null);
+
+  // GST state
+  const [gstin, setGstin] = useState("");
+  const [gstStatus, setGstStatus] = useState<GstStatus>("idle");
+  const [gstData, setGstData] = useState<GstData | null>(null);
+  const [gstError, setGstError] = useState("");
+  const verifyRef = useRef<AbortController | null>(null);
 
   const set = (k: keyof typeof form) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-      const val = e.target.value;
-      setForm(f => ({ ...f, [k]: val }));
-      if (k === "gstin") {
-        const upper = val.toUpperCase();
-        setForm(f => ({ ...f, gstin: upper }));
-        setGstinValid(upper.length === 0 ? null : GSTIN_REGEX.test(upper));
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+      setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const handleGstinChange = (val: string) => {
+    const upper = val.toUpperCase();
+    setGstin(upper);
+    // Reset verification when user changes the GSTIN
+    if (gstStatus !== "idle") {
+      setGstStatus("idle");
+      setGstData(null);
+      setGstError("");
+      setForm(f => ({ ...f, businessName: "" }));
+    }
+  };
+
+  const verifyGstin = useCallback(async () => {
+    if (verifyRef.current) verifyRef.current.abort();
+    const controller = new AbortController();
+    verifyRef.current = controller;
+
+    setGstStatus("loading");
+    setGstData(null);
+    setGstError("");
+
+    try {
+      const res = await fetch("/api/gst/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gstin }),
+        signal: controller.signal,
+        credentials: "include",
+      });
+      const data = await res.json() as {
+        valid: boolean; error?: string;
+        status?: string; businessName?: string;
+        taxpayerType?: string; registrationDate?: string;
+        address?: string; stateName?: string; verifiedAt?: string;
+      };
+
+      if (!data.valid) {
+        setGstStatus("error");
+        setGstError(data.error || "Verification failed. Please check your GSTIN.");
+        return;
       }
-    };
+
+      const gst: GstData = {
+        gstin,
+        status: data.status as GstData["status"],
+        businessName: data.businessName || "",
+        taxpayerType: data.taxpayerType || "Regular",
+        registrationDate: data.registrationDate || "",
+        address: data.address || "",
+        stateName: data.stateName || "",
+        verifiedAt: data.verifiedAt || new Date().toISOString(),
+      };
+      setGstData(gst);
+
+      if (data.status === "Active") {
+        setGstStatus("verified");
+        // Auto-fill business name if empty
+        if (!form.businessName && gst.businessName) {
+          setForm(f => ({ ...f, businessName: gst.businessName }));
+        }
+        // Auto-fill address if empty
+        if (!form.businessAddress && gst.address) {
+          setForm(f => ({ ...f, businessAddress: gst.address }));
+        }
+      } else {
+        setGstStatus("inactive");
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      setGstStatus("error");
+      setGstError("Unable to reach the verification service. Please check your connection and try again.");
+    }
+  }, [gstin, form.businessName, form.businessAddress]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!consent) {
-      toast({ title: "Consent Required", description: "You must agree to our Terms & Privacy Policy to continue.", variant: "destructive" });
+      toast({ title: "Consent Required", description: "Please agree to our Terms & Privacy Policy to continue.", variant: "destructive" });
       return;
     }
-    if (form.gstin && gstinValid === false) {
-      toast({ title: "Invalid GSTIN", description: "Please enter a valid 15-character GSTIN number.", variant: "destructive" });
+    if (!gstin) {
+      toast({ title: "GSTIN Required", description: "A valid GSTIN is mandatory for vendor registration.", variant: "destructive" });
       return;
     }
-    onSuccess(form.ownerName || form.businessName);
+    if (gstStatus !== "verified") {
+      toast({ title: "GST Verification Required", description: "Please verify your GSTIN before submitting. Only vendors with Active GST status can register.", variant: "destructive" });
+      return;
+    }
+
+    onSuccess(form.ownerName || form.businessName, true);
   };
 
-  const billingAddressValue = billingSame ? form.businessAddress : form.billingAddress;
+  const isVerified = gstStatus === "verified";
+  const canSubmit = isVerified && consent;
 
   return (
     <motion.form
@@ -235,20 +586,16 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string) => void }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FIELD label="Business Name *">
             <div className="relative">
-              <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-              <input type="text" placeholder="Registered business name" className={INPUT_CLS + " pl-10"}
-                value={form.businessName} onChange={set("businessName")} required />
+              <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+              <input type="text" placeholder="Registered business name" className={INPUT_CLS + " pl-10"} value={form.businessName} onChange={set("businessName")} required />
             </div>
           </FIELD>
-
           <FIELD label="Owner / Contact Name *">
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-              <input type="text" placeholder="Full name of proprietor" className={INPUT_CLS + " pl-10"}
-                value={form.ownerName} onChange={set("ownerName")} required />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+              <input type="text" placeholder="Full name of proprietor" className={INPUT_CLS + " pl-10"} value={form.ownerName} onChange={set("ownerName")} required />
             </div>
           </FIELD>
-
           <FIELD label="Service Category *">
             <div className="relative">
               <select className={SELECT_CLS} value={form.category} onChange={set("category")} required>
@@ -258,10 +605,9 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string) => void }) {
               <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
             </div>
           </FIELD>
-
           <FIELD label="Primary City *">
             <div className="relative">
-              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
+              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
               <select className={SELECT_CLS + " pl-10"} value={form.city} onChange={set("city")} required>
                 <option value="" className="bg-[#0d0b08]">Select city</option>
                 {CITIES.map(c => <option key={c} value={c} className="bg-[#0d0b08]">{c}</option>)}
@@ -278,25 +624,19 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string) => void }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FIELD label="Phone Number *">
             <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-              <input type="tel" placeholder="+91 XXXXX XXXXX" className={INPUT_CLS + " pl-10"}
-                value={form.phone} onChange={set("phone")} required />
+              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+              <input type="tel" placeholder="+91 XXXXX XXXXX" className={INPUT_CLS + " pl-10"} value={form.phone} onChange={set("phone")} required />
             </div>
           </FIELD>
-
           <FIELD label="Email Address *">
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-              <input type="email" placeholder="your@business.com" className={INPUT_CLS + " pl-10"}
-                value={form.email} onChange={set("email")} required />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
+              <input type="email" placeholder="your@business.com" className={INPUT_CLS + " pl-10"} value={form.email} onChange={set("email")} required />
             </div>
           </FIELD>
-
           <FIELD label="Website URL">
-            <input type="url" placeholder="https://yourbusiness.com" className={INPUT_CLS}
-              value={form.website} onChange={set("website")} />
+            <input type="url" placeholder="https://yourbusiness.com" className={INPUT_CLS} value={form.website} onChange={set("website")} />
           </FIELD>
-
           <FIELD label="Years of Experience">
             <div className="relative">
               <select className={SELECT_CLS} value={form.experience} onChange={set("experience")}>
@@ -316,19 +656,28 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string) => void }) {
         <SectionHeading>Address Details</SectionHeading>
         <div className="space-y-6">
           <FIELD label="Business Address *">
-            <textarea rows={3} placeholder="Full registered business address (street, area, city, pincode)"
-              className={INPUT_CLS + " resize-none"}
-              value={form.businessAddress} onChange={set("businessAddress")} required />
+            <textarea
+              rows={3}
+              placeholder={isVerified && gstData?.address ? "Auto-filled from GST records — edit if needed" : "Full registered business address (street, area, city, pincode)"}
+              className={INPUT_CLS + " resize-none " + (isVerified && gstData?.address ? "border-green-500/30" : "")}
+              value={form.businessAddress}
+              onChange={set("businessAddress")}
+              required
+            />
+            {isVerified && gstData?.address && (
+              <p className="font-manrope text-[11px] text-green-400/60 flex items-center gap-1.5">
+                <BadgeCheck className="w-3 h-3" /> Auto-filled from your GST registration records
+              </p>
+            )}
           </FIELD>
-
           <div>
             <div className="flex items-center justify-between mb-3">
               <label className="font-cinzel text-[10px] tracking-[0.3em] text-primary/80 uppercase">Billing Address</label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <div
-                  onClick={() => setBillingSame(s => !s)}
-                  className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${billingSame ? "bg-primary border-primary" : "border-white/25 bg-white/5"}`}
-                >
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => setBillingSame(s => !s)}
+              >
+                <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${billingSame ? "bg-primary border-primary" : "border-white/25 bg-white/5 hover:border-primary/40"}`}>
                   {billingSame && (
                     <svg className="w-2.5 h-2.5 text-black" fill="none" viewBox="0 0 12 12">
                       <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -336,12 +685,13 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string) => void }) {
                   )}
                 </div>
                 <span className="font-manrope text-xs text-white/50">Same as business address</span>
-              </label>
+              </div>
             </div>
-            <textarea rows={3}
-              placeholder={billingSame ? "Using the business address above" : "Full billing address (if different from business address)"}
+            <textarea
+              rows={3}
+              placeholder={billingSame ? "Using business address above" : "Full billing address (if different)"}
               className={INPUT_CLS + " resize-none " + (billingSame ? "opacity-40 cursor-not-allowed" : "")}
-              value={billingAddressValue}
+              value={billingSame ? form.businessAddress : form.billingAddress}
               onChange={billingSame ? undefined : set("billingAddress")}
               readOnly={billingSame}
             />
@@ -349,92 +699,78 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string) => void }) {
         </div>
       </div>
 
-      {/* GSTIN */}
+      {/* GST Registration — MANDATORY */}
       <div>
         <SectionHeading>
           GST Registration
-          <span className="text-primary/50 text-sm font-manrope font-light">Strongly recommended</span>
+          <span className="text-xs font-manrope font-semibold tracking-wide" style={{ color: "#d4af37" }}>
+            Mandatory for Vendor Verification
+          </span>
         </SectionHeading>
-
-        <div className="p-4 bg-primary/5 border border-primary/20 rounded-sm mb-6 flex gap-3">
-          <AlertCircle className="w-4 h-4 text-primary/70 shrink-0 mt-0.5" />
-          <p className="font-manrope text-xs text-white/55 leading-relaxed">
-            Only vendors with an <strong className="text-white/80">Active GST status</strong> will receive a verified badge on Book My Squad.
-            Please verify your GSTIN on the official GST portal before submitting.{" "}
-            <a
-              href={GSTIN_PORTAL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary/80 hover:text-primary inline-flex items-center gap-1 underline underline-offset-2 transition-colors"
-            >
-              Check GST Status <ExternalLink className="w-3 h-3" />
-            </a>
-          </p>
-        </div>
-
-        <FIELD
-          label="GSTIN (GST Identification Number)"
-          hint="15-character GSTIN — e.g. 27AAPFU0939F1ZV. Leave blank if not registered."
-        >
-          <div className="relative">
-            <FileText className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
-            <input
-              type="text"
-              placeholder="27AAPFU0939F1ZV"
-              maxLength={15}
-              className={
-                INPUT_CLS + " pl-10 pr-36 tracking-widest font-mono uppercase " +
-                (form.gstin.length > 0
-                  ? gstinValid === true
-                    ? "border-green-500/50 focus:border-green-500/70"
-                    : gstinValid === false
-                    ? "border-red-500/50 focus:border-red-500/70"
-                    : ""
-                  : "")
-              }
-              value={form.gstin}
-              onChange={set("gstin")}
-            />
-            <a
-              href={GSTIN_PORTAL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 font-cinzel text-[8px] tracking-[0.15em] uppercase text-primary/70 hover:text-primary border border-primary/25 hover:border-primary/50 px-2 py-1 transition-all bg-[#0d0a07]"
-            >
-              Verify <ExternalLink className="w-2.5 h-2.5" />
-            </a>
-          </div>
-          {form.gstin.length > 0 && (
-            <p className={`font-manrope text-[11px] mt-1 flex items-center gap-1 ${gstinValid ? "text-green-400/80" : "text-red-400/80"}`}>
-              {gstinValid === true ? (
-                <><CheckCircle2 className="w-3 h-3" /> Valid GSTIN format — please also verify Active status on the GST portal</>
-              ) : (
-                <><AlertCircle className="w-3 h-3" /> Invalid GSTIN format — must be exactly 15 alphanumeric characters</>
-              )}
-            </p>
-          )}
-        </FIELD>
+        <GstVerificationPanel
+          gstin={gstin}
+          onGstinChange={handleGstinChange}
+          gstStatus={gstStatus}
+          gstData={gstData}
+          gstError={gstError}
+          onVerify={verifyGstin}
+        />
       </div>
 
-      {/* Description */}
+      {/* About */}
       <div>
         <SectionHeading>About Your Business</SectionHeading>
         <FIELD label="Tell Us About Your Services">
-          <textarea rows={5} placeholder="Describe your services, specialties, notable events you've covered, and what sets you apart…"
+          <textarea
+            rows={5}
+            placeholder="Describe your services, specialties, notable events you've covered, and what sets you apart…"
             className={INPUT_CLS + " resize-none"}
-            value={form.description} onChange={set("description")} />
+            value={form.description}
+            onChange={set("description")}
+          />
         </FIELD>
       </div>
 
       {/* Consent + Submit */}
       <div className="pt-4 border-t border-white/8 space-y-6">
         <ConsentBox checked={consent} onChange={setConsent} />
+
+        {/* Verification gate message */}
+        {!isVerified && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-start gap-3 p-4 bg-primary/5 border border-primary/20 rounded-sm"
+          >
+            <ShieldCheck className="w-4 h-4 text-primary/60 shrink-0 mt-0.5" />
+            <p className="font-manrope text-sm text-white/45 leading-relaxed">
+              The <strong className="text-white/65">Submit Application</strong> button will unlock once your GSTIN is verified as Active.
+              GST verification is mandatory for all vendor registrations on Book My Squad.
+            </p>
+          </motion.div>
+        )}
+
         <button
           type="submit"
-          className="w-full md:w-auto px-12 py-4 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.25em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow flex items-center justify-center gap-3 group"
+          disabled={!canSubmit}
+          className={`w-full md:w-auto px-12 py-4 font-cinzel font-bold text-xs tracking-[0.25em] uppercase transition-all duration-300 flex items-center justify-center gap-3 group ${
+            canSubmit
+              ? "bg-primary text-black hover:bg-primary/90 gold-glow"
+              : "bg-white/8 text-white/25 border border-white/10 cursor-not-allowed"
+          }`}
         >
-          Submit Application
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          {isVerified ? (
+            <>
+              <BadgeCheck className="w-4 h-4" />
+              Submit Verified Application
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="w-4 h-4" />
+              Verify GST to Continue
+            </>
+          )}
+          {canSubmit && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
         </button>
       </div>
     </motion.form>
@@ -448,9 +784,11 @@ export default function ListYourBusiness() {
   const [formType, setFormType] = useState<FormType>("individual");
   const [submitted, setSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
+  const [gstVerified, setGstVerified] = useState(false);
 
-  const handleSuccess = (name: string) => {
+  const handleSuccess = (name: string, verified = false) => {
     setSubmittedName(name);
+    setGstVerified(verified);
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -458,17 +796,11 @@ export default function ListYourBusiness() {
   return (
     <div className="min-h-screen bg-[#080604] text-white font-sans flex flex-col">
       <Navbar />
-
       <main className="flex-grow pt-16">
         {/* Hero */}
         <section className="relative py-24 px-6 md:px-12 text-center overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.07)_0%,transparent_65%)]" />
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9 }}
-            className="relative z-10 max-w-3xl mx-auto"
-          >
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }} className="relative z-10 max-w-3xl mx-auto">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Join The Network ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h1 className="font-cormorant text-5xl md:text-7xl font-light mb-6 text-white leading-[1.1]">
@@ -483,12 +815,7 @@ export default function ListYourBusiness() {
         {/* Stats strip */}
         <section className="bg-primary/8 border-y border-primary/15 py-8 px-6">
           <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { n: "50,000+", l: "Monthly Couples" },
-              { n: "255+", l: "Verified Vendors" },
-              { n: "76+", l: "Cities" },
-              { n: "Free", l: "Basic Listing" },
-            ].map(s => (
+            {[{ n: "50,000+", l: "Monthly Couples" }, { n: "255+", l: "Verified Vendors" }, { n: "76+", l: "Cities" }, { n: "Free", l: "Basic Listing" }].map(s => (
               <div key={s.l} className="text-center">
                 <div className="font-cormorant text-3xl text-primary font-semibold">{s.n}</div>
                 <div className="font-manrope text-xs text-white/50 uppercase tracking-wider mt-1">{s.l}</div>
@@ -501,36 +828,39 @@ export default function ListYourBusiness() {
         <section className="py-20 px-6 md:px-12">
           <div className="max-w-4xl mx-auto">
             {submitted ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="luxury-card p-16 text-center"
-              >
-                <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-6" />
-                <h2 className="font-cormorant text-4xl text-white font-semibold mb-4">Application Received!</h2>
-                <p className="font-manrope text-white/60 text-base mb-8 max-w-md mx-auto leading-relaxed">
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="luxury-card p-16 text-center">
+                <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${gstVerified ? "bg-green-500/10 border-2 border-green-500/30" : "bg-primary/10 border-2 border-primary/30"}`}>
+                  {gstVerified
+                    ? <BadgeCheck className="w-10 h-10 text-green-400" />
+                    : <CheckCircle2 className="w-10 h-10 text-primary" />
+                  }
+                </div>
+                <p className="font-cinzel text-[9px] tracking-[0.4em] uppercase text-primary/60 mb-3">✦ Application Received ✦</p>
+                <h2 className="font-cormorant text-4xl text-white font-semibold mb-4">
+                  {gstVerified ? "GST-Verified Application Received!" : "Application Received!"}
+                </h2>
+                <p className="font-manrope text-white/55 text-base mb-2 max-w-md mx-auto leading-relaxed">
                   Thank you, <span className="text-primary">{submittedName}</span>. Our team will review your{" "}
                   {formType === "vendor" ? "vendor listing" : "request"} and reach out within 48 hours.
-                  {formType === "vendor" && (
-                    <span className="block mt-3 text-sm text-white/40">
-                      Vendor applications with an Active GSTIN receive priority review and receive a Verified badge.
-                    </span>
-                  )}
                 </p>
+                {gstVerified && (
+                  <p className="font-manrope text-sm text-green-400/70 mt-3 mb-8 flex items-center justify-center gap-2">
+                    <BadgeCheck className="w-4 h-4" />
+                    Your GST-verified application will receive priority review and a Verified badge upon approval.
+                  </p>
+                )}
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="font-cinzel text-[10px] tracking-[0.3em] uppercase text-primary border border-primary/30 px-6 py-3 hover:bg-primary hover:text-black transition-all duration-300"
+                  className="mt-6 font-cinzel text-[10px] tracking-[0.3em] uppercase text-primary border border-primary/30 px-6 py-3 hover:bg-primary hover:text-black transition-all duration-300"
                 >
                   Submit Another
                 </button>
               </motion.div>
             ) : (
               <>
-                {/* Form type tab switcher */}
+                {/* Tab switcher */}
                 <div className="mb-10">
-                  <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/60 uppercase text-center mb-5">
-                    Select registration type
-                  </p>
+                  <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/60 uppercase text-center mb-5">Select registration type</p>
                   <div className="flex rounded-sm bg-white/[0.03] border border-white/10 p-1.5 gap-1.5 max-w-md mx-auto">
                     {([
                       { key: "individual", label: "Individual", sub: "Looking for services" },
@@ -540,18 +870,10 @@ export default function ListYourBusiness() {
                         key={t.key}
                         type="button"
                         onClick={() => setFormType(t.key)}
-                        className={`flex-1 py-3 px-4 rounded-sm transition-all duration-300 flex flex-col items-center gap-0.5 ${
-                          formType === t.key
-                            ? "bg-primary text-black"
-                            : "text-white/45 hover:text-white/70 hover:bg-white/5"
-                        }`}
+                        className={`flex-1 py-3 px-4 rounded-sm transition-all duration-300 flex flex-col items-center gap-0.5 ${formType === t.key ? "bg-primary text-black" : "text-white/45 hover:text-white/70 hover:bg-white/5"}`}
                       >
-                        <span className={`font-cinzel text-[10px] tracking-[0.2em] uppercase font-bold ${formType === t.key ? "text-black" : ""}`}>
-                          {t.label}
-                        </span>
-                        <span className={`font-manrope text-[9px] ${formType === t.key ? "text-black/60" : "text-white/30"}`}>
-                          {t.sub}
-                        </span>
+                        <span className={`font-cinzel text-[10px] tracking-[0.2em] uppercase font-bold ${formType === t.key ? "text-black" : ""}`}>{t.label}</span>
+                        <span className={`font-manrope text-[9px] ${formType === t.key ? "text-black/60" : "text-white/30"}`}>{t.sub}</span>
                       </button>
                     ))}
                   </div>
@@ -559,7 +881,7 @@ export default function ListYourBusiness() {
 
                 <AnimatePresence mode="wait">
                   {formType === "individual" ? (
-                    <IndividualForm key="individual" onSuccess={handleSuccess} />
+                    <IndividualForm key="individual" onSuccess={n => handleSuccess(n, false)} />
                   ) : (
                     <VendorForm key="vendor" onSuccess={handleSuccess} />
                   )}
@@ -569,7 +891,6 @@ export default function ListYourBusiness() {
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );
