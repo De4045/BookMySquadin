@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed, Heart, MapPin, Trash2, Briefcase } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed, Heart, MapPin, Trash2, Briefcase, CalendarDays, ChevronLeft } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -35,6 +35,46 @@ export default function VenuePortal() {
   const [tab, setTab] = useState<"dashboard" | "enquiries" | "venue" | "saved">("dashboard");
   const [enquiries, setEnquiries] = useState<VenueEnquiry[]>([]);
   const [loading, setLoading] = useState(true);
+
+  /* Booking calendar state */
+  const now = new Date();
+  const [calYear, setCalYear] = useState(now.getFullYear());
+  const [calMonth, setCalMonth] = useState(now.getMonth());
+  const [calSelected, setCalSelected] = useState<string | null>(null);
+
+  const CAL_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const CAL_DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+
+  const todayYMD = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+
+  /* Map of YYYY-MM-DD → enquiries for that date */
+  const enquiryByDate = enquiries.reduce<Record<string, VenueEnquiry[]>>((acc, e) => {
+    if (e.eventDate) {
+      const d = e.eventDate.slice(0, 10);
+      if (!acc[d]) acc[d] = [];
+      acc[d].push(e);
+    }
+    return acc;
+  }, {});
+
+  const calPrev = () => {
+    if (calMonth === 0) { setCalYear(y => y - 1); setCalMonth(11); }
+    else setCalMonth(m => m - 1);
+  };
+  const calNext = () => {
+    if (calMonth === 11) { setCalYear(y => y + 1); setCalMonth(0); }
+    else setCalMonth(m => m + 1);
+  };
+
+  const calFirstDow = new Date(calYear, calMonth, 1).getDay();
+  const calDaysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const calCells: (number | null)[] = [
+    ...Array<null>(calFirstDow).fill(null),
+    ...Array.from({ length: calDaysInMonth }, (_, i) => i + 1),
+  ];
+  while (calCells.length % 7 !== 0) calCells.push(null);
+
+  const calSelectedEnquiries = calSelected ? (enquiryByDate[calSelected] ?? []) : [];
 
   useEffect(() => {
     if (!user) { navigate("/login"); return; }
@@ -135,6 +175,146 @@ export default function VenuePortal() {
                 <StatCard label="Profile Views" value="3,824" sub="This month" color="#9b8ae0" />
                 <StatCard label="Capacity" value="500+" sub="Banquet guests" color="#50e3c2" />
                 <StatCard label="Listing Status" value="Live" sub="Verified & active" color="#4caf50" />
+              </div>
+
+              {/* ── Booking Calendar ── */}
+              <div className="mb-10">
+                <div className="flex items-center gap-3 mb-5">
+                  <CalendarDays className="w-4 h-4 text-primary/60" />
+                  <p className="font-cinzel text-[10px] tracking-[0.35em] text-primary/50 uppercase">Booking Calendar</p>
+                  {Object.keys(enquiryByDate).length > 0 && (
+                    <span className="font-cinzel text-[8px] tracking-widest bg-primary/10 border border-primary/25 text-primary px-2 py-0.5 rounded-sm uppercase">
+                      {Object.keys(enquiryByDate).length} date{Object.keys(enquiryByDate).length !== 1 ? "s" : ""} booked
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {/* Calendar grid */}
+                  <div className="lg:col-span-2 bg-[#1a1510] border border-white/8 overflow-hidden">
+                    {/* Month nav */}
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/8" style={{ background: "rgba(212,175,55,0.03)" }}>
+                      <button type="button" onClick={calPrev}
+                        className="w-7 h-7 flex items-center justify-center text-white/30 hover:text-primary hover:bg-primary/8 rounded-sm transition-all">
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="font-cinzel text-[11px] tracking-[0.25em] text-white/70 uppercase select-none">
+                        {CAL_MONTHS[calMonth]} {calYear}
+                      </span>
+                      <button type="button" onClick={calNext}
+                        className="w-7 h-7 flex items-center justify-center text-white/30 hover:text-primary hover:bg-primary/8 rounded-sm transition-all">
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Day labels */}
+                    <div className="grid grid-cols-7 border-b border-white/5">
+                      {CAL_DAYS.map(d => (
+                        <div key={d} className="py-2 text-center font-cinzel text-[8px] tracking-[0.2em] text-white/20 uppercase select-none">{d}</div>
+                      ))}
+                    </div>
+
+                    {/* Date cells */}
+                    <div className="grid grid-cols-7">
+                      {calCells.map((day, idx) => {
+                        if (!day) return <div key={idx} className="aspect-square" />;
+                        const ymd = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                        const hasEnquiry = ymd in enquiryByDate;
+                        const count = enquiryByDate[ymd]?.length ?? 0;
+                        const isToday = ymd === todayYMD;
+                        const isSelected = ymd === calSelected;
+
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setCalSelected(isSelected ? null : ymd)}
+                            className={`aspect-square flex flex-col items-center justify-center relative transition-all duration-150 font-manrope text-sm
+                              ${isSelected ? "bg-primary" : hasEnquiry ? "bg-amber-500/12 hover:bg-amber-500/20" : "hover:bg-white/5"}
+                            `}
+                          >
+                            <span className={`select-none text-xs ${isSelected ? "text-black font-bold" : hasEnquiry ? "text-amber-300/80" : isToday ? "text-primary font-semibold" : "text-white/50"}`}>
+                              {day}
+                            </span>
+                            {/* Enquiry count dot */}
+                            {hasEnquiry && !isSelected && (
+                              <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+                                {Array.from({ length: Math.min(count, 3) }).map((_, i) => (
+                                  <span key={i} className="w-1 h-1 rounded-full bg-primary/70" />
+                                ))}
+                              </span>
+                            )}
+                            {/* Today ring */}
+                            {isToday && !isSelected && (
+                              <span className="absolute inset-[3px] border border-primary/40 rounded-sm pointer-events-none" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Legend */}
+                    <div className="flex items-center gap-5 px-5 py-3 border-t border-white/5" style={{ background: "rgba(212,175,55,0.02)" }}>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-sm bg-amber-500/18 border border-amber-400/25 inline-block" />
+                        <span className="font-manrope text-[10px] text-white/30">Has Enquiry</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-sm bg-primary inline-block" />
+                        <span className="font-manrope text-[10px] text-white/30">Selected</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1 h-1 rounded-full bg-primary/70 inline-block" />
+                        <span className="font-manrope text-[10px] text-white/30">Enquiry dot</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Detail panel */}
+                  <div className="bg-[#1a1510] border border-white/8 p-5 flex flex-col">
+                    {calSelected ? (
+                      <>
+                        <p className="font-cinzel text-[9px] tracking-[0.25em] text-primary/50 uppercase mb-1">Selected Date</p>
+                        <p className="font-cormorant text-xl text-white font-semibold mb-4">
+                          {new Date(calSelected + "T12:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                        </p>
+                        {calSelectedEnquiries.length === 0 ? (
+                          <div className="flex-1 flex flex-col items-center justify-center text-center py-6">
+                            <CalendarDays className="w-8 h-8 text-white/10 mb-3" />
+                            <p className="font-manrope text-sm text-white/30">No enquiries on this date.</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-3 flex-1 overflow-y-auto">
+                            {calSelectedEnquiries.map((e) => (
+                              <div key={e.id} className="bg-white/[0.03] border border-white/8 p-3.5">
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <span className="font-cormorant text-base text-white/80 font-semibold">{e.name}</span>
+                                  <span className={`font-cinzel text-[7px] uppercase tracking-wider px-1.5 py-0.5 border rounded-sm ${
+                                    e.status === "new" ? "text-primary border-primary/30 bg-primary/10" : "text-white/40 border-white/15"
+                                  }`}>{e.status}</span>
+                                </div>
+                                <p className="font-manrope text-xs text-white/40 mb-1">{e.phone}</p>
+                                {e.message && <p className="font-manrope text-[11px] text-white/30 leading-snug line-clamp-2">{e.message}</p>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <button onClick={() => { setTab("enquiries"); setCalSelected(null); }}
+                          className="mt-4 font-cinzel text-[9px] tracking-[0.2em] text-primary/60 uppercase hover:text-primary transition-colors">
+                          View All Enquiries →
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex-1 flex flex-col items-center justify-center text-center">
+                        <CalendarDays className="w-10 h-10 text-white/8 mb-4" />
+                        <p className="font-cormorant text-xl text-white/25 mb-2">No Date Selected</p>
+                        <p className="font-manrope text-xs text-white/20 leading-relaxed">
+                          Click any highlighted date on the calendar to see booking enquiries for that day.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

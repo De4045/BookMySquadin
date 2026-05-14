@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, MapPin, Phone, Users, Bed, UtensilsCrossed, Heart, CheckCircle2, ChevronRight } from "lucide-react";
 import { type Venue } from "@/data/venues";
 import { useShortlist } from "@/context/ShortlistContext";
+import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -222,8 +223,17 @@ export function VenueDetailModal({ venue, onClose }: Props) {
                 <input type="text" placeholder="Your Full Name *" value={form.name} onChange={set("name")} className={INPUT} />
                 <input type="email" placeholder="Email Address *" value={form.email} onChange={set("email")} className={INPUT} />
                 <input type="tel" placeholder="Phone Number *" value={form.phone} onChange={set("phone")} className={INPUT} />
-                <input type="date" value={form.date} onChange={set("date")}
-                  className={INPUT + " [color-scheme:dark]"} />
+
+                {/* Real-time availability calendar */}
+                <div>
+                  <p className="font-cinzel text-[9px] tracking-[0.25em] text-white/35 uppercase mb-2">Select Event Date</p>
+                  <AvailabilityCalendar
+                    venueName={venue.property_name}
+                    value={form.date}
+                    onChange={(d) => setForm(f => ({ ...f, date: d }))}
+                  />
+                </div>
+
                 <textarea
                   placeholder="Tell us about your event (guest count, event type, special requests)..."
                   value={form.message} onChange={set("message")} rows={3}
