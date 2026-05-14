@@ -824,10 +824,11 @@ export default function ListYourBusiness() {
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }} className="relative z-10 max-w-4xl mx-auto">
             <p className="font-cinzel text-xs tracking-[0.6em] text-primary uppercase mb-5">✦ For Vendors & Businesses ✦</p>
             <div className="gold-line w-20 mx-auto mb-8" />
-            <h1 className="font-cormorant text-6xl md:text-8xl font-semibold mb-6 leading-[1.05]"
-              style={{ color: "#fff", textShadow: "0 4px 60px rgba(212,175,55,0.20)" }}>
-              List Your{" "}
-              <span className="italic" style={{ color: "#d4af37", textShadow: "0 0 80px rgba(212,175,55,0.40)" }}>
+            <h1 className="font-cormorant text-6xl md:text-8xl font-semibold mb-6 leading-[1.05]">
+              <span style={{ color: "#d4af37", textShadow: "0 0 60px rgba(212,175,55,0.55), 0 4px 40px rgba(212,175,55,0.25)" }}>
+                List Your
+              </span>{" "}
+              <span className="italic" style={{ color: "#d4af37", textShadow: "0 0 80px rgba(212,175,55,0.65), 0 0 120px rgba(212,175,55,0.30)" }}>
                 Business
               </span>
             </h1>
@@ -881,22 +882,30 @@ export default function ListYourBusiness() {
               <>
                 {/* Premium GST disclaimer card */}
                 <div className="mb-8 relative overflow-hidden rounded-sm"
-                  style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 50%, rgba(212,175,55,0.05) 100%)" }}>
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-                  <div className="border border-primary/20 rounded-sm p-5">
+                  style={{
+                    background: "linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.05) 50%, rgba(212,175,55,0.10) 100%)",
+                    boxShadow: "0 0 32px rgba(212,175,55,0.18), 0 0 80px rgba(212,175,55,0.08), inset 0 0 40px rgba(212,175,55,0.06)",
+                  }}>
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"
+                    style={{ filter: "blur(1px)" }} />
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/90 to-transparent" />
+                  <div className="border border-primary/50 rounded-sm p-5"
+                    style={{ boxShadow: "inset 0 0 20px rgba(212,175,55,0.06)" }}>
                     <div className="flex items-start gap-4">
-                      <div className="w-9 h-9 rounded-sm bg-primary/10 border border-primary/25 flex items-center justify-center shrink-0 mt-0.5">
-                        <ShieldCheck className="w-4 h-4 text-primary" />
+                      <div className="w-9 h-9 rounded-sm bg-primary/15 border border-primary/50 flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ boxShadow: "0 0 12px rgba(212,175,55,0.30)" }}>
+                        <ShieldCheck className="w-4 h-4 text-primary" style={{ filter: "drop-shadow(0 0 4px rgba(212,175,55,0.8))" }} />
                       </div>
                       <div>
-                        <p className="font-cinzel text-[9px] tracking-[0.4em] text-primary uppercase mb-2 font-semibold">Verification Disclaimer</p>
-                        <p className="font-manrope text-[12px] text-white/55 leading-relaxed">
-                          <span className="text-white/80 font-medium">Disclaimer:</span> Book My Squad verifies vendor business details and GST information to maintain platform authenticity and trusted listings. Submission of invalid or misleading information may result in rejection or permanent suspension.
+                        <p className="font-cinzel text-[9px] tracking-[0.4em] text-primary uppercase mb-2 font-semibold"
+                          style={{ textShadow: "0 0 12px rgba(212,175,55,0.60)" }}>Verification Disclaimer</p>
+                        <p className="font-manrope text-[12px] text-white/80 leading-relaxed">
+                          <span className="text-primary font-semibold" style={{ textShadow: "0 0 8px rgba(212,175,55,0.50)" }}>Disclaimer:</span> Book My Squad verifies vendor business details and GST information to maintain platform authenticity and trusted listings. Submission of invalid or misleading information may result in rejection or permanent suspension.
                         </p>
                       </div>
                     </div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
                 </div>
 
                 <AnimatePresence mode="wait">

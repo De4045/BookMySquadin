@@ -185,27 +185,35 @@ export function Footer() {
 
         {/* Disclaimer — highlighted */}
         <div className="mb-8 relative overflow-hidden rounded-sm"
-          style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.03) 50%, rgba(212,175,55,0.06) 100%)" }}>
+          style={{
+            background: "linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.05) 50%, rgba(212,175,55,0.10) 100%)",
+            boxShadow: "0 0 32px rgba(212,175,55,0.18), 0 0 80px rgba(212,175,55,0.08), inset 0 0 40px rgba(212,175,55,0.06)",
+          }}>
           {/* Gold top stripe */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
-          <div className="border border-primary/25 rounded-sm p-6">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"
+            style={{ filter: "blur(1px)" }} />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/90 to-transparent" />
+          <div className="border border-primary/50 rounded-sm p-6"
+            style={{ boxShadow: "inset 0 0 20px rgba(212,175,55,0.06)" }}>
             <div className="flex items-start gap-4">
-              <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5">
-                <AlertCircle className="w-4 h-4 text-primary" />
+              <div className="w-9 h-9 rounded-full bg-primary/15 border border-primary/50 flex items-center justify-center shrink-0 mt-0.5"
+                style={{ boxShadow: "0 0 12px rgba(212,175,55,0.30)" }}>
+                <AlertCircle className="w-4 h-4 text-primary" style={{ filter: "drop-shadow(0 0 4px rgba(212,175,55,0.8))" }} />
               </div>
               <div>
-                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary uppercase mb-3 font-semibold">⚠ Important Disclaimer</p>
-                <p className="font-manrope text-xs text-white/60 leading-relaxed">
+                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary uppercase mb-3 font-semibold"
+                  style={{ textShadow: "0 0 12px rgba(212,175,55,0.60)" }}>⚠ Important Disclaimer</p>
+                <p className="font-manrope text-xs text-white/80 leading-relaxed">
                   Book My Squad is a marketplace platform connecting event planners, couples, and vendors. All vendor and venue listings are independently operated third parties. Book My Squad does not guarantee the quality, safety, or legality of any listed services. Pricing, availability, and service details are subject to change and must be confirmed directly with the vendor or venue. Book My Squad is not liable for any disputes, damages, or losses arising from bookings or transactions made through this platform. Images used are for illustrative purposes only. By using this platform you agree to our{" "}
-                  <Link href="/terms-of-service" className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors">Terms of Service</Link>
+                  <Link href="/terms-of-service" className="text-primary hover:text-white underline underline-offset-2 transition-colors" style={{ textShadow: "0 0 8px rgba(212,175,55,0.50)" }}>Terms of Service</Link>
                   {" "}and{" "}
-                  <Link href="/privacy-policy" className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors">Privacy Policy</Link>.
+                  <Link href="/privacy-policy" className="text-primary hover:text-white underline underline-offset-2 transition-colors" style={{ textShadow: "0 0 8px rgba(212,175,55,0.50)" }}>Privacy Policy</Link>.
                 </p>
               </div>
             </div>
           </div>
           {/* Gold bottom stripe */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
         </div>
 
         {/* Bottom bar */}
