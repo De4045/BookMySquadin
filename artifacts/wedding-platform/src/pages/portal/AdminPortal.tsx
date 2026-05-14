@@ -157,7 +157,7 @@ export default function AdminPortal() {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                 <StatCard label="Registered Users" value={stats?.totalUsers ?? "—"} sub={`${stats?.breakdown.vendors ?? 0} vendors · ${stats?.breakdown.venues ?? 0} venues`} accent="#d4af37" />
                 <StatCard label="Total Venues" value={stats?.totalVenues ?? 436} sub="Across India" accent="#4a90e2" />
-                <StatCard label="Total Vendors" value={stats?.totalVendors ?? 255} sub="Verified professionals" accent="#50e3c2" />
+                <StatCard label="Total Vendors" value={stats?.totalVendors ?? 255} accent="#50e3c2" />
                 <StatCard label="All Enquiries" value={allEnquiries.length} sub="Lifetime" accent="#e8a4c8" />
               </div>
 

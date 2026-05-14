@@ -3,25 +3,82 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Search, ChevronDown, ArrowRight } from "lucide-react";
+import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2 } from "lucide-react";
 import { Link, useLocation } from "wouter";
+
+const CITY_LIST = ["Mumbai","Delhi","Bangalore","Jaipur","Chennai","Hyderabad","Goa","Udaipur"];
+
+function matchToCity(raw: string): string {
+  const r = raw.toLowerCase();
+  const aliases: Record<string, string> = {
+    mumbai: "mumbai", bombay: "mumbai",
+    delhi: "delhi", "new delhi": "delhi", gurgaon: "delhi", gurugram: "delhi",
+    noida: "delhi", faridabad: "delhi", ghaziabad: "delhi",
+    bangalore: "bangalore", bengaluru: "bangalore",
+    jaipur: "jaipur",
+    chennai: "chennai", madras: "chennai",
+    hyderabad: "hyderabad", secunderabad: "hyderabad",
+    goa: "goa", panaji: "goa",
+    udaipur: "udaipur",
+  };
+  for (const [key, val] of Object.entries(aliases)) {
+    if (r.includes(key)) return val;
+  }
+  return "";
+}
 
 export default function Home() {
   const [, navigate] = useLocation();
   const [city, setCity] = useState("");
   const [eventType, setEventType] = useState("");
   const [service, setService] = useState("");
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoLat, setGeoLat] = useState<number | null>(null);
+  const [geoLon, setGeoLon] = useState<number | null>(null);
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) return;
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setGeoLat(latitude);
+        setGeoLon(longitude);
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+            { headers: { "Accept-Language": "en" } }
+          );
+          const data = await res.json() as { address?: Record<string, string> };
+          const addr = data.address ?? {};
+          const raw = addr.city ?? addr.town ?? addr.village ?? addr.county ?? "";
+          const matched = matchToCity(raw);
+          if (matched) setCity(matched);
+        } catch {
+          // silent fallback — leave city as-is
+        } finally {
+          setGeoLoading(false);
+        }
+      },
+      () => { setGeoLoading(false); },
+      { timeout: 8000 }
+    );
+  };
 
   const handleSearch = () => {
     if (service === "venues") {
       const params = new URLSearchParams();
       if (city) params.set("city", city.toUpperCase());
+      if (geoLat !== null) params.set("lat", geoLat.toFixed(4));
+      if (geoLon !== null) params.set("lon", geoLon.toFixed(4));
       const qs = params.toString();
       navigate(`/venues${qs ? `?${qs}` : ""}`);
     } else {
       const params = new URLSearchParams();
       if (city) params.set("city", city);
       if (service) params.set("category", service);
+      if (geoLat !== null) params.set("lat", geoLat.toFixed(4));
+      if (geoLon !== null) params.set("lon", geoLon.toFixed(4));
       const qs = params.toString();
       navigate(`/vendors${qs ? `?${qs}` : ""}`);
     }
@@ -94,18 +151,34 @@ export default function Home() {
           >
             <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-1.5 flex flex-col lg:flex-row gap-1.5 gold-border-glow">
               {/* City */}
-              <div className="flex-1 flex items-center px-5 py-3.5 border-r border-white/10">
-                <MapPin className="w-4 h-4 text-primary mr-3 shrink-0" />
+              <div className="flex-1 flex items-center px-5 py-3.5 border-r border-white/10 gap-2">
+                <MapPin className="w-4 h-4 text-primary shrink-0" />
                 <select
-                  className="w-full bg-transparent border-none outline-none text-white/80 text-sm font-manrope font-light cursor-pointer"
+                  className="flex-1 bg-transparent border-none outline-none text-white/80 text-sm font-manrope font-light cursor-pointer min-w-0"
                   value={city}
                   onChange={e => setCity(e.target.value)}
                 >
-                  <option value="" className="bg-[#0d0b08]">Select City</option>
-                  {["Mumbai","Delhi","Bangalore","Jaipur","Chennai","Hyderabad","Goa","Udaipur"].map(c => (
+                  <option value="" className="bg-[#0d0b08]">
+                    {geoLoading ? "Detecting…" : "Select City"}
+                  </option>
+                  {CITY_LIST.map(c => (
                     <option key={c} value={c.toLowerCase()} className="bg-[#0d0b08]">{c}</option>
                   ))}
                 </select>
+                <button
+                  type="button"
+                  onClick={detectLocation}
+                  title="Use my location"
+                  className="shrink-0 text-primary/50 hover:text-primary transition-colors duration-200"
+                >
+                  {geoLoading ? (
+                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}>
+                      <Loader2 className="w-3.5 h-3.5" />
+                    </motion.div>
+                  ) : (
+                    <LocateFixed className="w-3.5 h-3.5" />
+                  )}
+                </button>
               </div>
               {/* Event Type */}
               <div className="flex-1 flex items-center px-5 py-3.5 border-r border-white/10">
