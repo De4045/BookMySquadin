@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { User, Lock, Eye, EyeOff, ArrowLeft, CheckCircle, Mail } from "lucide-react";
+import { User, Lock, Eye, EyeOff, ArrowLeft, CheckCircle, Mail, FileText, ExternalLink, AlertCircle } from "lucide-react";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
@@ -76,6 +76,17 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [successName, setSuccessName] = useState("");
+  const [gstin, setGstin] = useState("");
+  const [gstinValid, setGstinValid] = useState<null | boolean>(null);
+
+  const GSTIN_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+  const GSTIN_PORTAL = "https://services.gst.gov.in/services/searchtp";
+
+  const handleGstinChange = (v: string) => {
+    const upper = v.toUpperCase();
+    setGstin(upper);
+    setGstinValid(upper.length === 0 ? null : GSTIN_REGEX.test(upper));
+  };
 
   const isSignUp = tab === "signup";
 
@@ -318,6 +329,64 @@ export default function Login() {
                         <span className="font-manrope text-[9px] text-white/30 mt-1 leading-tight">{opt.sub}</span>
                       </button>
                     ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {isSignUp && role === "vendor" && (
+                <motion.div key="gstin-field" variants={fieldVariants} initial="initial" animate="animate" exit="exit">
+                  <div className="space-y-3 p-4 bg-primary/5 border border-primary/20 rounded-sm">
+                    <div className="flex items-center justify-between">
+                      <label className="block font-cinzel text-[10px] tracking-[0.3em] text-primary/80 uppercase">
+                        GSTIN — GST Identification Number
+                      </label>
+                      <a
+                        href="https://services.gst.gov.in/services/searchtp"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 font-cinzel text-[8px] tracking-[0.15em] uppercase text-primary/70 hover:text-primary border border-primary/25 hover:border-primary/50 px-2 py-1 transition-all"
+                      >
+                        Verify Status <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                    <div className="relative">
+                      <FileText className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40 pointer-events-none" />
+                      <input
+                        type="text"
+                        placeholder="e.g. 27AAPFU0939F1ZV"
+                        maxLength={15}
+                        value={gstin}
+                        onChange={e => handleGstinChange(e.target.value)}
+                        className={`
+                          w-full h-13 pl-11 pr-4 py-3.5
+                          bg-white/[0.04] border font-mono tracking-widest uppercase
+                          font-manrope text-sm text-white placeholder:text-white/25
+                          focus:outline-none focus:bg-white/[0.06] transition-all duration-300 rounded-sm
+                          ${gstin.length > 0
+                            ? gstinValid === true
+                              ? "border-green-500/50 focus:border-green-500/70"
+                              : gstinValid === false
+                              ? "border-red-500/50 focus:border-red-500/70"
+                              : "border-white/10"
+                            : "border-white/10 focus:border-primary/60"}
+                        `}
+                      />
+                    </div>
+                    {gstin.length > 0 && (
+                      <p className={`font-manrope text-[11px] flex items-center gap-1.5 ${gstinValid ? "text-green-400/80" : "text-red-400/80"}`}>
+                        {gstinValid === true ? (
+                          <><CheckCircle className="w-3 h-3 shrink-0" /> Valid format — verify Active status on the GST portal</>
+                        ) : (
+                          <><AlertCircle className="w-3 h-3 shrink-0" /> Must be exactly 15 alphanumeric characters</>
+                        )}
+                      </p>
+                    )}
+                    <p className="font-manrope text-[11px] text-white/35 leading-snug flex items-start gap-1.5">
+                      <AlertCircle className="w-3 h-3 shrink-0 mt-0.5 text-primary/40" />
+                      Only vendors with an <strong className="text-white/55">Active GST status</strong> will receive a Verified badge. You can enter this later, but early submission speeds up approval.
+                    </p>
                   </div>
                 </motion.div>
               )}
