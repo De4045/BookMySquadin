@@ -418,103 +418,6 @@ function GstVerificationPanel({
   );
 }
 
-/* ─── Individual Form ─── */
-function IndividualForm({ onSuccess }: { onSuccess: (name: string) => void }) {
-  const { toast } = useToast();
-  const [form, setForm] = useState({ name: "", phone: "", email: "", city: "", category: "", description: "" });
-  const [consent, setConsent] = useState(false);
-
-  const set = (k: keyof typeof form) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-      setForm(f => ({ ...f, [k]: e.target.value }));
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!consent) {
-      toast({ title: "Consent Required", description: "Please agree to our Terms & Privacy Policy to continue.", variant: "destructive" });
-      return;
-    }
-    onSuccess(form.name);
-  };
-
-  return (
-    <motion.form
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.5 }}
-      onSubmit={handleSubmit}
-      className="luxury-card p-8 md:p-12 space-y-10"
-    >
-      <div>
-        <SectionHeading>
-          Personal Information
-          <span className="text-primary/50 text-sm font-manrope font-light">* required</span>
-        </SectionHeading>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FIELD label="Full Name *">
-            <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
-              <input type="text" placeholder="Your full name" className={INPUT_CLS + " pl-10"} value={form.name} onChange={set("name")} required />
-            </div>
-          </FIELD>
-          <FIELD label="Phone Number *">
-            <div className="relative">
-              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
-              <input type="tel" placeholder="+91 XXXXX XXXXX" className={INPUT_CLS + " pl-10"} value={form.phone} onChange={set("phone")} required />
-            </div>
-          </FIELD>
-          <FIELD label="Email Address *">
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
-              <input type="email" placeholder="your@email.com" className={INPUT_CLS + " pl-10"} value={form.email} onChange={set("email")} required />
-            </div>
-          </FIELD>
-          <FIELD label="City *">
-            <div className="relative">
-              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50 pointer-events-none" />
-              <select className={SELECT_CLS + " pl-10"} value={form.city} onChange={set("city")} required>
-                <option value="" className="bg-[#0d0b08]">Select your city</option>
-                {CITIES.map(c => <option key={c} value={c} className="bg-[#0d0b08]">{c}</option>)}
-              </select>
-              <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
-            </div>
-          </FIELD>
-        </div>
-      </div>
-
-      <div>
-        <SectionHeading>Service Interest</SectionHeading>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FIELD label="Category Interested In">
-            <div className="relative">
-              <select className={SELECT_CLS} value={form.category} onChange={set("category")}>
-                <option value="" className="bg-[#0d0b08]">Select a category</option>
-                {CATEGORIES.map(c => <option key={c} value={c} className="bg-[#0d0b08]">{c}</option>)}
-              </select>
-              <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
-            </div>
-          </FIELD>
-          <FIELD label="Tell Us More">
-            <textarea rows={3} placeholder="Briefly describe what you're looking for…" className={INPUT_CLS + " resize-none"} value={form.description} onChange={set("description")} />
-          </FIELD>
-        </div>
-      </div>
-
-      <div className="pt-4 border-t border-white/8 space-y-6">
-        <ConsentBox checked={consent} onChange={setConsent} />
-        <button
-          type="submit"
-          className="w-full md:w-auto px-12 py-4 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.25em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow flex items-center justify-center gap-3 group"
-        >
-          Submit Request
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
-    </motion.form>
-  );
-}
-
 /* ─── Vendor Form ─── */
 function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: boolean) => void }) {
   const { toast } = useToast();
@@ -898,10 +801,7 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
 }
 
 /* ─── Main Page ─── */
-type FormType = "individual" | "vendor";
-
 export default function ListYourBusiness() {
-  const [formType, setFormType] = useState<FormType>("individual");
   const [submitted, setSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
   const [gstVerified, setGstVerified] = useState(false);
@@ -922,7 +822,7 @@ export default function ListYourBusiness() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.10)_0%,transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(212,175,55,0.04)_0%,transparent_70%)]" />
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }} className="relative z-10 max-w-4xl mx-auto">
-            <p className="font-cinzel text-xs tracking-[0.6em] text-primary uppercase mb-5">✦ Join The Network ✦</p>
+            <p className="font-cinzel text-xs tracking-[0.6em] text-primary uppercase mb-5">✦ For Vendors & Businesses ✦</p>
             <div className="gold-line w-20 mx-auto mb-8" />
             <h1 className="font-cormorant text-6xl md:text-8xl font-semibold mb-6 leading-[1.05]"
               style={{ color: "#fff", textShadow: "0 4px 60px rgba(212,175,55,0.20)" }}>
@@ -932,7 +832,7 @@ export default function ListYourBusiness() {
               </span>
             </h1>
             <p className="font-manrope text-white/65 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed">
-              Join India's most trusted wedding & event marketplace. Reach thousands of couples planning their dream celebrations.
+              Join India's most trusted wedding & event marketplace. GST-verified vendors get a priority listing and a Verified badge visible to thousands of couples.
             </p>
           </motion.div>
         </section>
@@ -951,68 +851,34 @@ export default function ListYourBusiness() {
         </section>
 
         {/* Form section */}
-        <section className="py-20 px-6 md:px-12">
+        <section className="py-20 px-6 md:px-12" style={{ background: "linear-gradient(180deg, #080604 0%, #0a0805 50%, #080604 100%)" }}>
           <div className="max-w-4xl mx-auto">
             {submitted ? (
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="luxury-card p-16 text-center">
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${gstVerified ? "bg-green-500/10 border-2 border-green-500/30" : "bg-primary/10 border-2 border-primary/30"}`}>
-                  {gstVerified
-                    ? <BadgeCheck className="w-10 h-10 text-green-400" />
-                    : <CheckCircle2 className="w-10 h-10 text-primary" />
-                  }
+              <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="luxury-card p-16 text-center">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 bg-green-500/10 border-2 border-green-500/30">
+                  <BadgeCheck className="w-10 h-10 text-green-400" />
                 </div>
                 <p className="font-cinzel text-[9px] tracking-[0.4em] uppercase text-primary/60 mb-3">✦ Application Received ✦</p>
-                <h2 className="font-cormorant text-4xl text-white font-semibold mb-4">
+                <h2 className="font-cormorant text-4xl md:text-5xl text-white font-semibold mb-4"
+                  style={{ textShadow: "0 0 40px rgba(212,175,55,0.15)" }}>
                   {gstVerified ? "GST-Verified Application Received!" : "Application Received!"}
                 </h2>
                 <p className="font-manrope text-white/55 text-base mb-2 max-w-md mx-auto leading-relaxed">
-                  Thank you, <span className="text-primary">{submittedName}</span>. Our team will review your{" "}
-                  {formType === "vendor" ? "vendor listing" : "request"} and reach out within 48 hours.
+                  Thank you, <span className="text-primary font-medium">{submittedName}</span>. Our team will review your vendor listing and reach out within 48 hours.
                 </p>
-                {gstVerified && (
-                  <p className="font-manrope text-sm text-green-400/70 mt-3 mb-8 flex items-center justify-center gap-2">
-                    <BadgeCheck className="w-4 h-4" />
-                    Your GST-verified application will receive priority review and a Verified badge upon approval.
-                  </p>
-                )}
+                <p className="font-manrope text-sm text-green-400/70 mt-3 mb-10 flex items-center justify-center gap-2">
+                  <BadgeCheck className="w-4 h-4 shrink-0" />
+                  Your GST-verified application will receive priority review and a Verified badge upon approval.
+                </p>
                 <button
-                  onClick={() => setSubmitted(false)}
-                  className="mt-6 font-cinzel text-[10px] tracking-[0.3em] uppercase text-primary border border-primary/30 px-6 py-3 hover:bg-primary hover:text-black transition-all duration-300"
+                  onClick={() => { setSubmitted(false); setGstVerified(false); setSubmittedName(""); }}
+                  className="font-cinzel text-[10px] tracking-[0.3em] uppercase text-primary border border-primary/30 px-8 py-3.5 hover:bg-primary hover:text-black transition-all duration-300"
                 >
-                  Submit Another
+                  Submit Another Application
                 </button>
               </motion.div>
             ) : (
-              <>
-                {/* Tab switcher */}
-                <div className="mb-10">
-                  <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/60 uppercase text-center mb-5">Select registration type</p>
-                  <div className="flex rounded-sm bg-white/[0.03] border border-white/10 p-1.5 gap-1.5 max-w-md mx-auto">
-                    {([
-                      { key: "individual", label: "Individual", sub: "Looking for services" },
-                      { key: "vendor", label: "Vendor / Business", sub: "Offering services" },
-                    ] as const).map(t => (
-                      <button
-                        key={t.key}
-                        type="button"
-                        onClick={() => setFormType(t.key)}
-                        className={`flex-1 py-3 px-4 rounded-sm transition-all duration-300 flex flex-col items-center gap-0.5 ${formType === t.key ? "bg-primary text-black" : "text-white/45 hover:text-white/70 hover:bg-white/5"}`}
-                      >
-                        <span className={`font-cinzel text-[10px] tracking-[0.2em] uppercase font-bold ${formType === t.key ? "text-black" : ""}`}>{t.label}</span>
-                        <span className={`font-manrope text-[9px] ${formType === t.key ? "text-black/60" : "text-white/30"}`}>{t.sub}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <AnimatePresence mode="wait">
-                  {formType === "individual" ? (
-                    <IndividualForm key="individual" onSuccess={n => handleSuccess(n, false)} />
-                  ) : (
-                    <VendorForm key="vendor" onSuccess={handleSuccess} />
-                  )}
-                </AnimatePresence>
-              </>
+              <VendorForm onSuccess={handleSuccess} />
             )}
           </div>
         </section>

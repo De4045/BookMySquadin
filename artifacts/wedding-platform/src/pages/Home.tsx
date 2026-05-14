@@ -6,20 +6,42 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
-const CITY_LIST = ["Mumbai","Delhi","Bangalore","Jaipur","Chennai","Hyderabad","Goa","Udaipur"];
+const CITY_LIST = [
+  "Agra","Alwar","Bangalore","Bareilly","Bikaner","Chennai","Dehradun","Delhi",
+  "Faridabad","Ghaziabad","Goa","Gurgaon","Hyderabad","Jaipur","Jaisalmer",
+  "Jhansi","Jodhpur","Kanpur","Leh","Lucknow","Manali","Meerut","Mumbai",
+  "Noida","Prayagraj","Ramnagar","Rishikesh","Shimla","Udaipur","Varanasi",
+];
+
+const SERVICE_LIST = [
+  { label: "Wedding Planner", value: "wedding-planner" },
+  { label: "Photography", value: "photography" },
+  { label: "Makeup Artist", value: "makeup-artist" },
+  { label: "Catering", value: "catering" },
+  { label: "Decorator", value: "decorator" },
+  { label: "Entertainment", value: "entertainment" },
+  { label: "Music / DJ", value: "music" },
+];
 
 function matchToCity(raw: string): string {
   const r = raw.toLowerCase();
   const aliases: Record<string, string> = {
-    mumbai: "mumbai", bombay: "mumbai",
-    delhi: "delhi", "new delhi": "delhi", gurgaon: "delhi", gurugram: "delhi",
-    noida: "delhi", faridabad: "delhi", ghaziabad: "delhi",
-    bangalore: "bangalore", bengaluru: "bangalore",
-    jaipur: "jaipur",
-    chennai: "chennai", madras: "chennai",
-    hyderabad: "hyderabad", secunderabad: "hyderabad",
-    goa: "goa", panaji: "goa",
-    udaipur: "udaipur",
+    mumbai: "Mumbai", bombay: "Mumbai",
+    delhi: "Delhi", "new delhi": "Delhi", gurugram: "Gurgaon", gurgaon: "Gurgaon",
+    noida: "Noida", faridabad: "Faridabad", ghaziabad: "Ghaziabad",
+    bangalore: "Bangalore", bengaluru: "Bangalore",
+    jaipur: "Jaipur", jaisalmer: "Jaisalmer", jodhpur: "Jodhpur",
+    alwar: "Alwar", bikaner: "Bikaner", ajmer: "Jaipur",
+    chennai: "Chennai", madras: "Chennai",
+    hyderabad: "Hyderabad", secunderabad: "Hyderabad",
+    goa: "Goa", panaji: "Goa",
+    udaipur: "Udaipur",
+    lucknow: "Lucknow", kanpur: "Kanpur", agra: "Agra",
+    varanasi: "Varanasi", prayagraj: "Prayagraj", allahabad: "Prayagraj",
+    bareilly: "Bareilly", jhansi: "Jhansi", meerut: "Meerut",
+    dehradun: "Dehradun", rishikesh: "Rishikesh", mussoorie: "Dehradun",
+    shimla: "Shimla", manali: "Manali", leh: "Leh",
+    ramnagar: "Ramnagar",
   };
   for (const [key, val] of Object.entries(aliases)) {
     if (r.includes(key)) return val;
@@ -162,7 +184,7 @@ export default function Home() {
                     {geoLoading ? "Detecting…" : "Select City"}
                   </option>
                   {CITY_LIST.map(c => (
-                    <option key={c} value={c.toLowerCase()} className="bg-[#0d0b08]">{c}</option>
+                    <option key={c} value={c} className="bg-[#0d0b08]">{c}</option>
                   ))}
                 </select>
                 <button
@@ -209,8 +231,8 @@ export default function Home() {
                 >
                   <option value="" className="bg-[#0d0b08]">Select Service</option>
                   <option value="venues" className="bg-[#0d0b08]">Venues</option>
-                  {["Photography","Makeup","Catering","Decorator","Entertainment","Wedding Planner"].map(s => (
-                    <option key={s} value={s.toLowerCase().replace(/ /g,"-")} className="bg-[#0d0b08]">{s}</option>
+                  {SERVICE_LIST.map(s => (
+                    <option key={s.value} value={s.value} className="bg-[#0d0b08]">{s.label}</option>
                   ))}
                 </select>
               </div>

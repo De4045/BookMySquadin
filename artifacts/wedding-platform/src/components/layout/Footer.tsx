@@ -148,33 +148,10 @@ export function Footer() {
             <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Contact Us</h4>
 
             <div className="space-y-5">
-              <a href="tel:+918796318282" className="flex items-center gap-2 font-manrope text-sm text-white/65 hover:text-primary transition-colors group">
+              <a href="tel:+91XXXXXXXXXX" className="flex items-center gap-2 font-manrope text-sm text-white/65 hover:text-primary transition-colors group">
                 <Phone className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary shrink-0" />
-                +91 8796318282
+                +91 XXXXXXXXXX
               </a>
-
-              <div>
-                <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/55 uppercase mb-1.5">Corporate Office</p>
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-primary/50 shrink-0 mt-0.5" />
-                  <p className="font-manrope text-xs text-white/50 leading-relaxed">
-                    Unitech Cyber Park,<br />
-                    Sector 39, Gurugram,<br />
-                    122003
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/55 uppercase mb-1.5">Registered Office</p>
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-primary/50 shrink-0 mt-0.5" />
-                  <p className="font-manrope text-xs text-white/50 leading-relaxed">
-                    Shastri Nagar,<br />
-                    Meerut, 250004
-                  </p>
-                </div>
-              </div>
 
               <Link
                 href="/list-your-business"
@@ -202,17 +179,29 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Disclaimer */}
-        <div className="mb-8 p-5 border border-white/8 bg-white/[0.02] rounded-sm">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-4 h-4 text-primary/50 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/60 uppercase mb-2">Disclaimer</p>
-              <p className="font-manrope text-[11px] text-white/35 leading-relaxed">
-                Book My Squad is a marketplace platform connecting event planners, couples, and vendors. All vendor and venue listings are independently operated third parties. Book My Squad does not guarantee the quality, safety, or legality of any listed services. Pricing, availability, and service details are subject to change and must be confirmed directly with the vendor or venue. Book My Squad is not liable for any disputes, damages, or losses arising from bookings or transactions made through this platform. Images used are for illustrative purposes only. By using this platform you agree to our Terms of Service and Privacy Policy.
-              </p>
+        {/* Disclaimer — highlighted */}
+        <div className="mb-8 relative overflow-hidden rounded-sm"
+          style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.03) 50%, rgba(212,175,55,0.06) 100%)" }}>
+          {/* Gold top stripe */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+          <div className="border border-primary/25 rounded-sm p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5">
+                <AlertCircle className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary uppercase mb-3 font-semibold">⚠ Important Disclaimer</p>
+                <p className="font-manrope text-xs text-white/60 leading-relaxed">
+                  Book My Squad is a marketplace platform connecting event planners, couples, and vendors. All vendor and venue listings are independently operated third parties. Book My Squad does not guarantee the quality, safety, or legality of any listed services. Pricing, availability, and service details are subject to change and must be confirmed directly with the vendor or venue. Book My Squad is not liable for any disputes, damages, or losses arising from bookings or transactions made through this platform. Images used are for illustrative purposes only. By using this platform you agree to our{" "}
+                  <Link href="/terms-of-service" className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors">Terms of Service</Link>
+                  {" "}and{" "}
+                  <Link href="/privacy-policy" className="text-primary/80 hover:text-primary underline underline-offset-2 transition-colors">Privacy Policy</Link>.
+                </p>
+              </div>
             </div>
           </div>
+          {/* Gold bottom stripe */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         </div>
 
         {/* Bottom bar */}
