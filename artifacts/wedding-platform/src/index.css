@@ -145,6 +145,10 @@
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
+    text-shadow:
+      0 0 30px rgba(212, 175, 55, 0.35),
+      0 0 60px rgba(212, 175, 55, 0.15),
+      0 0 120px rgba(212, 175, 55, 0.07);
   }
 }
 
