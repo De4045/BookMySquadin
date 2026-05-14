@@ -33,7 +33,24 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    setSearchOpen(false);
+    setSearchQuery("");
+    navigate(`/vendors?search=${encodeURIComponent(q)}`);
+  };
+
+  const openSearch = () => {
+    setSearchOpen(true);
+    setTimeout(() => searchRef.current?.focus(), 80);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -112,7 +129,11 @@ export function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3 md:gap-4">
-            <button className="hidden md:flex text-white/70 hover:text-primary transition-colors">
+            <button
+              onClick={openSearch}
+              className="hidden md:flex text-white/70 hover:text-primary transition-colors p-1"
+              aria-label="Search"
+            >
               <Search className="w-4 h-4" />
             </button>
 
@@ -244,6 +265,66 @@ export function Navbar() {
           </div>
         </div>
       </header>
+
+      {/* Global Search Overlay */}
+      <AnimatePresence>
+        {searchOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm"
+              onClick={() => setSearchOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed top-[90px] left-1/2 -translate-x-1/2 z-[91] w-full max-w-2xl px-4"
+            >
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <div className="bg-[#0d0a07] border border-primary/30 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(212,175,55,0.1)] flex items-center gap-4 px-5 py-4">
+                  <Search className="w-5 h-5 text-primary/60 shrink-0" />
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search vendors, services, cities…"
+                    className="flex-1 bg-transparent border-none outline-none font-manrope text-base text-white placeholder:text-white/25"
+                  />
+                  {searchQuery && (
+                    <button type="button" onClick={() => setSearchQuery("")} className="text-white/30 hover:text-white/60 transition-colors">
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    className="font-cinzel text-[9px] tracking-[0.2em] uppercase bg-primary text-black px-4 py-2 hover:bg-primary/85 transition-colors font-bold shrink-0"
+                  >
+                    Search
+                  </button>
+                </div>
+                <div className="mt-2 flex gap-2 flex-wrap">
+                  {["Wedding Venues", "Photography", "Bridal Makeup", "Catering", "DJ & Music"].map(tag => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => { setSearchQuery(tag); searchRef.current?.focus(); }}
+                      className="font-manrope text-[11px] text-white/40 hover:text-primary/80 border border-white/10 hover:border-primary/30 px-3 py-1 transition-all"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Overlay */}
       {mobileOpen && (

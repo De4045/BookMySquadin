@@ -37,13 +37,55 @@ function fmt(iso: string) {
 }
 
 function StatCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) {
+  const color = accent || "#d4af37";
   return (
-    <div className="bg-[#1a1510] border border-white/8 p-6 relative overflow-hidden group hover:border-primary/30 transition-colors">
-      <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: accent || "#d4af37" }} />
-      <div className="font-cinzel text-[9px] tracking-[0.25em] text-white/35 uppercase mb-3">{label}</div>
-      <div className="font-cormorant text-4xl text-primary font-semibold mb-1">{value}</div>
-      {sub && <div className="font-manrope text-xs text-white/30">{sub}</div>}
-    </div>
+    <motion.div
+      whileHover={{ y: -3, scale: 1.01 }}
+      transition={{ duration: 0.25 }}
+      className="relative overflow-hidden cursor-default group"
+      style={{
+        background: "linear-gradient(145deg, #1c1408 0%, #120e05 55%, #0e0a04 100%)",
+        border: `1px solid ${color}20`,
+        boxShadow: `0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 ${color}12`,
+      }}
+    >
+      {/* Top shimmer line */}
+      <div className="absolute top-0 left-0 right-0 h-[2px]"
+        style={{ background: `linear-gradient(90deg, transparent 0%, ${color} 40%, ${color}aa 60%, transparent 100%)` }} />
+      {/* Glow orb on hover */}
+      <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{ backgroundColor: `${color}18` }} />
+      {/* Corner accent */}
+      <div className="absolute top-4 right-4 w-6 h-6 opacity-20"
+        style={{ borderTop: `1px solid ${color}`, borderRight: `1px solid ${color}` }} />
+      <div className="absolute bottom-4 left-4 w-4 h-4 opacity-15"
+        style={{ borderBottom: `1px solid ${color}`, borderLeft: `1px solid ${color}` }} />
+
+      <div className="relative z-10 px-7 pt-7 pb-6">
+        <div className="font-cinzel text-[9px] tracking-[0.4em] uppercase mb-5 flex items-center gap-2"
+          style={{ color: `${color}70` }}>
+          <div className="w-3 h-px" style={{ backgroundColor: `${color}60` }} />
+          {label}
+        </div>
+        <div
+          className="font-cormorant text-5xl font-bold leading-none mb-3"
+          style={{
+            background: `linear-gradient(135deg, ${color} 0%, ${color}cc 50%, ${color}90 100%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            filter: "drop-shadow(0 2px 8px rgba(212,175,55,0.2))",
+          }}
+        >
+          {value}
+        </div>
+        {sub && (
+          <div className="font-manrope text-[11px] tracking-wide" style={{ color: `${color}45` }}>{sub}</div>
+        )}
+      </div>
+      {/* Bottom fade line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px"
+        style={{ background: `linear-gradient(90deg, transparent, ${color}25, transparent)` }} />
+    </motion.div>
   );
 }
 

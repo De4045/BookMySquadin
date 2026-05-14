@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart } from "lucide-react";
+import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VENDORS } from "@/data/vendors";
 import { VendorDetailModal, type VendorLike } from "@/components/VendorDetailModal";
@@ -14,8 +14,84 @@ function normalizeCategory(raw: string): string {
   if (s.includes("MAKE"))             return "MAKEUP ARTIST";
   if (s.includes("PHOTO"))            return "PHOTOGRAPHER";
   if (s.includes("CATER"))            return "CATERER";
-  if (s.includes("MUSIC") || s.includes("DJ")) return "MUSIC & DJ";
+  if (s.includes("MUSIC") || s.includes("DJ") || s.includes("ENTERTAIN")) return "MUSIC & DJ";
   return s || "VENDOR";
+}
+
+const CATEGORY_IMAGES: Record<string, string[]> = {
+  "DECOR": [
+    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=75",
+    "https://images.unsplash.com/photo-1563697873-fc42501a3e53?w=600&q=75",
+    "https://images.unsplash.com/photo-1525772764200-be829a350797?w=600&q=75",
+    "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=75",
+    "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&q=75",
+    "https://images.unsplash.com/photo-1510076857177-7470076d4098?w=600&q=75",
+    "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=75",
+    "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&q=75",
+  ],
+  "WEDDING PLANNERS": [
+    "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=75",
+    "https://images.unsplash.com/photo-1550005809-91ad75fb315f?w=600&q=75",
+    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600&q=75",
+    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=600&q=75",
+    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=75",
+    "https://images.unsplash.com/photo-1478146059778-26028b07395a?w=600&q=75",
+    "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&q=75",
+    "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=75",
+  ],
+  "MAKEUP ARTIST": [
+    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=75",
+    "https://images.unsplash.com/photo-1487412840181-71b61d8d3d7d?w=600&q=75",
+    "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&q=75",
+    "https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=600&q=75",
+    "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=75",
+    "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600&q=75",
+    "https://images.unsplash.com/photo-1521561987953-e4e9c9ee8040?w=600&q=75",
+    "https://images.unsplash.com/photo-1571646034647-52e6ea84b28f?w=600&q=75",
+  ],
+  "PHOTOGRAPHER": [
+    "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=600&q=75",
+    "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=75",
+    "https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?w=600&q=75",
+    "https://images.unsplash.com/photo-1529543544282-ea669407fca3?w=600&q=75",
+    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=75",
+    "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=600&q=75",
+    "https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&q=75",
+    "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=600&q=75",
+  ],
+  "CATERER": [
+    "https://images.unsplash.com/photo-1555244162-803834f70033?w=600&q=75",
+    "https://images.unsplash.com/photo-1481833761820-0509d3217039?w=600&q=75",
+    "https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&q=75",
+    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=75",
+    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=75",
+    "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=600&q=75",
+    "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=75",
+    "https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=75",
+  ],
+  "MUSIC & DJ": [
+    "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=75",
+    "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=75",
+    "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&q=75",
+    "https://images.unsplash.com/photo-1504680177321-2e6a879aac86?w=600&q=75",
+    "https://images.unsplash.com/photo-1545128485-c400e7702796?w=600&q=75",
+    "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=75",
+    "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=600&q=75",
+    "https://images.unsplash.com/photo-1510797215324-95aa89f43c33?w=600&q=75",
+  ],
+};
+
+const DEFAULT_IMAGES = [
+  "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=75",
+  "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=75",
+  "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=75",
+  "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=600&q=75",
+];
+
+function getVendorImage(vendor: { image?: string }, cat: string, idx: number): string {
+  if (vendor.image) return vendor.image;
+  const pool = CATEGORY_IMAGES[cat] ?? DEFAULT_IMAGES;
+  return pool[idx % pool.length];
 }
 
 const CAT_COLOR: Record<string, string> = {
@@ -206,6 +282,9 @@ export default function Vendors() {
                 const slId        = `vendor-${vendor.name}-${vendor.city || ""}`;
                 const isSlisted   = has(slId);
 
+                const coverImg = getVendorImage(vendor, cat, idx);
+                const isInfinity = vendor.name === "Infinity Eventz";
+
                 return (
                   <motion.div
                     layout
@@ -216,23 +295,53 @@ export default function Vendors() {
                     transition={{ delay: Math.min(idx * 0.03, 0.25), duration: 0.4 }}
                     onClick={() => setSelected(vendor)}
                     className="bg-[#1a1510] border border-white/5 rounded-sm overflow-hidden flex flex-col group hover:border-primary/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] cursor-pointer"
+                    style={isInfinity ? { borderColor: "rgba(212,175,55,0.3)", boxShadow: "0 4px 24px rgba(212,175,55,0.08)" } : {}}
                   >
-                    <div className="h-0.5 w-full transition-opacity opacity-60 group-hover:opacity-100" style={{ backgroundColor: accentColor }} />
-                    <div className="p-6 flex flex-col flex-grow">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="font-cinzel text-[9px] uppercase tracking-[0.2em] font-bold" style={{ color: accentColor }}>{cat}</div>
+                    {/* Cover photo */}
+                    <div className="relative h-44 overflow-hidden shrink-0">
+                      <img
+                        src={coverImg}
+                        alt={vendor.company || vendor.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1510] via-[#1a1510]/20 to-transparent" />
+                      {/* Category badge */}
+                      <div className="absolute top-3 left-3">
+                        <div className="font-cinzel text-[8px] uppercase tracking-[0.2em] font-bold px-2 py-1 bg-[#0d0a07]/80 backdrop-blur-sm"
+                          style={{ color: accentColor, border: `1px solid ${accentColor}40` }}>{cat}</div>
+                      </div>
+                      {/* Heart + featured badge */}
+                      <div className="absolute top-3 right-3 flex items-center gap-2">
+                        {isInfinity && (
+                          <div className="font-cinzel text-[7px] tracking-[0.2em] uppercase px-2 py-1 bg-primary text-black font-bold">Featured</div>
+                        )}
                         <button
                           onClick={e => { e.stopPropagation(); toggle({ id: slId, type: "vendor", name: vendor.name, city: vendor.city, category: cat }); }}
-                          className={`w-7 h-7 flex items-center justify-center rounded-sm transition-all ${isSlisted ? "text-primary" : "text-white/20 hover:text-primary/70"}`}
+                          className={`w-7 h-7 flex items-center justify-center bg-[#0d0a07]/70 backdrop-blur-sm rounded-sm transition-all ${isSlisted ? "text-primary" : "text-white/50 hover:text-primary/70"}`}
                         >
                           <Heart className={`w-3.5 h-3.5 ${isSlisted ? "fill-primary" : ""}`} />
                         </button>
                       </div>
+                    </div>
 
-                      <h3 className="text-xl font-cormorant font-bold text-white leading-tight group-hover:text-primary transition-colors duration-300 mb-1">{vendor.name}</h3>
-                      {hasCompany && <p className="font-manrope text-white/50 text-sm mb-4">{vendor.company}</p>}
+                    <div className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-xl font-cormorant font-bold text-white leading-tight group-hover:text-primary transition-colors duration-300 mb-0.5">{vendor.name}</h3>
+                      {hasCompany && vendor.company !== vendor.name && (
+                        <p className="font-manrope text-white/50 text-sm mb-3">{vendor.company}</p>
+                      )}
 
-                      <div className="mt-auto pt-4 border-t border-white/5 space-y-2.5 font-manrope text-xs text-white/60">
+                      {/* Star rating */}
+                      {vendor.rating !== undefined && (
+                        <div className="flex items-center gap-1 mb-3">
+                          {[1,2,3,4,5].map(s => (
+                            <Star key={s} className="w-3 h-3" fill={s <= vendor.rating! ? "#d4af37" : "none"} stroke={s <= vendor.rating! ? "#d4af37" : "#d4af3740"} />
+                          ))}
+                          <span className="font-manrope text-[10px] text-primary/70 ml-1">{vendor.rating}.0</span>
+                        </div>
+                      )}
+
+                      <div className="mt-auto pt-4 border-t border-white/5 space-y-2 font-manrope text-xs text-white/60">
                         {(hasCity || hasState) && (
                           <div className="flex items-center gap-2.5">
                             <MapPin className="w-3.5 h-3.5 text-primary/50 shrink-0" />
@@ -250,7 +359,7 @@ export default function Vendors() {
                         )}
                       </div>
 
-                      <div className="mt-5 pt-4 border-t border-white/8 flex items-center justify-between">
+                      <div className="mt-4 pt-4 border-t border-white/8 flex items-center justify-between">
                         <span className="font-cinzel text-[9px] tracking-[0.2em] text-white/40 uppercase group-hover:text-primary transition-colors">View Profile</span>
                         <ArrowRight className="w-3.5 h-3.5 text-white/40 group-hover:text-primary group-hover:translate-x-1 transition-all" />
                       </div>

@@ -397,6 +397,7 @@ export default function Login() {
               type="button"
               whileTap={{ scale: 0.97 }}
               whileHover={{ scale: 1.02 }}
+              onClick={() => toast({ title: "Coming Soon", description: "Facebook sign-in will be available soon. Please use email to continue." })}
               className="flex-1 h-11 flex items-center justify-center gap-2.5 bg-white/[0.04] border border-white/10 text-white/70 hover:text-white hover:border-white/25 hover:bg-white/[0.07] transition-all duration-300 rounded-sm font-manrope text-sm"
             >
               <FaFacebook className="w-4 h-4 text-[#4267B2]" />
@@ -406,6 +407,7 @@ export default function Login() {
               type="button"
               whileTap={{ scale: 0.97 }}
               whileHover={{ scale: 1.02 }}
+              onClick={() => toast({ title: "Coming Soon", description: "Google sign-in will be available soon. Please use email to continue." })}
               className="flex-1 h-11 flex items-center justify-center gap-2.5 bg-white/[0.04] border border-white/10 text-white/70 hover:text-white hover:border-white/25 hover:bg-white/[0.07] transition-all duration-300 rounded-sm font-manrope text-sm"
             >
               <FaGoogle className="w-4 h-4 text-[#EA4335]" />
@@ -419,13 +421,12 @@ export default function Login() {
             className="mt-7 p-5 border border-white/8 bg-white/[0.02] rounded-sm text-center transition-colors duration-300"
           >
             <p className="font-manrope text-sm text-white/40 mb-2">Are you a vendor or event planner?</p>
-            <button
-              type="button"
-              onClick={() => setTab("signup")}
+            <Link
+              href="/list-your-business"
               className="font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary hover:text-primary/70 transition-colors"
             >
               Register your business →
-            </button>
+            </Link>
           </motion.div>
 
           <p className="mt-6 text-center font-manrope text-xs text-white/25">

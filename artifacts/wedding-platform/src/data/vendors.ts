@@ -5,9 +5,81 @@ export interface Vendor {
   city: string;
   contact: string;
   state: string;
+  rating?: number;
+  image?: string;
 }
 
 export const VENDORS: Vendor[] = [
+  {
+    "category": "DEOCR",
+    "name": "Infinity Eventz",
+    "company": "Infinity Eventz",
+    "city": "Mumbai",
+    "contact": "9820000001",
+    "state": "Maharashtra",
+    "rating": 5,
+    "image": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80"
+  },
+  {
+    "category": "Wedding planners",
+    "name": "Infinity Eventz",
+    "company": "Infinity Eventz",
+    "city": "Delhi",
+    "contact": "9820000002",
+    "state": "Delhi",
+    "rating": 5,
+    "image": "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80"
+  },
+  {
+    "category": "Makeup Artist",
+    "name": "Infinity Eventz",
+    "company": "Infinity Eventz",
+    "city": "Bangalore",
+    "contact": "9820000003",
+    "state": "Karnataka",
+    "rating": 5,
+    "image": "https://images.unsplash.com/photo-1503236823255-94609f598e71?w=600&q=80"
+  },
+  {
+    "category": "Photography",
+    "name": "Infinity Eventz",
+    "company": "Infinity Eventz",
+    "city": "Jaipur",
+    "contact": "9820000004",
+    "state": "Rajasthan",
+    "rating": 5,
+    "image": "https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&q=80"
+  },
+  {
+    "category": "Catering",
+    "name": "Infinity Eventz",
+    "company": "Infinity Eventz",
+    "city": "Hyderabad",
+    "contact": "9820000005",
+    "state": "Telangana",
+    "rating": 5,
+    "image": "https://images.unsplash.com/photo-1481833761820-0509d3217039?w=600&q=80"
+  },
+  {
+    "category": "Music",
+    "name": "Infinity Eventz",
+    "company": "Infinity Eventz",
+    "city": "Goa",
+    "contact": "9820000006",
+    "state": "Goa",
+    "rating": 5,
+    "image": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=80"
+  },
+  {
+    "category": "Entertainment",
+    "name": "Infinity Eventz",
+    "company": "Infinity Eventz",
+    "city": "Chennai",
+    "contact": "9820000007",
+    "state": "Tamil Nadu",
+    "rating": 5,
+    "image": "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&q=80"
+  },
   {
     "category": "DEOCR",
     "name": "Yogesh Sharma",
