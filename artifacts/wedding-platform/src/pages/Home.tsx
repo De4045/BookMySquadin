@@ -655,7 +655,7 @@ export default function Home() {
               >
                 <div className="overflow-hidden h-[420px] mb-6 relative border border-white/5 group-hover:border-primary/40 transition-all duration-500">
                   <img
-                    src="https://images.unsplash.com/photo-1583396618422-c6cf3b31e30c?w=1000&q=85"
+                    src="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1000&q=85"
                     alt="Featured"
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                   />
@@ -687,21 +687,21 @@ export default function Home() {
             <div className="flex flex-col gap-7">
               {[
                 {
-                  img: "https://images.unsplash.com/photo-1554774853-719586f82d77?w=600&q=85",
+                  img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=85",
                   tag: "Planning",
                   title: "How to Plan Your Wedding Budget Without Stress",
                   excerpt: "A practical guide to allocating your wedding budget across venues, catering, décor and photography.",
                   time: "7 min read",
                 },
                 {
-                  img: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=600&q=85",
+                  img: "https://images.unsplash.com/photo-1478146059778-26028b07395a?w=600&q=85",
                   tag: "Décor",
                   title: "Minimalist Décor Ideas That Look Expensive",
                   excerpt: "Less is more — discover how restrained colour palettes and quality florals create a luxury atmosphere.",
                   time: "4 min read",
                 },
                 {
-                  img: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=85",
+                  img: "https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&q=85",
                   tag: "Photography",
                   title: "Golden Hour Portraits: Tips From Top Wedding Photographers",
                   excerpt: "India's leading wedding photographers share their secrets for capturing those unforgettable moments.",
