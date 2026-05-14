@@ -6,6 +6,7 @@ import venuesRouter from "./venues.js";
 import enquiryRouter from "./enquiry.js";
 import chatRouter from "./chat.js";
 import gstRouter from "./gst.js";
+import paymentsRouter from "./payments.js";
 import {
   authLimiter,
   registerLimiter,
@@ -34,5 +35,6 @@ router.use(enquiryRouter);
 
 router.use(chatRouter);
 router.use(gstRouter);
+router.use(paymentsRouter);
 
 export default router;

@@ -3,7 +3,8 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LogOut, ExternalLink, Heart, Building2, Briefcase, ShieldCheck, User, MapPin, ChevronRight } from "lucide-react";
+import { LogOut, ExternalLink, Heart, Building2, Briefcase, ShieldCheck, User, MapPin, ChevronRight, CreditCard } from "lucide-react";
+import { PaymentTab } from "./PaymentTab";
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
@@ -20,7 +21,7 @@ export default function Profile() {
   const { user, logout } = useAuth();
   const { items, remove } = useShortlist();
   const [, navigate] = useLocation();
-  const [tab, setTab] = useState<"account" | "shortlist">("account");
+  const [tab, setTab] = useState<"account" | "shortlist" | "payment">("account");
 
   if (!user) {
     return (
@@ -67,15 +68,20 @@ export default function Profile() {
       <div className="pt-14">
         <div className="bg-[#0a0806] border-b border-white/8 px-6 flex gap-0">
           {[
-            { key: "account", label: "Account" },
-            { key: "shortlist", label: `Saved (${items.length})` },
-          ].map(t => (
-            <button key={t.key} onClick={() => setTab(t.key as typeof tab)}
-              className={`px-5 py-4 font-cinzel text-[9px] tracking-[0.2em] uppercase border-b-2 transition-all ${
-                tab === t.key ? "border-primary text-primary" : "border-transparent text-white/35 hover:text-white/60"
-              }`}>{t.label}
-            </button>
-          ))}
+            { key: "account",   label: "Account",                icon: User },
+            { key: "shortlist", label: `Saved (${items.length})`, icon: Heart },
+            { key: "payment",   label: "Membership",              icon: CreditCard },
+          ].map(t => {
+            const Icon = t.icon;
+            return (
+              <button key={t.key} onClick={() => setTab(t.key as typeof tab)}
+                className={`flex items-center gap-2 px-5 py-4 font-cinzel text-[9px] tracking-[0.2em] uppercase border-b-2 transition-all ${
+                  tab === t.key ? "border-primary text-primary" : "border-transparent text-white/35 hover:text-white/60"
+                }`}>
+                <Icon className="w-3.5 h-3.5" /> {t.label}
+              </button>
+            );
+          })}
         </div>
 
         <div className="max-w-3xl mx-auto px-6 py-10">
@@ -142,6 +148,8 @@ export default function Profile() {
               </div>
             </motion.div>
           )}
+
+          {tab === "payment" && <PaymentTab role="user" />}
 
           {tab === "shortlist" && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>

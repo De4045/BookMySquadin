@@ -3,7 +3,8 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed, Heart, MapPin, Trash2, Briefcase, CalendarDays, ChevronLeft } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed, Heart, MapPin, Trash2, Briefcase, CalendarDays, ChevronLeft, CreditCard } from "lucide-react";
+import { PaymentTab } from "./PaymentTab";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -32,7 +33,7 @@ export default function VenuePortal() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const { items: shortlist, remove: removeShortlist } = useShortlist();
-  const [tab, setTab] = useState<"dashboard" | "enquiries" | "venue" | "saved">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "enquiries" | "venue" | "saved" | "payment">("dashboard");
   const [enquiries, setEnquiries] = useState<VenueEnquiry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -97,10 +98,11 @@ export default function VenuePortal() {
   const initials = user ? user.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase() : "??";
 
   const TABS = [
-    { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { key: "dashboard", label: "Dashboard",                       icon: LayoutDashboard },
     { key: "enquiries", label: `Enquiries (${enquiries.length})`, icon: MessageSquare },
-    { key: "venue", label: "My Venue", icon: Building2 },
-    { key: "saved", label: `Saved (${shortlist.length})`, icon: Heart },
+    { key: "venue",     label: "My Venue",                        icon: Building2 },
+    { key: "saved",     label: `Saved (${shortlist.length})`,     icon: Heart },
+    { key: "payment",   label: "Subscription",                    icon: CreditCard },
   ] as const;
 
   if (loading) return (
@@ -465,6 +467,9 @@ export default function VenuePortal() {
               </div>
             </motion.div>
           )}
+          {/* PAYMENT TAB */}
+          {tab === "payment" && <PaymentTab role="venue" />}
+
           {/* SAVED TAB */}
           {tab === "saved" && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>

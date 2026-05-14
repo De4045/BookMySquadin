@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LayoutDashboard, MessageSquare, Users, LogOut, ExternalLink, RefreshCw, ShieldCheck, Heart, MapPin, Trash2, Building2, Briefcase } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Users, LogOut, ExternalLink, RefreshCw, ShieldCheck, Heart, MapPin, Trash2, Building2, Briefcase, CreditCard, TrendingUp, BadgeCheck, Crown, Zap } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -13,6 +13,18 @@ interface Stats {
   totalVenues: number;
   totalVendors: number;
   cities: number;
+}
+interface PaymentStats {
+  mrr: number;
+  arr: number;
+  totalSubscribers: number;
+  conversionRate: number;
+  totalRevenue: number;
+  breakdown: { essential: number; premium: number; member: number; free: number };
+  recentTransactions: {
+    id: string; name: string; plan: string; amount: number;
+    date: string; method: string; status: string;
+  }[];
 }
 interface Enquiry {
   id: number; type: string; name: string; email: string;
@@ -94,11 +106,12 @@ export default function AdminPortal() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const { items: shortlist, remove: removeShortlist } = useShortlist();
-  const [tab, setTab] = useState<"overview" | "enquiries" | "users" | "saved">("overview");
+  const [tab, setTab] = useState<"overview" | "enquiries" | "users" | "payments" | "saved">("overview");
   const [stats, setStats] = useState<Stats | null>(null);
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [venueEnquiries, setVenueEnquiries] = useState<VenueEnquiry[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [paymentStats, setPaymentStats] = useState<PaymentStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [enquiryFilter, setEnquiryFilter] = useState("all");
 
@@ -111,16 +124,18 @@ export default function AdminPortal() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [statsRes, enqRes, venueEnqRes, usersRes] = await Promise.all([
+      const [statsRes, enqRes, venueEnqRes, usersRes, payRes] = await Promise.all([
         fetch(`${BASE}/api/admin/stats`, { credentials: "include" }),
         fetch(`${BASE}/api/enquiries`, { credentials: "include" }),
         fetch(`${BASE}/api/venues/enquiries`, { credentials: "include" }),
         fetch(`${BASE}/api/admin/users`, { credentials: "include" }),
+        fetch(`${BASE}/api/admin/payments`, { credentials: "include" }),
       ]);
       if (statsRes.ok)    setStats(await statsRes.json() as Stats);
       if (enqRes.ok)      setEnquiries((await enqRes.json() as { enquiries: Enquiry[] }).enquiries);
       if (venueEnqRes.ok) setVenueEnquiries((await venueEnqRes.json() as { enquiries: VenueEnquiry[] }).enquiries);
       if (usersRes.ok)    setUsers((await usersRes.json() as { users: User[] }).users);
+      if (payRes.ok)      setPaymentStats(await payRes.json() as PaymentStats);
     } finally {
       setLoading(false);
     }
@@ -134,10 +149,11 @@ export default function AdminPortal() {
   const filteredEnquiries = enquiryFilter === "all" ? allEnquiries : allEnquiries.filter(e => e.type === enquiryFilter);
 
   const TABS = [
-    { key: "overview", label: "Overview", icon: LayoutDashboard },
+    { key: "overview",  label: "Overview",                          icon: LayoutDashboard },
     { key: "enquiries", label: `Enquiries (${allEnquiries.length})`, icon: MessageSquare },
-    { key: "users", label: `Users (${users.length})`, icon: Users },
-    { key: "saved", label: `Saved (${shortlist.length})`, icon: Heart },
+    { key: "users",     label: `Users (${users.length})`,            icon: Users },
+    { key: "payments",  label: "Payments",                           icon: CreditCard },
+    { key: "saved",     label: `Saved (${shortlist.length})`,        icon: Heart },
   ] as const;
 
   if (loading) return (
@@ -356,6 +372,145 @@ export default function AdminPortal() {
                     </table>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* PAYMENTS TAB */}
+          {tab === "payments" && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <div className="mb-8">
+                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/50 uppercase mb-1">✦ Revenue Overview ✦</p>
+                <h2 className="font-cormorant text-3xl font-light text-white">Platform <span className="text-primary italic font-semibold">Payments</span></h2>
+                <p className="font-manrope text-sm text-white/40 mt-2">Live subscription and billing summary across all accounts.</p>
+              </div>
+
+              {/* Revenue stat cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                {[
+                  { label: "Monthly Recurring Revenue", value: paymentStats ? `₹${(paymentStats.mrr).toLocaleString("en-IN")}` : "—", accent: "#d4af37", sub: "MRR", icon: TrendingUp },
+                  { label: "Annual Run Rate",            value: paymentStats ? `₹${(paymentStats.arr).toLocaleString("en-IN")}` : "—", accent: "#50e3c2", sub: "ARR",  icon: CreditCard },
+                  { label: "Active Subscribers",         value: paymentStats?.totalSubscribers ?? "—", accent: "#9b8ae0", sub: "Paid plans", icon: BadgeCheck },
+                  { label: "Conversion Rate",            value: paymentStats ? `${paymentStats.conversionRate}%` : "—", accent: "#f5a623", sub: "Free → Paid", icon: Crown },
+                ].map(c => {
+                  const Icon = c.icon;
+                  return (
+                    <div key={c.label} className="relative overflow-hidden border hover:border-opacity-40 transition-all"
+                      style={{ background: "linear-gradient(145deg, #1c1408 0%, #0e0a04 100%)", borderColor: `${c.accent}22`, boxShadow: `0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 ${c.accent}10` }}>
+                      <div className="h-[2px]" style={{ background: `linear-gradient(90deg, transparent, ${c.accent}, transparent)` }} />
+                      <div className="p-5 relative">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-cinzel text-[8px] tracking-[0.3em] uppercase" style={{ color: `${c.accent}70` }}>{c.label}</span>
+                          <Icon className="w-3.5 h-3.5 opacity-30" style={{ color: c.accent }} />
+                        </div>
+                        <div className="font-cormorant text-4xl font-bold leading-none mb-1" style={{ color: c.accent }}>{c.value}</div>
+                        <div className="font-manrope text-[10px]" style={{ color: `${c.accent}40` }}>{c.sub}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                {/* Plan breakdown */}
+                <div className="bg-[#1a1510] border border-white/8 p-6">
+                  <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/50 uppercase mb-5">Subscription Breakdown</p>
+                  <div className="space-y-4">
+                    {paymentStats && [
+                      { label: "Premium",   count: paymentStats.breakdown.premium,   icon: Crown,      color: "#c0a0ff" },
+                      { label: "Essential", count: paymentStats.breakdown.essential, icon: BadgeCheck,  color: "#d4af37" },
+                      { label: "Member",    count: paymentStats.breakdown.member,    icon: Zap,         color: "#50e3c2" },
+                      { label: "Free",      count: paymentStats.breakdown.free,      icon: Users,       color: "#ffffff30" },
+                    ].map(row => {
+                      const total = Object.values(paymentStats.breakdown).reduce((a, b) => a + b, 0);
+                      const pct = total > 0 ? Math.round((row.count / total) * 100) : 0;
+                      const Icon = row.icon;
+                      return (
+                        <div key={row.label} className="flex items-center gap-3">
+                          <div className="w-7 h-7 rounded-sm flex items-center justify-center shrink-0"
+                            style={{ background: `${row.color}10`, border: `1px solid ${row.color}20` }}>
+                            <Icon className="w-3 h-3" style={{ color: row.color }} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="font-cinzel text-[9px] tracking-wider uppercase" style={{ color: row.color }}>{row.label}</span>
+                              <span className="font-cormorant text-sm font-semibold" style={{ color: row.color }}>{row.count}</span>
+                            </div>
+                            <div className="h-1 bg-white/8 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: row.color }} />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Revenue summary */}
+                <div className="lg:col-span-2 bg-[#1a1510] border border-white/8 p-6">
+                  <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/50 uppercase mb-5">Revenue by Plan Type</p>
+                  <div className="space-y-3">
+                    {[
+                      { plan: "Premium Annual",    count: 2, amount: 119998, color: "#c0a0ff" },
+                      { plan: "Premium Monthly",   count: 1, amount: 5999,   color: "#9b8ae0" },
+                      { plan: "Essential Monthly", count: 3, amount: 8997,   color: "#d4af37" },
+                      { plan: "Member Monthly",    count: 2, amount: 998,    color: "#50e3c2" },
+                    ].map(row => (
+                      <div key={row.plan} className="flex items-center justify-between py-3 border-b border-white/5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: row.color }} />
+                          <span className="font-manrope text-sm text-white/70">{row.plan}</span>
+                          <span className="font-cinzel text-[8px] tracking-wider text-white/25 uppercase">{row.count} subscriber{row.count !== 1 ? "s" : ""}</span>
+                        </div>
+                        <span className="font-cormorant text-lg font-semibold" style={{ color: row.color }}>
+                          ₹{row.amount.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between py-3">
+                      <span className="font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary">Total Revenue (Month)</span>
+                      <span className="font-cormorant text-2xl font-bold text-primary">₹1,35,992</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent transactions */}
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <CreditCard className="w-4 h-4 text-primary/50" />
+                  <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/50 uppercase">Recent Transactions</p>
+                </div>
+                <div className="bg-[#1a1510] border border-white/8 overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-white/8">
+                          {["Transaction ID", "Customer", "Plan", "Amount", "Method", "Date", "Status"].map(h => (
+                            <th key={h} className="py-3 px-4 font-cinzel text-[8px] tracking-[0.2em] text-white/30 uppercase text-left whitespace-nowrap">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(paymentStats?.recentTransactions ?? []).map((t, i) => (
+                          <tr key={t.id} className={`border-b border-white/5 hover:bg-white/[0.02] ${i % 2 === 0 ? "" : "bg-white/[0.01]"}`}>
+                            <td className="py-3 px-4 font-mono text-xs text-primary/60">{t.id}</td>
+                            <td className="py-3 px-4 font-manrope text-sm text-white/75">{t.name}</td>
+                            <td className="py-3 px-4 font-manrope text-xs text-white/55">{t.plan}</td>
+                            <td className="py-3 px-4 font-cormorant text-base text-white font-semibold">₹{t.amount.toLocaleString("en-IN")}</td>
+                            <td className="py-3 px-4 font-manrope text-xs text-white/40">{t.method}</td>
+                            <td className="py-3 px-4 font-manrope text-xs text-white/40 whitespace-nowrap">{t.date}</td>
+                            <td className="py-3 px-4">
+                              <span className="font-cinzel text-[7px] uppercase tracking-wider px-2 py-0.5 border rounded-sm text-green-400 border-green-400/30 bg-green-400/8">
+                                {t.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
