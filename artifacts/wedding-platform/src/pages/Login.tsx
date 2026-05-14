@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { User, Lock, Eye, EyeOff, ArrowLeft, CheckCircle, Mail, FileText, ExternalLink, AlertCircle } from "lucide-react";
@@ -90,14 +90,23 @@ export default function Login() {
 
   const isSignUp = tab === "signup";
 
+  const pwdChecks = useMemo(() => [
+    { label: "8+ characters",      pass: password.length >= 8 },
+    { label: "Uppercase letter",    pass: /[A-Z]/.test(password) },
+    { label: "Number",              pass: /\d/.test(password) },
+    { label: "Special character",   pass: /[!@#$%^&*()\-_=+[\]{}|;:,.<>?/~`]/.test(password) },
+  ], [password]);
+
+  const pwdStrength = pwdChecks.filter((c) => c.pass).length;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       let userData;
       if (isSignUp) {
-        if (password.length < 8) {
-          throw new Error("Password must be at least 8 characters");
+        if (!pwdChecks.every((c) => c.pass)) {
+          throw new Error("Please meet all password requirements before continuing.");
         }
         userData = await register(name.trim(), email.trim(), password, role);
       } else {
@@ -416,6 +425,43 @@ export default function Login() {
                 </button>
               }
             />
+
+            {isSignUp && password.length > 0 && (
+              <div className="space-y-2.5 -mt-1">
+                <div className="flex gap-1">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${
+                        i < pwdStrength
+                          ? pwdStrength === 1 ? "bg-red-500"
+                          : pwdStrength === 2 ? "bg-orange-400"
+                          : pwdStrength === 3 ? "bg-yellow-400"
+                          : "bg-green-400"
+                          : "bg-white/12"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                  {pwdChecks.map((c) => (
+                    <div
+                      key={c.label}
+                      className={`flex items-center gap-1.5 font-manrope text-[10px] transition-colors duration-200 ${
+                        c.pass ? "text-green-400" : "text-white/30"
+                      }`}
+                    >
+                      {c.pass ? (
+                        <CheckCircle className="w-2.5 h-2.5 shrink-0" />
+                      ) : (
+                        <div className="w-2.5 h-2.5 rounded-full border border-white/25 shrink-0" />
+                      )}
+                      {c.label}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {!isSignUp && (
               <div className="flex justify-end -mt-1">
