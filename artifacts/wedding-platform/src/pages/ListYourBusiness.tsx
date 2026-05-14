@@ -53,6 +53,189 @@ function FIELD({ label, children, hint }: { label: string; children: React.React
   );
 }
 
+/* ─── GSTIN Live Segment Breakdown ─── */
+const GSTIN_STATE_MAP: Record<string, string> = {
+  "01": "Jammu & Kashmir",  "02": "Himachal Pradesh", "03": "Punjab",
+  "04": "Chandigarh",       "05": "Uttarakhand",       "06": "Haryana",
+  "07": "Delhi",            "08": "Rajasthan",         "09": "Uttar Pradesh",
+  "10": "Bihar",            "11": "Sikkim",            "12": "Arunachal Pradesh",
+  "13": "Nagaland",         "14": "Manipur",           "15": "Mizoram",
+  "16": "Tripura",          "17": "Meghalaya",         "18": "Assam",
+  "19": "West Bengal",      "20": "Jharkhand",         "21": "Odisha",
+  "22": "Chhattisgarh",     "23": "Madhya Pradesh",    "24": "Gujarat",
+  "25": "Daman & Diu",      "26": "Dadra & NH",        "27": "Maharashtra",
+  "28": "Andhra Pradesh",   "29": "Karnataka",         "30": "Goa",
+  "31": "Lakshadweep",      "32": "Kerala",            "33": "Tamil Nadu",
+  "34": "Puducherry",       "35": "A&N Islands",       "36": "Telangana",
+  "37": "AP (New)",
+};
+
+const GSTIN_ENTITY_MAP: Record<string, string> = {
+  P: "Proprietor", F: "Firm/LLP", C: "Company",
+  T: "Trust",      B: "Body/Individuals",
+  L: "Local Auth", J: "Juridical", G: "Government",
+};
+
+type SegDef = {
+  label: string;
+  len: number;
+  valid: (v: string) => boolean;
+  sublabel?: (v: string) => string | undefined;
+  errorHint: string;
+};
+
+const SEG_DEFS: SegDef[] = [
+  {
+    label: "State", len: 2,
+    valid: v => /^[0-9]{2}$/.test(v) && v in GSTIN_STATE_MAP,
+    sublabel: v => GSTIN_STATE_MAP[v],
+    errorHint: "Must be a valid state code (01–37)",
+  },
+  {
+    label: "PAN", len: 5,
+    valid: v => /^[A-Z]{5}$/.test(v),
+    sublabel: () => "PAN letters",
+    errorHint: "Positions 3–7 must be uppercase letters",
+  },
+  {
+    label: "PAN No.", len: 4,
+    valid: v => /^[0-9]{4}$/.test(v),
+    sublabel: () => "PAN digits",
+    errorHint: "Positions 8–11 must be 4 digits",
+  },
+  {
+    label: "Entity", len: 1,
+    valid: v => /^[A-Z]$/.test(v),
+    sublabel: v => GSTIN_ENTITY_MAP[v],
+    errorHint: "Position 12 must be an uppercase letter",
+  },
+  {
+    label: "Reg.", len: 1,
+    valid: v => /^[1-9A-Z]$/.test(v),
+    sublabel: () => "Reg. no.",
+    errorHint: "Position 13 must be 1–9 or A–Z (not zero)",
+  },
+  {
+    label: "Z", len: 1,
+    valid: v => v === "Z",
+    sublabel: () => "Fixed 'Z'",
+    errorHint: "Position 14 must always be 'Z'",
+  },
+  {
+    label: "Check", len: 1,
+    valid: v => /^[0-9A-Z]$/.test(v),
+    sublabel: () => "Checksum",
+    errorHint: "Position 15 must be a digit or uppercase letter",
+  },
+];
+
+function GstinSegmentBreakdown({ gstin, gstStatus }: { gstin: string; gstStatus: GstStatus }) {
+  if (!gstin.length || gstStatus === "verified" || gstStatus === "inactive") return null;
+
+  let offset = 0;
+  const segments = SEG_DEFS.map(def => {
+    const filled  = gstin.slice(offset, offset + def.len);
+    const isFull  = filled.length === def.len;
+    const isValid = isFull && def.valid(filled);
+    const isInvalid = isFull && !isValid;
+    offset += def.len;
+    const display  = filled + "·".repeat(def.len - filled.length);
+    const sublabel = isFull ? def.sublabel?.(filled) : undefined;
+    return { def, display, filled, isValid, isInvalid, sublabel };
+  });
+
+  const totalValid = segments.filter(s => s.isValid).length;
+  const firstInvalid = gstin.length === 15 ? segments.find(s => s.isInvalid) : undefined;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="space-y-3"
+    >
+      {/* Segment pills */}
+      <div className="flex flex-wrap gap-1.5">
+        {segments.map(({ def, display, filled, isValid, isInvalid, sublabel }, i) => {
+          const hasChars = filled.length > 0;
+          const borderCls = isValid
+            ? "border-primary/50"
+            : isInvalid
+            ? "border-red-500/45"
+            : hasChars
+            ? "border-white/18"
+            : "border-white/8";
+          const textCls = isValid
+            ? "text-primary"
+            : isInvalid
+            ? "text-red-400"
+            : hasChars
+            ? "text-white/55"
+            : "text-white/18";
+          const bgCls = isValid
+            ? "bg-primary/5"
+            : isInvalid
+            ? "bg-red-500/5"
+            : "bg-white/[0.025]";
+
+          return (
+            <div
+              key={i}
+              className={`flex flex-col items-center px-2 py-1.5 border rounded-sm transition-colors duration-200 ${borderCls} ${bgCls}`}
+              style={{ minWidth: def.len === 1 ? 34 : def.len === 2 ? 46 : def.len === 4 ? 68 : 84 }}
+            >
+              <span className={`font-mono text-[11px] tracking-widest font-semibold leading-none ${textCls}`}>
+                {display}
+              </span>
+              <span className="font-cinzel text-[6.5px] tracking-[0.12em] text-white/22 uppercase mt-1 leading-none">
+                {def.label}
+              </span>
+              {sublabel && (
+                <span className={`font-manrope text-[7.5px] mt-0.5 leading-none truncate max-w-full px-0.5 text-center ${isValid ? "text-primary/55" : "text-red-400/55"}`}>
+                  {sublabel}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Progress bar */}
+      <div className="flex items-center gap-2.5">
+        <div className="flex-1 h-px rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: "linear-gradient(90deg, rgba(212,175,55,0.45), #d4af37)" }}
+            initial={{ width: 0 }}
+            animate={{ width: `${(totalValid / SEG_DEFS.length) * 100}%` }}
+            transition={{ duration: 0.2 }}
+          />
+        </div>
+        <span className="font-manrope text-[9.5px] text-white/22 tabular-nums shrink-0">
+          {totalValid}/{SEG_DEFS.length} valid
+        </span>
+      </div>
+
+      {/* Specific error for the first failing segment */}
+      <AnimatePresence>
+        {firstInvalid && (
+          <motion.p
+            key="seg-error"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="font-manrope text-[11px] text-red-400/80 flex items-center gap-1.5"
+          >
+            <AlertCircle className="w-3 h-3 shrink-0 text-red-400/70" />
+            <span><strong className="text-red-400">{firstInvalid.def.label}:</strong> {firstInvalid.def.errorHint}</span>
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-stretch gap-4 mb-8">
@@ -154,18 +337,8 @@ function GstVerificationPanel({
             className={`${INPUT_CLS} pl-10 pr-4 tracking-widest font-mono uppercase ${borderCls} ${gstStatus === "loading" ? "opacity-60 cursor-wait" : ""}`}
           />
         </div>
-        {/* Inline format feedback */}
-        {gstin.length > 0 && gstin.length < 15 && (
-          <p className="font-manrope text-[11px] text-white/35 flex items-center gap-1.5">
-            <span className="tabular-nums">{gstin.length}/15</span> characters entered
-          </p>
-        )}
-        {gstin.length === 15 && !formatValid && (
-          <p className="font-manrope text-[11px] text-red-400/80 flex items-center gap-1.5">
-            <AlertCircle className="w-3 h-3 shrink-0" />
-            Invalid GSTIN format. Ensure it follows the pattern: 2 digits + 5 letters + 4 digits + 1 letter + 1 alphanumeric + Z + 1 alphanumeric.
-          </p>
-        )}
+        {/* Live segment breakdown — shows as user types */}
+        <GstinSegmentBreakdown gstin={gstin} gstStatus={gstStatus} />
       </FIELD>
 
       {/* Verify button — shown when format is valid and not yet verified */}
