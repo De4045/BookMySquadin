@@ -315,7 +315,7 @@ export default function Home() {
                 whileHover={{ scale: 1.01 }}
                 transition={{ duration: 0.4 }}
               >
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" alt="Hotels" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.08]" />
+                <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80" alt="Hotels" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.08]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
                 <div className="absolute inset-0 border border-transparent group-hover:border-primary/30 transition-all duration-500" />
                 <div className="absolute bottom-8 left-8 right-8">
@@ -334,28 +334,28 @@ export default function Home() {
             {/* Four smaller cards filling the 2×2 right side */}
             {[
               {
-                img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=700&q=80",
                 type: "Banquet",
                 title: "Banquet Halls",
                 desc: "Elegant indoor spaces for up to 2,000 guests with world-class catering.",
                 cities: ["Mumbai", "Delhi", "Jaipur"],
               },
               {
-                img: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&q=80",
                 type: "Garden",
                 title: "Marriage Garden & Lawns",
                 desc: "Lush open-air venues perfect for a dreamy outdoor celebration.",
                 cities: ["Bangalore", "Pune", "Ahmedabad"],
               },
               {
-                img: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=700&q=80",
                 type: "Resort",
                 title: "Destination Resorts",
                 desc: "Weekend getaway venues with private villas and spa retreats.",
                 cities: ["Goa", "Udaipur", "Shimla"],
               },
               {
-                img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=700&q=80",
                 type: "Farmhouse",
                 title: "Heritage Farmhouses",
                 desc: "Rustic yet opulent farmhouse estates blending charm with modernity.",
