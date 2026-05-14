@@ -305,83 +305,106 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Bento grid — large left card (2 rows) + 4 right cards (2×2) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Large card spanning 2 rows */}
-            <Link href="/venues">
+          {/* Bento grid — fixed row heights for perfect visual balance */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[310px_310px] gap-4">
+
+            {/* ── Large left card — spans 2 rows ── */}
+            <Link href="/venues" className="md:col-span-2 lg:col-span-1 lg:row-span-2">
               <motion.div
-                className="lg:row-span-2 relative overflow-hidden group cursor-pointer luxury-card h-[340px] lg:h-full"
-                style={{ minHeight: '600px' }}
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.4 }}
+                className="relative overflow-hidden group cursor-pointer h-[420px] md:h-[380px] lg:h-full w-full"
+                whileHover={{ scale: 1.015 }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
               >
-                <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80" alt="Hotels" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.08]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                <div className="absolute inset-0 border border-transparent group-hover:border-primary/30 transition-all duration-500" />
+                <img
+                  src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&q=85"
+                  alt="Luxury Hotels"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                {/* Cinematic gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/5 group-hover:via-black/25 transition-all duration-600" />
+                {/* Gold border on hover */}
+                <div className="absolute inset-0 border border-white/[0.06] group-hover:border-primary/45 transition-all duration-500" />
+                {/* Top shimmer on hover */}
+                <div className="absolute inset-x-0 top-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
+
                 <div className="absolute bottom-8 left-8 right-8">
-                  <span className="font-cinzel text-[10px] tracking-[0.3em] text-primary/70 uppercase">Hotels</span>
-                  <h3 className="font-cormorant text-3xl text-white mt-2 mb-3 font-semibold">4 Star & Above Hotels</h3>
-                  <p className="font-manrope text-sm text-white/50 font-light leading-relaxed mb-4">Grand ballrooms and stunning pool-side lawns in India's finest luxury hotel properties.</p>
-                  <div className="flex flex-wrap gap-3">
-                    {["Mumbai", "Bangalore", "Pune", "Delhi", "Hyderabad"].map(c => (
-                      <span key={c} className="text-[10px] text-white/50 font-manrope border-b border-white/20 pb-0.5 hover:text-primary hover:border-primary/40 transition-colors">{c}</span>
+                  <span className="font-cinzel text-[9px] tracking-[0.45em] text-primary/65 uppercase block mb-2">Hotels</span>
+                  <h3 className="font-cormorant text-[2.1rem] text-white font-semibold leading-tight mb-3">
+                    4 Star &amp; Above Hotels
+                  </h3>
+                  <p className="font-manrope text-sm text-white/45 font-light leading-relaxed mb-5">
+                    Grand ballrooms and pool-side lawns in India's finest luxury hotel properties.
+                  </p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-5">
+                    {["Mumbai", "Bangalore", "Delhi", "Pune", "Hyderabad"].map(c => (
+                      <span key={c} className="font-manrope text-[10px] text-white/45 border-b border-white/20 pb-0.5 group-hover:text-white/65 group-hover:border-white/30 transition-colors duration-300">{c}</span>
                     ))}
+                  </div>
+                  <div className="flex items-center gap-2 translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
+                    <span className="font-cinzel text-[9px] tracking-[0.3em] text-primary uppercase">Explore All</span>
+                    <span className="text-primary text-sm">→</span>
                   </div>
                 </div>
               </motion.div>
             </Link>
 
-            {/* Four smaller cards filling the 2×2 right side */}
+            {/* ── Four equal small cards (2 × 2 right grid) ── */}
             {[
               {
-                img: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=85",
                 type: "Banquet",
                 title: "Banquet Halls",
-                desc: "Elegant indoor spaces for up to 2,000 guests with world-class catering.",
                 cities: ["Mumbai", "Delhi", "Jaipur"],
               },
               {
-                img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=85",
                 type: "Garden",
                 title: "Marriage Garden & Lawns",
-                desc: "Lush open-air venues perfect for a dreamy outdoor celebration.",
                 cities: ["Bangalore", "Pune", "Ahmedabad"],
               },
               {
-                img: "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=85",
                 type: "Resort",
                 title: "Destination Resorts",
-                desc: "Weekend getaway venues with private villas and spa retreats.",
                 cities: ["Goa", "Udaipur", "Shimla"],
               },
               {
-                img: "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=700&q=80",
+                img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=85",
                 type: "Farmhouse",
                 title: "Heritage Farmhouses",
-                desc: "Rustic yet opulent farmhouse estates blending charm with modernity.",
                 cities: ["Delhi NCR", "Jaipur", "Chandigarh"],
               },
             ].map((card, i) => (
               <Link key={i} href="/venues">
                 <motion.div
-                  className="relative overflow-hidden group cursor-pointer luxury-card"
-                  style={{ minHeight: '280px' }}
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ duration: 0.4 }}
+                  className="relative overflow-hidden group cursor-pointer h-[240px] md:h-[260px] lg:h-full w-full"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                 >
-                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                  <div className="absolute inset-0 border border-transparent group-hover:border-primary/30 transition-all duration-500" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <span className="font-cinzel text-[9px] tracking-[0.3em] text-primary/70 uppercase">{card.type}</span>
-                    <h3 className="font-cormorant text-xl text-white mt-1 mb-2 font-semibold">{card.title}</h3>
-                    <p className="font-manrope text-xs text-white/40 font-light leading-relaxed mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 max-h-0 group-hover:max-h-16 overflow-hidden">
-                      {card.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {card.cities.map(c => (
-                        <span key={c} className="text-[9px] text-white/40 font-manrope border-b border-white/15 pb-0.5">{c}</span>
-                      ))}
+                  <img
+                    src={card.img}
+                    alt={card.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  {/* Dark editorial gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/30 to-black/5 group-hover:via-black/20 transition-all duration-600" />
+                  {/* Border glow */}
+                  <div className="absolute inset-0 border border-white/[0.05] group-hover:border-primary/40 transition-all duration-500" />
+                  {/* Top shimmer on hover */}
+                  <div className="absolute inset-x-0 top-0 h-[1.5px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
+
+                  <div className="absolute bottom-5 left-5 right-5">
+                    <span className="font-cinzel text-[8px] tracking-[0.4em] text-primary/60 uppercase block mb-1.5">{card.type}</span>
+                    <h3 className="font-cormorant text-[1.3rem] text-white font-semibold leading-tight mb-3">{card.title}</h3>
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap gap-x-3 gap-y-1">
+                        {card.cities.map(c => (
+                          <span key={c} className="font-manrope text-[9px] text-white/38 border-b border-white/12 pb-0.5 group-hover:text-white/60 group-hover:border-white/25 transition-colors duration-300">{c}</span>
+                        ))}
+                      </div>
+                      <span className="text-primary/50 group-hover:text-primary text-base transition-colors duration-300 ml-2 shrink-0">→</span>
                     </div>
                   </div>
                 </motion.div>
