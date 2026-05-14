@@ -4,6 +4,7 @@ const router: IRouter = Router();
 
 interface Enquiry {
   id: number;
+  userId?: number;
   type: "vendor" | "venue" | "contact" | "listing";
   name: string;
   email: string;
@@ -17,6 +18,12 @@ interface Enquiry {
 
 const enquiries: Enquiry[] = [];
 let nextId = 1;
+
+function sessionUserId(req: Parameters<Parameters<typeof router.post>[1]>[0]): number | undefined {
+  const session = req.session as Record<string, unknown>;
+  const uid = session["userId"];
+  return typeof uid === "number" ? uid : undefined;
+}
 
 // General contact enquiry
 router.post("/enquiry/contact", (req, res) => {
@@ -34,6 +41,7 @@ router.post("/enquiry/contact", (req, res) => {
 
   const enquiry: Enquiry = {
     id: nextId++,
+    userId: sessionUserId(req),
     type: "contact",
     name: name.trim(),
     email: email.toLowerCase().trim(),
@@ -57,6 +65,7 @@ router.post("/enquiry/listing", (req, res) => {
 
   const enquiry: Enquiry = {
     id: nextId++,
+    userId: sessionUserId(req),
     type: "listing",
     name: ownerName.trim(),
     email: email.toLowerCase().trim(),
@@ -87,6 +96,7 @@ router.post("/enquiry/vendor", (req, res) => {
 
   const enquiry: Enquiry = {
     id: nextId++,
+    userId: sessionUserId(req),
     type: "vendor",
     name: name.trim(),
     email: email.toLowerCase().trim(),
@@ -101,7 +111,7 @@ router.post("/enquiry/vendor", (req, res) => {
   res.status(201).json({ success: true, message: "Enquiry sent! The vendor will contact you shortly.", id: enquiry.id });
 });
 
-// Get all enquiries (admin only — add auth middleware in production)
+// Get all enquiries (admin)
 router.get("/enquiries", (req, res) => {
   const session = req.session as Record<string, unknown>;
   const userId = session["userId"];
@@ -110,6 +120,17 @@ router.get("/enquiries", (req, res) => {
     return;
   }
   res.json({ enquiries, total: enquiries.length });
+});
+
+// Get current user's enquiries (vendor + contact + listing types)
+router.get("/enquiries/my", (req, res) => {
+  const uid = sessionUserId(req);
+  if (!uid) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
+  const mine = enquiries.filter((e) => e.userId === uid);
+  res.json({ enquiries: mine, total: mine.length });
 });
 
 export default router;

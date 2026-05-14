@@ -21,6 +21,7 @@ function addBookedDate(venueName: string, rawDate: string) {
 /* ── Enquiries store ── */
 const enquiries: Array<{
   id: number;
+  userId?: number;
   name: string;
   email: string;
   phone: string;
@@ -33,6 +34,12 @@ const enquiries: Array<{
 }> = [];
 
 let enquiryId = 1;
+
+function sessionUserId(req: Parameters<Parameters<typeof router.post>[1]>[0]): number | undefined {
+  const session = req.session as Record<string, unknown>;
+  const uid = session["userId"];
+  return typeof uid === "number" ? uid : undefined;
+}
 
 /* ── Routes ── */
 
@@ -52,6 +59,20 @@ router.get("/venues/enquiries", (req, res) => {
     return;
   }
   res.json({ enquiries, total: enquiries.length });
+});
+
+/**
+ * GET /api/venues/my-enquiries
+ * Returns venue enquiries submitted by the currently logged-in user.
+ */
+router.get("/venues/my-enquiries", (req, res) => {
+  const uid = sessionUserId(req);
+  if (!uid) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
+  const mine = enquiries.filter((e) => e.userId === uid);
+  res.json({ enquiries: mine, total: mine.length });
 });
 
 /**
@@ -90,6 +111,7 @@ router.post("/venues/enquiry", (req, res) => {
 
   const enquiry = {
     id: enquiryId++,
+    userId: sessionUserId(req),
     name: name.trim(),
     email: email.toLowerCase().trim(),
     phone: phone.trim(),
@@ -129,15 +151,16 @@ router.patch("/venues/enquiries/:id/status", (req, res) => {
   const { status } = req.body as { status?: string };
   const valid = ["new", "contacted", "booked"];
   if (!status || !valid.includes(status)) {
-    res.status(400).json({ error: "Invalid status" });
+    res.status(400).json({ error: "Status must be one of: new, contacted, booked" });
     return;
   }
-  const enquiry = enquiries.find(e => e.id === id);
+  const enquiry = enquiries.find((e) => e.id === id);
   if (!enquiry) {
     res.status(404).json({ error: "Enquiry not found" });
     return;
   }
   enquiry.status = status as "new" | "contacted" | "booked";
+  req.log.info({ enquiryId: id, status }, "Venue enquiry status updated");
   res.json({ success: true, enquiry });
 });
 

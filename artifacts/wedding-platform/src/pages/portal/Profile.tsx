@@ -1,27 +1,122 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LogOut, ExternalLink, Heart, Building2, Briefcase, ShieldCheck, User, MapPin, ChevronRight, CreditCard } from "lucide-react";
+import {
+  LogOut, ExternalLink, Heart, Building2, Briefcase, ShieldCheck, User,
+  MapPin, ChevronRight, CreditCard, MessageSquare, Loader2, Inbox,
+  CalendarDays, Tag,
+} from "lucide-react";
 import { PaymentTab } from "./PaymentTab";
+
+const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 const ROLE_META: Record<string, { label: string; color: string; icon: React.ElementType; portal: string; portalLabel: string }> = {
-  admin:  { label: "Administrator",  color: "text-red-400 border-red-400/30 bg-red-400/10",    icon: ShieldCheck, portal: "/portal/admin",  portalLabel: "Admin Dashboard" },
-  vendor: { label: "Vendor",         color: "text-blue-400 border-blue-400/30 bg-blue-400/10",  icon: Briefcase,   portal: "/portal/vendor", portalLabel: "Vendor Dashboard" },
+  admin:  { label: "Administrator",  color: "text-red-400 border-red-400/30 bg-red-400/10",      icon: ShieldCheck, portal: "/portal/admin",  portalLabel: "Admin Dashboard" },
+  vendor: { label: "Vendor",         color: "text-blue-400 border-blue-400/30 bg-blue-400/10",   icon: Briefcase,   portal: "/portal/vendor", portalLabel: "Vendor Dashboard" },
   venue:  { label: "Venue Manager",  color: "text-purple-400 border-purple-400/30 bg-purple-400/10", icon: Building2, portal: "/portal/venue", portalLabel: "Venue Dashboard" },
-  user:   { label: "Customer",       color: "text-green-400 border-green-400/30 bg-green-400/10", icon: User,       portal: "/",              portalLabel: "Back to Home" },
+  user:   { label: "Customer",       color: "text-green-400 border-green-400/30 bg-green-400/10",  icon: User,       portal: "/",              portalLabel: "Back to Home" },
+};
+
+type EnquiryRow = {
+  id: string;
+  kind: "vendor" | "venue" | "contact" | "listing";
+  subject: string;
+  detail: string;
+  message: string;
+  status?: string;
+  date: string;
+};
+
+const KIND_META: Record<EnquiryRow["kind"], { label: string; color: string }> = {
+  vendor:  { label: "Vendor",   color: "text-blue-300 border-blue-400/30 bg-blue-400/10" },
+  venue:   { label: "Venue",    color: "text-purple-300 border-purple-400/30 bg-purple-400/10" },
+  contact: { label: "Contact",  color: "text-amber-300 border-amber-400/30 bg-amber-400/10" },
+  listing: { label: "Listing",  color: "text-teal-300 border-teal-400/30 bg-teal-400/10" },
+};
+
+const STATUS_COLOR: Record<string, string> = {
+  new:       "text-primary border-primary/30 bg-primary/10",
+  contacted: "text-blue-300 border-blue-400/30 bg-blue-400/10",
+  booked:    "text-green-300 border-green-400/30 bg-green-400/10",
 };
 
 export default function Profile() {
   const { user, logout } = useAuth();
   const { items, remove } = useShortlist();
   const [, navigate] = useLocation();
-  const [tab, setTab] = useState<"account" | "shortlist" | "payment">("account");
+  const [tab, setTab] = useState<"account" | "enquiries" | "shortlist" | "payment">("account");
+
+  // ── My Enquiries state ──
+  const [enquiries, setEnquiries] = useState<EnquiryRow[]>([]);
+  const [enqLoading, setEnqLoading] = useState(false);
+  const [enqError, setEnqError] = useState<string | null>(null);
+
+  const fetchEnquiries = useCallback(async () => {
+    setEnqLoading(true);
+    setEnqError(null);
+    try {
+      const [genRes, venueRes] = await Promise.all([
+        fetch(`${BASE}/api/enquiries/my`, { credentials: "include" }),
+        fetch(`${BASE}/api/venues/my-enquiries`, { credentials: "include" }),
+      ]);
+
+      const rows: EnquiryRow[] = [];
+
+      if (genRes.ok) {
+        const data = await genRes.json() as { enquiries: Array<{
+          id: number; type: string; message: string; createdAt: string;
+          businessName?: string; category?: string; city?: string;
+        }> };
+        for (const e of data.enquiries) {
+          const kind = (["vendor", "contact", "listing"].includes(e.type) ? e.type : "contact") as EnquiryRow["kind"];
+          const subject =
+            kind === "vendor"  ? (e.message.match(/Vendor: ([^|]+)/)?.[1]?.trim() ?? "Vendor Enquiry") :
+            kind === "listing" ? (e.businessName ?? "Listing Application") :
+            "General Contact";
+          const detail =
+            kind === "vendor"  ? (e.category ?? e.message.match(/Date: ([^|]+)/)?.[1]?.trim() ?? "") :
+            kind === "listing" ? (e.category ? `${e.category} · ${e.city ?? ""}` : (e.city ?? "")) :
+            "";
+          rows.push({ id: `gen-${e.id}`, kind, subject, detail, message: e.message, date: e.createdAt });
+        }
+      }
+
+      if (venueRes.ok) {
+        const data = await venueRes.json() as { enquiries: Array<{
+          id: number; venueName?: string; eventDate?: string; message: string;
+          status: string; createdAt: string;
+        }> };
+        for (const e of data.enquiries) {
+          rows.push({
+            id: `venue-${e.id}`,
+            kind: "venue",
+            subject: e.venueName ?? "Venue Enquiry",
+            detail: e.eventDate ? `Event: ${new Date(e.eventDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}` : "",
+            message: e.message,
+            status: e.status,
+            date: e.createdAt,
+          });
+        }
+      }
+
+      rows.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setEnquiries(rows);
+    } catch {
+      setEnqError("Could not load enquiries. Please try again.");
+    } finally {
+      setEnqLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tab === "enquiries") fetchEnquiries();
+  }, [tab, fetchEnquiries]);
 
   if (!user) {
     return (
@@ -41,6 +136,13 @@ export default function Profile() {
   const initials = user.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   const venueItems = items.filter(i => i.type === "venue");
   const vendorItems = items.filter(i => i.type === "vendor");
+
+  const tabs = [
+    { key: "account",   label: "Account",                       icon: User },
+    { key: "enquiries", label: enquiries.length > 0 && tab !== "enquiries" ? `Enquiries (${enquiries.length})` : "Enquiries", icon: MessageSquare },
+    { key: "shortlist", label: `Saved (${items.length})`,       icon: Heart },
+    { key: "payment",   label: "Membership",                    icon: CreditCard },
+  ] as const;
 
   return (
     <div className="min-h-screen bg-[#080604] text-white font-sans">
@@ -66,16 +168,12 @@ export default function Profile() {
       </header>
 
       <div className="pt-14">
-        <div className="bg-[#0a0806] border-b border-white/8 px-6 flex gap-0">
-          {[
-            { key: "account",   label: "Account",                icon: User },
-            { key: "shortlist", label: `Saved (${items.length})`, icon: Heart },
-            { key: "payment",   label: "Membership",              icon: CreditCard },
-          ].map(t => {
+        <div className="bg-[#0a0806] border-b border-white/8 px-6 flex gap-0 overflow-x-auto">
+          {tabs.map(t => {
             const Icon = t.icon;
             return (
-              <button key={t.key} onClick={() => setTab(t.key as typeof tab)}
-                className={`flex items-center gap-2 px-5 py-4 font-cinzel text-[9px] tracking-[0.2em] uppercase border-b-2 transition-all ${
+              <button key={t.key} onClick={() => setTab(t.key)}
+                className={`flex items-center gap-2 px-5 py-4 font-cinzel text-[9px] tracking-[0.2em] uppercase border-b-2 transition-all whitespace-nowrap ${
                   tab === t.key ? "border-primary text-primary" : "border-transparent text-white/35 hover:text-white/60"
                 }`}>
                 <Icon className="w-3.5 h-3.5" /> {t.label}
@@ -86,9 +184,9 @@ export default function Profile() {
 
         <div className="max-w-3xl mx-auto px-6 py-10">
 
+          {/* ── Account ── */}
           {tab === "account" && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-5">
-              {/* Profile card */}
               <div className="bg-[#1a1510] border border-white/8 p-8">
                 <div className="flex items-center gap-5 mb-8">
                   <div className="w-20 h-20 rounded-sm bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
@@ -102,7 +200,6 @@ export default function Profile() {
                     </span>
                   </div>
                 </div>
-
                 <div className="space-y-3">
                   {[
                     { label: "Full Name",      value: user.name },
@@ -119,7 +216,6 @@ export default function Profile() {
                 </div>
               </div>
 
-              {/* Portal link */}
               {user.role !== "user" && (
                 <div className="bg-[#1a1510] border border-white/8 p-6">
                   <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/50 uppercase mb-3">Your Portal</p>
@@ -136,7 +232,6 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Danger zone */}
               <div className="bg-[#1a1510] border border-white/8 p-6">
                 <p className="font-cinzel text-[10px] tracking-[0.3em] text-white/30 uppercase mb-3">Session</p>
                 <button
@@ -149,8 +244,114 @@ export default function Profile() {
             </motion.div>
           )}
 
+          {/* ── My Enquiries ── */}
+          {tab === "enquiries" && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <div className="mb-6">
+                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/50 uppercase mb-1">✦ Your Activity ✦</p>
+                <h2 className="font-cormorant text-3xl font-light text-white">My <span className="text-primary italic font-semibold">Enquiries</span></h2>
+              </div>
+
+              {/* Stats row */}
+              {!enqLoading && enquiries.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { label: "Total",   value: enquiries.length, color: "text-primary" },
+                    { label: "Vendors", value: enquiries.filter(e => e.kind === "vendor").length, color: "text-blue-300" },
+                    { label: "Venues",  value: enquiries.filter(e => e.kind === "venue").length,  color: "text-purple-300" },
+                  ].map(s => (
+                    <div key={s.label} className="bg-[#1a1510] border border-white/8 p-4 text-center">
+                      <p className={`font-cinzel text-2xl font-bold mb-0.5 ${s.color}`}>{s.value}</p>
+                      <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Loading */}
+              {enqLoading && (
+                <div className="flex items-center justify-center py-20 bg-[#1a1510] border border-white/8">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                </div>
+              )}
+
+              {/* Error */}
+              {enqError && !enqLoading && (
+                <div className="bg-[#1a1510] border border-red-400/20 p-6 text-center">
+                  <p className="font-manrope text-sm text-red-400/70 mb-3">{enqError}</p>
+                  <button onClick={fetchEnquiries} className="font-cinzel text-[9px] tracking-widest uppercase text-primary hover:text-primary/80 transition-colors">
+                    Try Again
+                  </button>
+                </div>
+              )}
+
+              {/* Empty state */}
+              {!enqLoading && !enqError && enquiries.length === 0 && (
+                <div className="text-center py-20 bg-[#1a1510] border border-white/8">
+                  <Inbox className="w-12 h-12 text-white/10 mx-auto mb-4" />
+                  <p className="font-cormorant text-2xl text-white/40 mb-2">No Enquiries Yet</p>
+                  <p className="font-manrope text-sm text-white/25 mb-6">When you contact a vendor or venue, your enquiries will appear here.</p>
+                  <div className="flex justify-center gap-4">
+                    <Link href="/venues"><button className="px-5 py-2.5 border border-primary/40 text-primary font-cinzel text-[9px] tracking-widest uppercase hover:bg-primary hover:text-black transition-all">Browse Venues</button></Link>
+                    <Link href="/vendors"><button className="px-5 py-2.5 border border-white/15 text-white/50 font-cinzel text-[9px] tracking-widest uppercase hover:border-primary/40 hover:text-primary transition-all">Browse Vendors</button></Link>
+                  </div>
+                </div>
+              )}
+
+              {/* List */}
+              {!enqLoading && !enqError && enquiries.length > 0 && (
+                <AnimatePresence>
+                  <div className="space-y-2">
+                    {enquiries.map((e, i) => {
+                      const km = KIND_META[e.kind];
+                      const msgPreview = e.message.length > 80 ? e.message.slice(0, 80) + "…" : e.message;
+                      return (
+                        <motion.div
+                          key={e.id}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: i * 0.04 }}
+                          className="bg-[#1a1510] border border-white/8 hover:border-primary/20 transition-colors p-5"
+                        >
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <div className="flex items-center gap-2.5 flex-wrap">
+                              <span className={`font-cinzel text-[8px] tracking-[0.2em] uppercase px-2 py-0.5 border rounded-sm ${km.color}`}>
+                                {km.label}
+                              </span>
+                              {e.status && (
+                                <span className={`font-cinzel text-[8px] tracking-[0.2em] uppercase px-2 py-0.5 border rounded-sm ${STATUS_COLOR[e.status] ?? STATUS_COLOR.new}`}>
+                                  {e.status}
+                                </span>
+                              )}
+                              <h3 className="font-manrope text-sm text-white/80 font-medium">{e.subject}</h3>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <CalendarDays className="w-3 h-3 text-white/25" />
+                              <span className="font-cinzel text-[8px] tracking-wide text-white/30">{fmt(e.date)}</span>
+                            </div>
+                          </div>
+
+                          {e.detail && (
+                            <div className="flex items-center gap-1.5 mb-1.5">
+                              <Tag className="w-3 h-3 text-primary/30 shrink-0" />
+                              <span className="font-cinzel text-[8px] tracking-wider text-primary/50 uppercase">{e.detail}</span>
+                            </div>
+                          )}
+
+                          <p className="font-manrope text-xs text-white/30 leading-relaxed">{msgPreview}</p>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </AnimatePresence>
+              )}
+            </motion.div>
+          )}
+
+          {/* ── Membership ── */}
           {tab === "payment" && <PaymentTab role="user" />}
 
+          {/* ── Saved / Shortlist ── */}
           {tab === "shortlist" && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
               <div className="mb-6">
