@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import {
   MapPin, Phone, Mail, User, Building2, ChevronDown, CheckCircle2,
   ArrowRight, FileText, AlertCircle, ShieldCheck, BadgeCheck, Loader2,
-  Calendar, Hash, Globe, XCircle,
+  Calendar, Hash, Globe, XCircle, Star, BarChart2, Headphones, Lock,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -802,6 +802,7 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
 
 /* ─── Main Page ─── */
 export default function ListYourBusiness() {
+  const [formType, setFormType] = useState<"individual" | "vendor">("individual");
   const [submitted, setSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
   const [gstVerified, setGstVerified] = useState(false);
@@ -850,6 +851,99 @@ export default function ListYourBusiness() {
           </div>
         </section>
 
+        {/* Why Choose Us */}
+        <section className="py-24 px-6 md:px-12"
+          style={{ background: "linear-gradient(180deg, #080604 0%, #09070480 60%, #080604 100%)" }}>
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Why List With Us ✦</p>
+              <div className="gold-line w-16 mx-auto mb-6" />
+              <h2 className="font-cormorant text-4xl md:text-5xl font-semibold text-white"
+                style={{ textShadow: "0 0 40px rgba(212,175,55,0.15)" }}>
+                Everything you need to{" "}
+                <span className="italic" style={{ color: "#d4af37" }}>grow your business</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[
+                {
+                  icon: <Star className="w-5 h-5 text-primary" />,
+                  title: "Verified Leads",
+                  desc: "Receive high-intent enquiries from couples who have actively searched for your service category in your city.",
+                },
+                {
+                  icon: <Globe className="w-5 h-5 text-primary" />,
+                  title: "Premium Visibility",
+                  desc: "Your profile appears in curated search results, featured sections, and city-level spotlight pages.",
+                },
+                {
+                  icon: <BadgeCheck className="w-5 h-5 text-primary" />,
+                  title: "Trusted Marketplace",
+                  desc: "Join a GST-verified network of professionals that couples trust for their most important celebrations.",
+                },
+                {
+                  icon: <BarChart2 className="w-5 h-5 text-primary" />,
+                  title: "Smart Vendor Dashboard",
+                  desc: "Track enquiries, manage your portfolio, update pricing, and monitor your listing performance — all in one place.",
+                },
+                {
+                  icon: <Headphones className="w-5 h-5 text-primary" />,
+                  title: "Dedicated Support",
+                  desc: "Our onboarding team assists you at every step — from profile setup to your first confirmed booking.",
+                },
+                {
+                  icon: <Lock className="w-5 h-5 text-primary" />,
+                  title: "Secure GST Verification",
+                  desc: "Your business identity is verified via GST authentication, giving couples confidence and you a Verified badge.",
+                },
+              ].map((card, i) => (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: 0.08 * i }}
+                  className="group relative p-7 rounded-sm border border-white/8 cursor-default transition-all duration-500
+                    hover:border-primary/30 hover:-translate-y-1"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)",
+                    backdropFilter: "blur(12px)",
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.25)",
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow =
+                      "0 8px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(212,175,55,0.12), inset 0 0 40px rgba(212,175,55,0.03)";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 24px rgba(0,0,0,0.25)";
+                  }}
+                >
+                  {/* subtle gold corner accent */}
+                  <div className="absolute top-0 left-0 w-12 h-px bg-gradient-to-r from-primary/40 to-transparent" />
+                  <div className="absolute top-0 left-0 w-px h-12 bg-gradient-to-b from-primary/40 to-transparent" />
+
+                  <div className="w-11 h-11 rounded-sm bg-primary/8 border border-primary/20 flex items-center justify-center mb-5
+                    group-hover:bg-primary/12 group-hover:border-primary/35 transition-all duration-300">
+                    {card.icon}
+                  </div>
+                  <h3 className="font-cinzel text-sm tracking-[0.08em] text-white font-semibold mb-3
+                    group-hover:text-primary/90 transition-colors duration-300">
+                    {card.title}
+                  </h3>
+                  <p className="font-manrope text-[13px] text-white/45 leading-relaxed group-hover:text-white/60 transition-colors duration-300">
+                    {card.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Form section */}
         <section className="py-20 px-6 md:px-12" style={{ background: "linear-gradient(180deg, #080604 0%, #0a0805 50%, #080604 100%)" }}>
           <div className="max-w-4xl mx-auto">
@@ -878,7 +972,52 @@ export default function ListYourBusiness() {
                 </button>
               </motion.div>
             ) : (
-              <VendorForm onSuccess={handleSuccess} />
+              <>
+                {/* Tab switcher */}
+                <div className="mb-10">
+                  <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/60 uppercase text-center mb-5">Select registration type</p>
+                  <div className="flex rounded-sm bg-white/[0.03] border border-white/10 p-1.5 gap-1.5 max-w-md mx-auto">
+                    {([
+                      { key: "individual" as const, label: "Individual", sub: "Offering Services" },
+                      { key: "vendor" as const, label: "Vendor / Business", sub: "Offering services" },
+                    ]).map(t => (
+                      <button
+                        key={t.key}
+                        type="button"
+                        onClick={() => setFormType(t.key)}
+                        className={`flex-1 py-3 px-4 rounded-sm transition-all duration-300 flex flex-col items-center gap-0.5 ${formType === t.key ? "bg-primary text-black" : "text-white/45 hover:text-white/70 hover:bg-white/5"}`}
+                      >
+                        <span className={`font-cinzel text-[10px] tracking-[0.2em] uppercase font-bold ${formType === t.key ? "text-black" : ""}`}>{t.label}</span>
+                        <span className={`font-manrope text-[9px] ${formType === t.key ? "text-black/60" : "text-white/30"}`}>{t.sub}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Premium GST disclaimer card */}
+                <div className="mb-8 relative overflow-hidden rounded-sm"
+                  style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.02) 50%, rgba(212,175,55,0.05) 100%)" }}>
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+                  <div className="border border-primary/20 rounded-sm p-5">
+                    <div className="flex items-start gap-4">
+                      <div className="w-9 h-9 rounded-sm bg-primary/10 border border-primary/25 flex items-center justify-center shrink-0 mt-0.5">
+                        <ShieldCheck className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-cinzel text-[9px] tracking-[0.4em] text-primary uppercase mb-2 font-semibold">Verification Disclaimer</p>
+                        <p className="font-manrope text-[12px] text-white/55 leading-relaxed">
+                          <span className="text-white/80 font-medium">Disclaimer:</span> Book My Squad verifies vendor business details and GST information to maintain platform authenticity and trusted listings. Submission of invalid or misleading information may result in rejection or permanent suspension.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <VendorForm key={formType} onSuccess={handleSuccess} />
+                </AnimatePresence>
+              </>
             )}
           </div>
         </section>

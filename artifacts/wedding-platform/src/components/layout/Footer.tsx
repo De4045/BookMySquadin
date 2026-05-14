@@ -148,10 +148,14 @@ export function Footer() {
             <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Contact Us</h4>
 
             <div className="space-y-5">
-              <a href="tel:+91XXXXXXXXXX" className="flex items-center gap-2 font-manrope text-sm text-white/65 hover:text-primary transition-colors group">
+              <a href="tel:XXXXXXXXXX" className="flex items-center gap-2 font-manrope text-sm text-white/65 hover:text-primary transition-colors group">
                 <Phone className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary shrink-0" />
-                +91 XXXXXXXXXX
+                XXXXXXXXXX
               </a>
+
+              <div>
+                <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/55 uppercase mb-2">Registered Office</p>
+              </div>
 
               <Link
                 href="/list-your-business"
