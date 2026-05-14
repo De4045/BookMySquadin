@@ -15,11 +15,13 @@ import Weddings from "@/pages/Weddings";
 import Blog from "@/pages/Blog";
 import Photos from "@/pages/Photos";
 import ListYourBusiness from "@/pages/ListYourBusiness";
+import WhyChooseUs from "@/pages/WhyChooseUs";
 import NotFound from "@/pages/not-found";
 import AdminPortal from "@/pages/portal/AdminPortal";
 import VendorPortal from "@/pages/portal/VendorPortal";
 import VenuePortal from "@/pages/portal/VenuePortal";
 import Profile from "@/pages/portal/Profile";
+import SavedFavorites from "@/pages/portal/SavedFavorites";
 
 const queryClient = new QueryClient();
 
@@ -35,10 +37,12 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/photos" component={Photos} />
       <Route path="/list-your-business" component={ListYourBusiness} />
+      <Route path="/why-choose-us" component={WhyChooseUs} />
       <Route path="/portal/admin" component={AdminPortal} />
       <Route path="/portal/vendor" component={VendorPortal} />
       <Route path="/portal/venue" component={VenuePortal} />
       <Route path="/portal/profile" component={Profile} />
+      <Route path="/portal/saved" component={SavedFavorites} />
       <Route component={NotFound} />
     </Switch>
   );

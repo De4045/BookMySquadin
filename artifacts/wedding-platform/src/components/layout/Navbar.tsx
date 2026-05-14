@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Photos", href: "/photos" },
   { label: "Weddings", href: "/weddings" },
   { label: "Blog", href: "/blog" },
+  { label: "Why Us", href: "/why-choose-us" },
 ];
 
 const PORTAL_META: Record<string, { label: string; href: string; icon: React.ElementType; color: string }> = {
@@ -204,7 +205,7 @@ export function Navbar() {
                           </button>
                         </Link>
 
-                        <Link href="/portal/profile">
+                        <Link href="/portal/saved">
                           <button
                             onClick={() => setUserMenuOpen(false)}
                             className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
@@ -214,15 +215,17 @@ export function Navbar() {
                           </button>
                         </Link>
 
-                        <Link href="/portal/profile">
-                          <button
-                            onClick={() => setUserMenuOpen(false)}
-                            className="w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors text-left"
-                          >
-                            <LayoutDashboard className="w-3.5 h-3.5 text-primary/60" />
-                            Dashboard
-                          </button>
-                        </Link>
+                        {portalMeta && (
+                          <Link href={portalMeta.href}>
+                            <button
+                              onClick={() => setUserMenuOpen(false)}
+                              className={`w-full flex items-center gap-3 px-4 py-3 font-manrope text-sm hover:bg-white/5 transition-colors text-left ${portalMeta.color}`}
+                            >
+                              <LayoutDashboard className="w-3.5 h-3.5 opacity-60" />
+                              Dashboard
+                            </button>
+                          </Link>
+                        )}
                       </div>
 
                       <div className="border-t border-white/8 py-1.5">

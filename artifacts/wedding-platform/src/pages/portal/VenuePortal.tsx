@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed } from "lucide-react";
+import { useShortlist } from "@/context/ShortlistContext";
+import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed, Heart, MapPin, Trash2, Briefcase } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -30,7 +31,8 @@ function StatCard({ label, value, sub, color = "#d4af37" }: { label: string; val
 export default function VenuePortal() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
-  const [tab, setTab] = useState<"dashboard" | "enquiries" | "venue">("dashboard");
+  const { items: shortlist, remove: removeShortlist } = useShortlist();
+  const [tab, setTab] = useState<"dashboard" | "enquiries" | "venue" | "saved">("dashboard");
   const [enquiries, setEnquiries] = useState<VenueEnquiry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -58,6 +60,7 @@ export default function VenuePortal() {
     { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { key: "enquiries", label: `Enquiries (${enquiries.length})`, icon: MessageSquare },
     { key: "venue", label: "My Venue", icon: Building2 },
+    { key: "saved", label: `Saved (${shortlist.length})`, icon: Heart },
   ] as const;
 
   if (loading) return (
@@ -280,6 +283,69 @@ export default function VenuePortal() {
                   </Link>
                 </div>
               </div>
+            </motion.div>
+          )}
+          {/* SAVED TAB */}
+          {tab === "saved" && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/50 uppercase mb-1">✦ Your Collection ✦</p>
+                  <h2 className="font-cormorant text-3xl font-light text-white">Saved <span className="text-primary italic font-semibold">Favourites</span></h2>
+                </div>
+                <Link href="/portal/saved">
+                  <button className="flex items-center gap-2 px-4 py-2.5 border border-white/10 hover:border-primary/30 font-cinzel text-[9px] tracking-[0.2em] uppercase text-white/40 hover:text-primary transition-all">
+                    Full View →
+                  </button>
+                </Link>
+              </div>
+
+              {shortlist.length === 0 ? (
+                <div className="text-center py-20 bg-[#1a1510] border border-white/8">
+                  <Heart className="w-10 h-10 text-white/10 mx-auto mb-4" />
+                  <p className="font-cormorant text-2xl text-white/40 mb-2">No Saved Items</p>
+                  <p className="font-manrope text-sm text-white/25 mb-6">Browse vendors and venues and tap the heart icon to save them here.</p>
+                  <div className="flex gap-3 justify-center">
+                    <Link href="/vendors"><button className="px-5 py-2.5 bg-primary text-black font-cinzel text-[9px] tracking-widest uppercase font-bold hover:bg-primary/90 transition-all">Browse Vendors</button></Link>
+                    <Link href="/venues"><button className="px-5 py-2.5 border border-primary/30 text-primary font-cinzel text-[9px] tracking-widest uppercase font-bold hover:bg-primary/8 transition-all">Browse Venues</button></Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {shortlist.map(item => {
+                    const Icon = item.type === "venue" ? Building2 : Briefcase;
+                    const accent = item.type === "venue" ? "#9b8ae0" : "#d4af37";
+                    return (
+                      <div key={item.id} className="group relative bg-[#1a1510] border border-white/8 hover:border-primary/25 transition-all p-5">
+                        <div className="absolute top-0 left-0 right-0 h-[2px]"
+                          style={{ background: `linear-gradient(90deg, transparent, ${accent}50, transparent)` }} />
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="w-10 h-10 rounded-sm flex items-center justify-center"
+                            style={{ background: `${accent}10`, border: `1px solid ${accent}20` }}>
+                            <Icon className="w-4 h-4" style={{ color: accent }} />
+                          </div>
+                          <button onClick={() => removeShortlist(item.id)}
+                            className="p-1.5 text-white/20 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <h3 className="font-cormorant text-lg text-white font-semibold leading-snug mb-1">{item.name}</h3>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-cinzel text-[8px] tracking-widest uppercase px-1.5 py-0.5 border rounded-sm"
+                            style={{ color: accent, borderColor: `${accent}30`, background: `${accent}10` }}>{item.type}</span>
+                          {item.category && <span className="font-manrope text-[11px] text-white/35">{item.category}</span>}
+                        </div>
+                        {item.city && (
+                          <div className="flex items-center gap-1.5">
+                            <MapPin className="w-3 h-3 text-primary/35 shrink-0" />
+                            <span className="font-manrope text-xs text-white/40">{item.city}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </motion.div>
           )}
         </div>
