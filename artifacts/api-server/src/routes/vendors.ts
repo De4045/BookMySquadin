@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { VENDOR_DATA } from "../data/vendors.js";
+import { loadVendors } from "../lib/excel-loader.js";
 
 const router: IRouter = Router();
 
@@ -10,7 +10,8 @@ router.get("/vendors", (req, res) => {
     q?: string;
   };
 
-  let results = [...VENDOR_DATA];
+  const allVendors = loadVendors();
+  let results = [...allVendors];
 
   if (category) {
     results = results.filter(
@@ -35,19 +36,14 @@ router.get("/vendors", (req, res) => {
   }
 
   const cities = [
-    ...new Set(VENDOR_DATA.map((v) => v.city).filter(Boolean)),
+    ...new Set(allVendors.map((v) => v.city).filter(Boolean)),
   ].sort();
 
   const categories = [
-    ...new Set(VENDOR_DATA.map((v) => v.category).filter(Boolean)),
+    ...new Set(allVendors.map((v) => v.category).filter(Boolean)),
   ].sort();
 
-  res.json({
-    vendors: results,
-    total: results.length,
-    cities,
-    categories,
-  });
+  res.json({ vendors: results, total: results.length, cities, categories });
 });
 
 export default router;

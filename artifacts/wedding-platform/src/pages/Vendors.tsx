@@ -3,11 +3,13 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star, Lock, BadgeCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { VENDORS } from "@/data/vendors";
+import { type Vendor } from "@/data/vendors";
 import { VendorDetailModal, type VendorLike } from "@/components/VendorDetailModal";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { isVendorVerified } from "@/data/subscriptions";
+
+const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
 function normalizeCategory(raw: string): string {
   const s = (raw || "").trim().toUpperCase();
@@ -116,11 +118,20 @@ const SORT_OPTIONS = [
 export default function Vendors() {
   const { has, toggle } = useShortlist();
   const { user } = useAuth();
+  const [vendors, setVendors]           = useState<Vendor[]>([]);
   const [search, setSearch]             = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [cityFilter, setCityFilter]     = useState("");
   const [sortBy, setSortBy]             = useState("default");
   const [selected, setSelected]         = useState<VendorLike | null>(null);
+
+  // Fetch vendors from API on mount
+  useEffect(() => {
+    fetch(`${BASE}/api/vendors`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => setVendors(d.vendors ?? []))
+      .catch(() => {});
+  }, []);
 
   // Read URL params on mount
   useEffect(() => {
@@ -132,16 +143,16 @@ export default function Vendors() {
   }, []);
 
   const uniqueCategories = useMemo(() =>
-    [...new Set(VENDORS.map(v => normalizeCategory(v.category)))].sort()
-  , []);
+    [...new Set(vendors.map(v => normalizeCategory(v.category)))].sort()
+  , [vendors]);
 
   const uniqueCities = useMemo(() =>
-    [...new Set(VENDORS.map(v => v.city).filter(Boolean))].sort()
-  , []);
+    [...new Set(vendors.map(v => v.city).filter(Boolean))].sort()
+  , [vendors]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    let list = VENDORS.filter(v => {
+    let list = vendors.filter(v => {
       const cat = normalizeCategory(v.category);
       const matchSearch = !q ||
         v.name.toLowerCase().includes(q) ||
@@ -159,7 +170,7 @@ export default function Vendors() {
       case "city":     list = [...list].sort((a, b) => (a.city || "").localeCompare(b.city || "")); break;
     }
     return list;
-  }, [search, filterCategory, cityFilter, sortBy]);
+  }, [vendors, search, filterCategory, cityFilter, sortBy]);
 
   const activeFilters: { label: string; clear: () => void }[] = [];
   if (search)         activeFilters.push({ label: `"${search}"`, clear: () => setSearch("") });
@@ -213,7 +224,7 @@ export default function Vendors() {
           <div className="py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="font-manrope text-sm text-white/50 font-light shrink-0">
               Showing <span className="text-primary font-semibold">{filtered.length}</span>
-              <span className="text-white/30"> / {VENDORS.length}</span> vendors
+              <span className="text-white/30"> / {vendors.length}</span> vendors
             </div>
             <div className="flex flex-wrap w-full md:w-auto items-center gap-3">
               <div className="relative w-full md:w-56 bg-white/[0.04] border border-white/10 rounded-sm overflow-hidden">

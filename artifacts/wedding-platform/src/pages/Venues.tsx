@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { VENUES } from "@/data/venues";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { MapPin, Phone, Users, Bed, Search, ChevronDown, X, ArrowUpDown, UtensilsCrossed, Heart, Lock, BadgeCheck } from "lucide-react";
@@ -9,6 +8,8 @@ import { useShortlist } from "@/context/ShortlistContext";
 import { type Venue } from "@/data/venues";
 import { useAuth } from "@/context/AuthContext";
 import { isVenueVerified } from "@/data/subscriptions";
+
+const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
 const TYPE_COLOR: Record<string, string> = {
   HOTEL: "#4a90e2",
@@ -33,11 +34,20 @@ function normalizeType(t: string) {
 export default function Venues() {
   const { has, toggle } = useShortlist();
   const { user } = useAuth();
+  const [venues, setVenues]         = useState<Venue[]>([]);
   const [search, setSearch]         = useState("");
   const [cityFilter, setCityFilter]  = useState("");
   const [typeFilter, setTypeFilter]  = useState("");
   const [sortBy, setSortBy]          = useState("default");
   const [selected, setSelected]      = useState<Venue | null>(null);
+
+  // Fetch venues from API on mount
+  useEffect(() => {
+    fetch(`${BASE}/api/venues`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => setVenues(d.venues ?? []))
+      .catch(() => {});
+  }, []);
 
   // Read URL params on mount
   useEffect(() => {
@@ -49,16 +59,16 @@ export default function Venues() {
   }, []);
 
   const uniqueCities = useMemo(() =>
-    [...new Set(VENUES.map(v => v.city_sheet).filter(Boolean))].sort()
-  , []);
+    [...new Set(venues.map(v => v.city_sheet).filter(Boolean))].sort()
+  , [venues]);
 
   const uniqueTypes = useMemo(() =>
-    [...new Set(VENUES.map(v => normalizeType(v.type)).filter(Boolean))].sort()
-  , []);
+    [...new Set(venues.map(v => normalizeType(v.type)).filter(Boolean))].sort()
+  , [venues]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
-    let list = VENUES.filter(v => {
+    let list = venues.filter(v => {
       const matchSearch = !q ||
         (v.property_name || "").toLowerCase().includes(q) ||
         (v.location      || "").toLowerCase().includes(q) ||
@@ -76,7 +86,7 @@ export default function Venues() {
       case "rooms-high": list = [...list].sort((a, b) => Number(b.max_rooms || 0) - Number(a.max_rooms || 0)); break;
     }
     return list;
-  }, [search, cityFilter, typeFilter, sortBy]);
+  }, [venues, search, cityFilter, typeFilter, sortBy]);
 
   const activeFilters: { label: string; clear: () => void }[] = [];
   if (search)     activeFilters.push({ label: `"${search}"`, clear: () => setSearch("") });
@@ -107,7 +117,7 @@ export default function Venues() {
             </p>
             <div className="flex flex-wrap justify-center gap-8 md:gap-16">
               {[
-                [VENUES.length, "Venues"],
+                [venues.length, "Venues"],
                 [uniqueCities.length, "Cities"],
                 [uniqueTypes.length, "Types"],
               ].map(([n, l], i, arr) => (
@@ -128,7 +138,7 @@ export default function Venues() {
           <div className="py-4 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="font-manrope text-sm text-white/50 font-light shrink-0">
               Showing <span className="text-primary font-semibold">{filtered.length}</span>
-              <span className="text-white/30"> / {VENUES.length}</span> venues
+              <span className="text-white/30"> / {venues.length}</span> venues
             </div>
             <div className="flex flex-wrap w-full md:w-auto items-center gap-3">
               <div className="relative w-full md:w-56 bg-white/[0.04] border border-white/10 rounded-sm overflow-hidden">

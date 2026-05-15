@@ -1,6 +1,54 @@
 import { Router, type IRouter } from "express";
+import { loadVenues } from "../lib/excel-loader.js";
 
 const router: IRouter = Router();
+
+/**
+ * GET /api/venues
+ * Returns all venues from the Excel file with optional filtering.
+ */
+router.get("/venues", (req, res) => {
+  const { city, type, q } = req.query as {
+    city?: string;
+    type?: string;
+    q?: string;
+  };
+
+  const allVenues = loadVenues();
+  let results = [...allVenues];
+
+  if (city) {
+    results = results.filter(
+      (v) => v.city_sheet.toLowerCase() === city.toLowerCase(),
+    );
+  }
+
+  if (type) {
+    results = results.filter(
+      (v) => v.type.toLowerCase() === type.toLowerCase(),
+    );
+  }
+
+  if (q) {
+    const query = q.toLowerCase();
+    results = results.filter((v) =>
+      [v.property_name, v.location, v.city_sheet]
+        .join(" ")
+        .toLowerCase()
+        .includes(query),
+    );
+  }
+
+  const cities = [
+    ...new Set(allVenues.map((v) => v.city_sheet).filter(Boolean)),
+  ].sort();
+
+  const types = [
+    ...new Set(allVenues.map((v) => v.type).filter(Boolean)),
+  ].sort();
+
+  res.json({ venues: results, total: results.length, cities, types });
+});
 
 /* ── Booked-dates store: venueName → Set<"YYYY-MM-DD"> ── */
 const bookedDatesMap = new Map<string, Set<string>>();
