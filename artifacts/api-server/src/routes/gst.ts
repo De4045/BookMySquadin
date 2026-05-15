@@ -2,155 +2,200 @@ import { Router, type IRouter } from "express";
 
 const router: IRouter = Router();
 
+/* ── Constants ────────────────────────────────────────────────────────── */
+
 const GSTIN_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 
 const STATE_MAP: Record<string, string> = {
-  "01": "Jammu & Kashmir", "02": "Himachal Pradesh", "03": "Punjab",
-  "04": "Chandigarh", "05": "Uttarakhand", "06": "Haryana", "07": "Delhi",
-  "08": "Rajasthan", "09": "Uttar Pradesh", "10": "Bihar", "11": "Sikkim",
-  "12": "Arunachal Pradesh", "13": "Nagaland", "14": "Manipur", "15": "Mizoram",
-  "16": "Tripura", "17": "Meghalaya", "18": "Assam", "19": "West Bengal",
-  "20": "Jharkhand", "21": "Odisha", "22": "Chhattisgarh", "23": "Madhya Pradesh",
-  "24": "Gujarat", "25": "Daman & Diu", "26": "Dadra & Nagar Haveli",
-  "27": "Maharashtra", "28": "Andhra Pradesh", "29": "Karnataka", "30": "Goa",
-  "31": "Lakshadweep", "32": "Kerala", "33": "Tamil Nadu", "34": "Puducherry",
-  "35": "Andaman & Nicobar Islands", "36": "Telangana", "37": "Andhra Pradesh (New)",
+  "01": "Jammu & Kashmir",      "02": "Himachal Pradesh",   "03": "Punjab",
+  "04": "Chandigarh",           "05": "Uttarakhand",        "06": "Haryana",
+  "07": "Delhi",                "08": "Rajasthan",          "09": "Uttar Pradesh",
+  "10": "Bihar",                "11": "Sikkim",             "12": "Arunachal Pradesh",
+  "13": "Nagaland",             "14": "Manipur",            "15": "Mizoram",
+  "16": "Tripura",              "17": "Meghalaya",          "18": "Assam",
+  "19": "West Bengal",          "20": "Jharkhand",          "21": "Odisha",
+  "22": "Chhattisgarh",         "23": "Madhya Pradesh",     "24": "Gujarat",
+  "25": "Daman & Diu",          "26": "Dadra & Nagar Haveli", "27": "Maharashtra",
+  "28": "Andhra Pradesh",       "29": "Karnataka",          "30": "Goa",
+  "31": "Lakshadweep",          "32": "Kerala",             "33": "Tamil Nadu",
+  "34": "Puducherry",           "35": "Andaman & Nicobar Islands",
+  "36": "Telangana",            "37": "Andhra Pradesh (New)",
 };
 
-const ENTITY_TYPE_MAP: Record<string, string> = {
-  "P": "Proprietorship",
-  "F": "Firm / LLP",
-  "C": "Company (Private/Public)",
-  "T": "Trust",
-  "B": "Body of Individuals",
-  "L": "Local Authority",
-  "J": "Artificial Juridical Person",
-  "G": "Government",
-};
+/* ── Result type ──────────────────────────────────────────────────────── */
 
-// In-memory store for verification results
-interface GstVerification {
-  gstin: string;
-  status: "Active" | "Cancelled" | "Suspended";
-  businessName: string;
-  taxpayerType: string;
-  registrationDate: string;
-  address: string;
-  stateCode: string;
-  stateName: string;
-  verifiedAt: string;
+interface GstResult {
+  gstin:                  string;
+  status:                 "Active" | "Cancelled" | "Suspended";
+  businessName:           string;
+  taxpayerType:           string;
+  constitutionOfBusiness: string;
+  registrationDate:       string;
+  address:                string;
+  stateCode:              string;
+  stateName:              string;
+  verifiedAt:             string;
+  source:                 "masters-india" | "gov-portal";
 }
 
-const verificationCache = new Map<string, GstVerification>();
+/* ── In-memory cache (15-minute TTL) ─────────────────────────────────── */
 
-// Known test GSTINs for demo/testing
-const KNOWN_GSTINS: Record<string, Partial<GstVerification>> = {
-  /* ── Real verified GSTIN from government GST portal ── */
-  "09AURPT5897R1ZU": {
-    status: "Active",
-    businessName: "AUR EVENTS & ENTERTAINMENT PRIVATE LIMITED",
-    taxpayerType: "Regular",
-    registrationDate: "2020-10-02",
-    address: "No 58, 2nd Floor, Business Park, Uttar Pradesh - 110001",
-  },
-  "29AABCU9603R1ZM": {
-    status: "Active",
-    businessName: "URBAN CLAP TECHNOLOGIES INDIA PRIVATE LIMITED",
-    taxpayerType: "Regular",
-    registrationDate: "2015-11-01",
-    address: "No 521, 3rd Floor, 17th Cross, Sadashivanagar, Bengaluru, Karnataka - 560080",
-  },
-  "27AAPFU0939F1ZV": {
-    status: "Active",
-    businessName: "UBER INDIA SYSTEMS PRIVATE LIMITED",
-    taxpayerType: "Regular",
-    registrationDate: "2017-07-01",
-    address: "Level 3, Tower A, DLF Cyber City Phase II, Mumbai, Maharashtra - 400051",
-  },
-  "07AABCS1429B1ZP": {
-    status: "Suspended",
-    businessName: "SAMPLE SUSPENDED COMPANY PVT LTD",
-    taxpayerType: "Regular",
-    registrationDate: "2018-03-15",
-    address: "Plot No 45, Sector 18, Gurugram, Haryana - 122001",
-  },
-  "33AABCT1332L1ZT": {
-    status: "Cancelled",
-    businessName: "SAMPLE CANCELLED ENTERPRISE",
-    taxpayerType: "Composition",
-    registrationDate: "2019-06-20",
-    address: "No 12, Anna Salai, Chennai, Tamil Nadu - 600002",
-  },
-};
+const cache = new Map<string, GstResult>();
 
-function generateBusinessName(gstin: string): string {
-  const panLetters = gstin.substring(2, 7).toUpperCase();
-  const entityCode = gstin.charAt(12);
-  const stateCode = gstin.substring(0, 2);
-  const stateName = STATE_MAP[stateCode] || "India";
-
-  const nameParts: Record<string, string[]> = {
-    EVENTS: ["A", "E", "I", "V", "N"],
-    WEDDINGS: ["W", "D", "G", "S"],
-    DECOR: ["D", "C", "R", "K"],
-    PHOTOS: ["P", "H", "T", "O"],
-    CATERING: ["C", "T", "R", "G"],
-  };
-
-  const suffixMap: Record<string, string> = {
-    P: "& ASSOCIATES",
-    F: "LLP",
-    C: "PRIVATE LIMITED",
-    T: "TRUST",
-    B: "ENTERPRISES",
-    L: "AUTHORITY",
-    J: "FOUNDATION",
-    G: "GOVERNMENT DEPT",
-  };
-
-  const suffix = suffixMap[entityCode] || "PRIVATE LIMITED";
-
-  // Deterministically pick a business type based on the PAN letters
-  const firstChar = panLetters.charAt(0);
-  let businessType = "EVENTS & HOSPITALITY";
-  if (["A", "B", "C"].includes(firstChar)) businessType = "EVENTS & ENTERTAINMENT";
-  else if (["D", "E", "F"].includes(firstChar)) businessType = "WEDDING SOLUTIONS";
-  else if (["G", "H", "I"].includes(firstChar)) businessType = "DECOR & STYLING";
-  else if (["J", "K", "L"].includes(firstChar)) businessType = "PHOTOGRAPHY";
-  else if (["M", "N", "O"].includes(firstChar)) businessType = "CATERING SERVICES";
-  else if (["P", "Q", "R"].includes(firstChar)) businessType = "HOSPITALITY";
-  else if (["S", "T", "U"].includes(firstChar)) businessType = "PRODUCTION HOUSE";
-  else if (["V", "W", "X"].includes(firstChar)) businessType = "VENUES & BANQUETS";
-  else businessType = "EVENT MANAGEMENT";
-
-  return `${panLetters.substring(0, 3)} ${businessType} ${suffix}`;
+function cacheSet(gstin: string, result: GstResult) {
+  cache.set(gstin, result);
+  setTimeout(() => cache.delete(gstin), 15 * 60 * 1000);
 }
 
-function generateAddress(stateCode: string, gstin: string): string {
-  const stateName = STATE_MAP[stateCode] || "India";
-  const num = parseInt(gstin.substring(8, 12), 10);
-  const streets = [
-    `${(num % 99) + 1}, Industrial Estate, Phase ${(num % 3) + 1}`,
-    `Plot ${(num % 150) + 1}, MIDC Area, Sector ${(num % 12) + 1}`,
-    `No ${(num % 60) + 1}, 2nd Floor, Business Park`,
-    `Unit ${(num % 50) + 1}, Commercial Complex, MG Road`,
-    `${(num % 80) + 1}-${(num % 20) + 1}, Trade Center, Ring Road`,
-  ];
-  const pincodes = ["400001", "110001", "560001", "600001", "500001", "700001", "302001", "380001"];
-  const street = streets[num % streets.length];
-  const pincode = pincodes[num % pincodes.length];
-  return `${street}, ${stateName} - ${pincode}`;
+/* ── Helpers ──────────────────────────────────────────────────────────── */
+
+function normalizeStatus(raw: string): GstResult["status"] {
+  const s = raw.toLowerCase().trim();
+  if (s === "active"    || s === "act") return "Active";
+  if (s === "cancelled" || s === "cnl" || s === "cancel") return "Cancelled";
+  if (s === "suspended" || s === "sus") return "Suspended";
+  return "Active";
 }
 
-function generateRegistrationDate(gstin: string): string {
-  const num = parseInt(gstin.substring(8, 12), 10);
-  const year = 2017 + (num % 6);
-  const month = String((num % 12) + 1).padStart(2, "0");
-  const day = String((num % 28) + 1).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+/** Convert DD/MM/YYYY → YYYY-MM-DD; pass through ISO dates unchanged. */
+function normalizeDate(raw: string): string {
+  if (!raw) return "";
+  const m = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+  return raw;
 }
 
-router.post("/gst/verify", (req, res) => {
+/** Build a single-line address string from a GST portal address object. */
+function buildAddress(
+  addr: Record<string, string | undefined>,
+  fallbackJurisdiction: string,
+): string {
+  const parts = [
+    addr["bno"], addr["flno"], addr["bnm"], addr["st"],
+    addr["loc"], addr["dst"], addr["stcd"],
+  ].filter(Boolean) as string[];
+
+  if (parts.length === 0) return fallbackJurisdiction || "";
+  const pincode = addr["pncd"] ? ` - ${addr["pncd"]}` : "";
+  return parts.join(", ") + pincode;
+}
+
+/* ── Provider 1: Masters India API ───────────────────────────────────── */
+/*
+ * Sign up at https://mastersindia.co/developer — free trial available.
+ * Set MASTERS_INDIA_API_KEY (Bearer token) and optionally
+ * MASTERS_INDIA_CLIENT_ID in environment secrets.
+ */
+async function verifyViaMastersIndia(
+  gstin: string,
+): Promise<GstResult | null> {
+  const apiKey  = process.env["MASTERS_INDIA_API_KEY"];
+  const clientId = process.env["MASTERS_INDIA_CLIENT_ID"];
+  if (!apiKey) return null;
+
+  try {
+    const res = await fetch(
+      `https://commonapi.mastersindia.co/commonapis/searchgstin?gstin=${encodeURIComponent(gstin)}`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          ...(clientId ? { "client_id": clientId } : {}),
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        signal: AbortSignal.timeout(10000),
+      },
+    );
+
+    if (!res.ok) return null;
+    const raw = await res.json() as Record<string, unknown>;
+
+    /* Masters India wraps data under a `data` key */
+    const d = (raw["data"] ?? raw) as Record<string, unknown>;
+    if (!d || raw["error"]) return null;
+
+    const stateCode = gstin.substring(0, 2);
+    const addrObj   = (
+      (d["pradr"] as Record<string, unknown>)?.["addr"] ??
+      d["address"] ?? {}
+    ) as Record<string, string | undefined>;
+
+    return {
+      gstin,
+      status:                 normalizeStatus(String(d["sts"] ?? d["status"] ?? "")),
+      businessName:           String(d["lgnm"] ?? d["legalName"] ?? d["tradeNam"] ?? d["tradeName"] ?? ""),
+      taxpayerType:           String(d["dty"]  ?? d["taxPayerType"] ?? "Regular"),
+      constitutionOfBusiness: String(d["ctb"]  ?? d["constitutuionOfBusiness"] ?? ""),
+      registrationDate:       normalizeDate(String(d["rgdt"] ?? d["registrationDate"] ?? "")),
+      address:                buildAddress(addrObj, String(d["stj"] ?? "")),
+      stateCode,
+      stateName:              STATE_MAP[stateCode] ?? String((addrObj)["stcd"] ?? ""),
+      verifiedAt:             new Date().toISOString(),
+      source:                 "masters-india",
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* ── Provider 2: Official Government GST Portal (free, no key) ───────── */
+/*
+ * Powers the public search at services.gst.gov.in/services/searchtp.
+ * No registration or API key required. Subject to GST portal availability.
+ * Response spec: https://services.gst.gov.in (taxpayerDetails endpoint)
+ */
+async function verifyViaGovPortal(
+  gstin: string,
+): Promise<GstResult | null> {
+  try {
+    const res = await fetch(
+      `https://services.gst.gov.in/services/api/search/taxpayerDetails?gstin=${encodeURIComponent(gstin)}`,
+      {
+        method: "GET",
+        headers: {
+          "Accept":          "application/json, text/plain, */*",
+          "Accept-Language": "en-IN,en-US;q=0.9,en;q=0.8",
+          "Referer":         "https://services.gst.gov.in/services/searchtp",
+          "Origin":          "https://services.gst.gov.in",
+          "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        },
+        signal: AbortSignal.timeout(12000),
+      },
+    );
+
+    if (!res.ok) return null;
+    const d = await res.json() as Record<string, unknown>;
+
+    /* Portal returns errorCode when GSTIN is not found */
+    if (d["errorCode"] || d["error"] || !d["gstin"]) return null;
+
+    const stateCode = gstin.substring(0, 2);
+    const addrObj   = (
+      (d["pradr"] as Record<string, unknown>)?.["addr"] ?? {}
+    ) as Record<string, string | undefined>;
+
+    return {
+      gstin,
+      status:                 normalizeStatus(String(d["sts"] ?? "")),
+      businessName:           String(d["lgnm"] ?? d["tradeNam"] ?? ""),
+      taxpayerType:           String(d["dty"]  ?? "Regular"),
+      constitutionOfBusiness: String(d["ctb"]  ?? ""),
+      registrationDate:       normalizeDate(String(d["rgdt"] ?? "")),
+      address:                buildAddress(addrObj, String(d["stj"] ?? "")),
+      stateCode,
+      stateName:              STATE_MAP[stateCode] ?? String(addrObj["stcd"] ?? ""),
+      verifiedAt:             new Date().toISOString(),
+      source:                 "gov-portal",
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* ── Route: POST /api/gst/verify ─────────────────────────────────────── */
+
+router.post("/gst/verify", async (req, res) => {
   const { gstin } = req.body as { gstin?: string };
 
   if (!gstin || typeof gstin !== "string") {
@@ -160,9 +205,9 @@ router.post("/gst/verify", (req, res) => {
 
   const normalized = gstin.trim().toUpperCase();
 
-  // Format validation
+  /* ── Format validation ── */
   if (normalized.length !== 15) {
-    res.status(200).json({
+    res.json({
       valid: false,
       error: `GSTIN must be exactly 15 characters. You entered ${normalized.length}.`,
     });
@@ -170,46 +215,53 @@ router.post("/gst/verify", (req, res) => {
   }
 
   if (!GSTIN_REGEX.test(normalized)) {
-    res.status(200).json({
+    res.json({
       valid: false,
-      error: "Invalid GSTIN format. Please check and re-enter your GST Identification Number.",
+      error: "Invalid GSTIN format. Expected: 2 digits · 5 letters · 4 digits · 1 letter · 1 alphanumeric · Z · 1 alphanumeric.",
     });
     return;
   }
 
-  // Check cache
-  if (verificationCache.has(normalized)) {
-    const cached = verificationCache.get(normalized)!;
-    res.json({ valid: true, ...cached, cached: true });
+  /* ── Cache hit ── */
+  if (cache.has(normalized)) {
+    req.log.info({ gstin: normalized }, "GST verification served from cache");
+    res.json({ valid: true, ...cache.get(normalized)!, cached: true });
     return;
   }
 
-  const stateCode = normalized.substring(0, 2);
-  const stateName = STATE_MAP[stateCode] || "India";
-  const entityCode = normalized.charAt(12);
-  const taxpayerType = ENTITY_TYPE_MAP[entityCode] || "Regular";
+  req.log.info({ gstin: normalized }, "Verifying GSTIN via live APIs");
 
-  // Check known GSTINs
-  const known = KNOWN_GSTINS[normalized];
-  const status = known?.status ?? "Active";
-  const businessName = known?.businessName ?? generateBusinessName(normalized);
-  const registrationDate = known?.registrationDate ?? generateRegistrationDate(normalized);
-  const address = known?.address ?? generateAddress(stateCode, normalized);
+  /* ── Try each provider in priority order ── */
+  let result: GstResult | null = null;
 
-  const result: GstVerification = {
-    gstin: normalized,
-    status,
-    businessName,
-    taxpayerType: known ? "Regular" : taxpayerType,
-    registrationDate,
-    address,
-    stateCode,
-    stateName,
-    verifiedAt: new Date().toISOString(),
-  };
+  result = await verifyViaMastersIndia(normalized);
+  if (result) {
+    req.log.info({ gstin: normalized, source: result.source }, "GST verified via Masters India");
+  }
 
-  verificationCache.set(normalized, result);
-  req.log.info({ gstin: normalized, status }, "GST verification completed");
+  if (!result) {
+    result = await verifyViaGovPortal(normalized);
+    if (result) {
+      req.log.info({ gstin: normalized, source: result.source }, "GST verified via government portal");
+    }
+  }
+
+  if (!result) {
+    req.log.warn({ gstin: normalized }, "All GST verification sources failed");
+    res.json({
+      valid: false,
+      error:
+        "Unable to verify this GSTIN right now. The GST verification service may be temporarily unavailable. " +
+        "Please try again in a moment or verify manually at services.gst.gov.in.",
+    });
+    return;
+  }
+
+  cacheSet(normalized, result);
+  req.log.info(
+    { gstin: normalized, status: result.status, source: result.source },
+    "GST verification complete",
+  );
 
   res.json({ valid: true, ...result });
 });
