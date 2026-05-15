@@ -1,0 +1,130 @@
+Improve text visibility and readability across the entire Admin Dashboard including the new Payments section while keeping the same luxury black-gold premium theme unchanged.
+
+Requirements:
+
+GLOBAL TEXT IMPROVEMENTS:
+
+* Make all text clearly visible on dark backgrounds
+* Increase font sizes according to desktop/laptop web screens
+* Improve readability and spacing across all sections
+* Brighten primary text slightly
+* Increase font weight where needed
+* Improve readability of small gold text
+* Add subtle glow or brighter gold accents for headings
+* Increase opacity of muted text
+* Make analytics numbers larger and more prominent
+* Improve spacing and visual hierarchy
+* Keep layout/design unchanged
+* Maintain premium SaaS admin aesthetic
+
+Improve visibility for:
+
+* stats cards
+* headings
+* sidebar items
+* labels
+* tables
+* analytics sections
+* payment cards
+* charts
+* enquiry sections
+* user breakdown
+* recent activities
+
+TYPOGRAPHY:
+
+* Increase dashboard heading sizes
+* Increase stats numbers font size
+* Increase sidebar menu readability
+* Increase table text readability
+* Improve button text visibility
+* Make section labels more premium
+
+Recommended:
+
+* Primary text: text-white
+* Secondary text: text-gray-300
+* Gold labels: #fbbf24
+* Increase opacity from opacity-50 → opacity-80
+* Slightly lighter dark cards for contrast
+* Better hover states
+
+PAYMENTS SECTION:
+Add a premium Payments section/tab inside Admin Dashboard.
+
+Features Required:
+
+1. Payment Overview Cards
+
+* Total Revenue
+* Monthly Revenue
+* Pending Payments
+* Successful Transactions
+* Refund Requests
+* Vendor Subscription Earnings
+
+2. Payments Table
+   Columns:
+
+* Transaction ID
+* Vendor/User Name
+* Payment Type
+* Amount
+* Payment Method
+* Status
+* Date
+* Actions
+
+Statuses:
+
+* Success
+* Pending
+* Failed
+* Refunded
+
+3. Payment Analytics
+
+* Revenue growth
+* Monthly transactions
+* Subscription earnings
+* Booking commissions
+
+4. Filters
+
+* Date filter
+* Status filter
+* Payment method filter
+* Search functionality
+
+5. Payment Methods UI
+   Show:
+
+* UPI
+* Razorpay
+* Stripe
+* Bank Transfer
+* Credit/Debit Card
+
+6. Backend APIs
+   Create:
+
+* GET /api/payments
+* GET /api/payments/analytics
+* GET /api/payments/pending
+* PATCH /api/payments/refund
+
+7. UI Style
+
+* Premium glassmorphism dark cards
+* Gold accents
+* Smooth hover animations
+* Responsive design
+* Modern SaaS appearance
+* Elegant status badges
+
+8. Important
+
+* Keep existing admin dashboard layout unchanged
+* Do NOT redesign the dashboard
+* Only improve visibility, font scaling, readability, and add Payments functionality
+* Maintain luxury black-gold theme consistency throughout
