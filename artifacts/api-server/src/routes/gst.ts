@@ -47,8 +47,8 @@ const PAN_ENTITY_MAP: Record<string, string> = {
 interface GstResult {
   gstin:                  string;
   /** "Active" | "Cancelled" | "Suspended" from live APIs;
-   *  "Format Verified" from structural extraction (no live API) */
-  status:                 "Active" | "Cancelled" | "Suspended" | "Format Verified";
+   *  "Format Validated" from structural extraction (no live API) */
+  status:                 "Active" | "Cancelled" | "Suspended" | "Format Validated";
   businessName:           string;
   taxpayerType:           string;
   constitutionOfBusiness: string;
@@ -75,7 +75,9 @@ function normalizeStatus(raw: string): "Active" | "Cancelled" | "Suspended" {
   if (s === "active"    || s === "act") return "Active";
   if (s === "cancelled" || s === "cnl" || s === "cancel") return "Cancelled";
   if (s === "suspended" || s === "sus") return "Suspended";
-  return "Active";
+  /* Unknown / empty status from API — treat as Suspended (safe default;
+     never fake an Active result for an unrecognised response). */
+  return "Suspended";
 }
 
 /** Convert DD/MM/YYYY → YYYY-MM-DD; pass through ISO dates unchanged. */
@@ -221,8 +223,9 @@ async function verifyViaGovPortal(gstin: string): Promise<GstResult | null> {
  * Every GSTIN encodes two authoritative, extractable fields:
  *   • State  — from the 2-digit state code prefix (GSTIN[0:2])
  *   • Entity — from PAN char 4 = GSTIN[5], encoding legal constitution
- * Returns status "Format Verified" — structure is mathematically valid,
- * live Active/Suspended status requires a live API key.
+ * Returns status "Format Validated" — structure is mathematically valid,
+ * but live Active/Suspended status CANNOT be confirmed without a live API key.
+ * The frontend treats this as a BLOCKED (non-verified) state.
  */
 function verifyViaStructureExtraction(gstin: string): GstResult {
   const stateCode    = gstin.substring(0, 2);
@@ -232,7 +235,7 @@ function verifyViaStructureExtraction(gstin: string): GstResult {
 
   return {
     gstin,
-    status:                 "Format Verified",
+    status:                 "Format Validated",
     businessName:           "",
     taxpayerType,
     constitutionOfBusiness: taxpayerType,

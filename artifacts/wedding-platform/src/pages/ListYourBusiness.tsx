@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import {
   MapPin, Phone, Mail, User, Building2, ChevronDown, CheckCircle2,
   ArrowRight, FileText, AlertCircle, ShieldCheck, BadgeCheck, Loader2,
-  Calendar, Hash, Globe, XCircle, Star, BarChart2, Headphones, Lock,
+  Calendar, Hash, Globe, XCircle, Star, BarChart2, Headphones, Lock, ExternalLink,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -30,10 +30,10 @@ const INPUT_CLS =
 const SELECT_CLS = INPUT_CLS + " cursor-pointer appearance-none";
 
 /* ─── GST Verification Types ─── */
-type GstStatus = "idle" | "loading" | "verified" | "inactive" | "error";
+type GstStatus = "idle" | "loading" | "verified" | "format-validated" | "inactive" | "error";
 interface GstData {
   gstin: string;
-  status: "Active" | "Cancelled" | "Suspended" | "Format Verified";
+  status: "Active" | "Cancelled" | "Suspended" | "Format Validated";
   businessName: string;
   taxpayerType: string;
   registrationDate: string;
@@ -130,7 +130,7 @@ const SEG_DEFS: SegDef[] = [
 ];
 
 function GstinSegmentBreakdown({ gstin, gstStatus }: { gstin: string; gstStatus: GstStatus }) {
-  if (!gstin.length || gstStatus === "verified" || gstStatus === "inactive") return null;
+  if (!gstin.length || gstStatus === "verified" || gstStatus === "format-validated" || gstStatus === "inactive") return null;
 
   let offset = 0;
   const segments = SEG_DEFS.map(def => {
@@ -304,6 +304,7 @@ function GstVerificationPanel({
 
   const borderCls =
     gstStatus === "verified" ? "border-green-500/60 focus:border-green-500/80" :
+    gstStatus === "format-validated" ? "border-yellow-500/50 focus:border-yellow-500/60" :
     gstStatus === "inactive" || gstStatus === "error" ? "border-red-500/50 focus:border-red-500/70" :
     formatValid ? "border-primary/50 focus:border-primary/70" :
     gstin.length > 0 && !formatValid ? "border-red-500/40 focus:border-red-500/60" :
@@ -341,8 +342,8 @@ function GstVerificationPanel({
         <GstinSegmentBreakdown gstin={gstin} gstStatus={gstStatus} />
       </FIELD>
 
-      {/* Verify button — shown when format is valid and not yet verified */}
-      {formatValid && gstStatus !== "verified" && (
+      {/* Verify button — shown when format is valid but not yet in a resolved state */}
+      {formatValid && gstStatus !== "verified" && gstStatus !== "format-validated" && gstStatus !== "inactive" && (
         <motion.button
           type="button"
           onClick={onVerify}
@@ -388,7 +389,7 @@ function GstVerificationPanel({
         )}
       </AnimatePresence>
 
-      {/* SUCCESS — Verified (Active or Format Verified) */}
+      {/* SUCCESS — Verified (Active from live API only) */}
       <AnimatePresence>
         {gstStatus === "verified" && gstData && (() => {
           const isLive = gstData.status === "Active";
@@ -414,7 +415,7 @@ function GstVerificationPanel({
                     </div>
                     <div>
                       <p className={`font-cinzel text-[9px] tracking-[0.3em] uppercase ${accent.label}`}>
-                        {isLive ? "GST Verified" : "GSTIN Structure Verified"}
+                        GST Verified / Active
                       </p>
                       <p className={`font-cormorant text-lg ${accent.statusText} font-semibold leading-tight`}>{gstData.status}</p>
                     </div>
@@ -600,11 +601,97 @@ function GstVerificationPanel({
         )}
       </AnimatePresence>
 
+      {/* FORMAT VALIDATED — structure valid, no live status confirmation */}
+      <AnimatePresence>
+        {gstStatus === "format-validated" && gstData && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.4 }}
+            className="relative overflow-hidden rounded-sm border border-yellow-500/35"
+            style={{ background: "linear-gradient(145deg, #1a1400 0%, #110e00 55%, #0d0b00 100%)" }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-yellow-400/70 to-transparent" />
+
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-yellow-500/12 border border-yellow-500/35 flex items-center justify-center shrink-0">
+                    <AlertCircle className="w-5 h-5 text-yellow-400" />
+                  </div>
+                  <div>
+                    <p className="font-cinzel text-[9px] tracking-[0.3em] uppercase text-yellow-400/80">
+                      GST Format Validated
+                    </p>
+                    <p className="font-cormorant text-lg text-yellow-200/90 font-semibold leading-tight">
+                      Live Status Unconfirmed
+                    </p>
+                  </div>
+                </div>
+                <div className="font-mono text-[10px] text-yellow-400/40 bg-yellow-500/8 border border-yellow-500/20 px-2.5 py-1 rounded-sm tracking-widest">
+                  {gstData.gstin}
+                </div>
+              </div>
+
+              {/* Extracted fields */}
+              <div className="grid grid-cols-2 gap-4 mb-5">
+                <div className="space-y-1">
+                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">Entity Type</p>
+                  <p className="font-manrope text-sm text-white/70">{gstData.taxpayerType}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">State</p>
+                  <p className="font-manrope text-sm text-white/70">{gstData.stateName}</p>
+                </div>
+              </div>
+
+              {/* Explanation box */}
+              <div className="mb-5 p-4 bg-yellow-500/6 border border-yellow-500/20 rounded-sm">
+                <p className="font-manrope text-sm text-white/60 leading-relaxed">
+                  Your GSTIN format is <strong className="text-white/80">structurally valid</strong>, but we could not confirm
+                  your live registration status with the government database. Only vendors with a
+                  confirmed <strong className="text-white/80">Active</strong> status can complete registration on Book My Squad.
+                </p>
+                <p className="font-manrope text-xs text-white/35 mt-3 leading-relaxed">
+                  Please verify your current GST status at the official portal, then contact us if your
+                  registration is Active and you believe this is an error.
+                </p>
+              </div>
+
+              {/* Footer actions */}
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <a
+                  href="https://services.gst.gov.in/services/searchtp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 font-cinzel text-[9px] tracking-[0.15em] uppercase text-yellow-400/70 hover:text-yellow-300 border border-yellow-500/25 hover:border-yellow-500/50 px-4 py-2 transition-all duration-300"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  Confirm on GST Portal
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onGstinChange("");
+                  }}
+                  className="font-cinzel text-[9px] tracking-[0.15em] uppercase text-white/30 hover:text-white/50 transition-colors"
+                >
+                  Try a Different GSTIN
+                </button>
+              </div>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Trust badge */}
       <div className="flex items-center gap-2.5 pt-1">
         <div className="flex items-center gap-2 px-3 py-1.5 border border-primary/20 bg-primary/5 rounded-sm">
           <ShieldCheck className="w-3.5 h-3.5 text-primary/60" />
-          <span className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-primary/60">Government GST Verification Enabled</span>
+          <span className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-primary/60">GSTIN Format &amp; Status Verification</span>
         </div>
         <div className="flex items-center gap-1.5">
           <Hash className="w-2.5 h-2.5 text-white/20" />
@@ -716,9 +803,9 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
       };
       setGstData(gst);
 
-      if (data.status === "Active" || data.status === "Format Verified") {
+      if (data.status === "Active") {
         setGstStatus("verified");
-        // Auto-fill fields from GST data — only overwrite if the API returned a value
+        // Auto-fill fields from live GST data — only overwrite if the API returned a value
         const detectedCity = extractCityFromAddress(gst.address);
         setForm(f => ({
           ...f,
@@ -726,7 +813,11 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
           businessAddress: gst.address || f.businessAddress,
           city: detectedCity || f.city,
         }));
+      } else if (data.status === "Format Validated") {
+        // Structural check only — NOT verified, submission remains locked
+        setGstStatus("format-validated");
       } else {
+        // Cancelled / Suspended — hard rejection
         setGstStatus("inactive");
       }
     } catch (err: unknown) {
@@ -951,6 +1042,31 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
                 Your GSTIN has an inactive GST status. Only vendors with an{" "}
                 <strong className="text-white/70">Active GST registration</strong> can complete this application.
                 Please resolve your GST status before reapplying.
+              </p>
+            </motion.div>
+          ) : gstStatus === "format-validated" ? (
+            <motion.div
+              key="format-validated-gate"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex items-start gap-3 p-4 bg-yellow-500/6 border border-yellow-500/25 rounded-sm"
+            >
+              <AlertCircle className="w-4 h-4 text-yellow-400/70 shrink-0 mt-0.5" />
+              <p className="font-manrope text-sm text-white/50 leading-relaxed">
+                <strong className="text-yellow-400/80">Live status unconfirmed.</strong>{" "}
+                Your GSTIN format is valid but we could not verify your{" "}
+                <strong className="text-white/70">Active</strong> status with the government database.
+                Please confirm at{" "}
+                <a
+                  href="https://services.gst.gov.in/services/searchtp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary/60 hover:text-primary underline underline-offset-2 transition-colors"
+                >
+                  services.gst.gov.in
+                </a>{" "}
+                and try again once your status is Active.
               </p>
             </motion.div>
           ) : !isVerified ? (

@@ -1,0 +1,80 @@
+To achieve that, your website needs a **real backend GST verification integration** — not just frontend validation.
+
+What you want is:
+
+```txt id="i4zj3e"
+User enters GSTIN
+↓
+Website automatically sends request
+↓
+GST API checks government records
+↓
+Returns:
+- Business Name
+- GST Status (Active/Suspended)
+- State
+- Registration Date
+- Taxpayer Type
+↓
+Show details instantly on screen
+↓
+Allow registration only if GST is ACTIVE
+```
+
+Use this exact prompt with your developer/Replit AI:
+
+Implement real-time automatic GST verification on the “List Your Business” page.
+
+Requirements:
+
+When the user enters a GST number:
+
+* Automatically trigger GST verification
+* Fetch real GST details from a government-connected GST API
+* Show:
+
+  * Legal Business Name
+  * GST Status (Active/Suspended)
+  * Taxpayer Type
+  * State
+  * Registration Date
+  * Registered Address
+* Display results dynamically in the existing luxury verification card UI
+* Verification should happen automatically after entering valid GSTIN
+* Prevent registration if GST status is:
+
+  * Suspended
+  * Cancelled
+  * Invalid
+  * Not Found
+* Allow proceeding only if GST status is ACTIVE
+
+Backend Requirements:
+
+* Create secure backend verification route
+* Integrate real GST verification provider:
+
+  * Masters India GST API
+    OR
+  * ClearTax GST API
+* Store API keys securely in environment variables
+* Add loading states and error handling
+* Prevent frontend-only/mock verification
+* Log verification failures properly
+
+UI Requirements:
+
+* Keep current luxury black-and-gold UI unchanged
+* Show elegant verification success/error states
+* Add automatic verification spinner/loading animation
+* Make verification seamless and premium
+
+Important:
+Do NOT use only regex/format validation.
+Use real API-based GST verification connected to official GST records.
+
+Also note:
+
+* This requires a paid or authorized GST API service.
+* The official GST website itself is not meant to be directly scraped continuously.
+* Production apps use GST API providers connected to government records.
