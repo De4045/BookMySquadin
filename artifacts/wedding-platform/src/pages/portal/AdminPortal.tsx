@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LayoutDashboard, MessageSquare, Users, LogOut, ExternalLink, RefreshCw, ShieldCheck, Heart, MapPin, Trash2, Building2, Briefcase, CreditCard, TrendingUp, BadgeCheck, Crown, Zap } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Users, LogOut, ExternalLink, RefreshCw, ShieldCheck, Heart, MapPin, Trash2, Building2, Briefcase, CreditCard, TrendingUp, BadgeCheck, Crown, Zap, Download } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -42,6 +42,27 @@ const ROLE_COLOR: Record<string, string> = {
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function exportTransactionsCSV(transactions: PaymentStats["recentTransactions"]) {
+  const headers = ["Transaction ID", "Customer", "Plan", "Amount (INR)", "Method", "Date", "Status"];
+  const rows = transactions.map(t => [
+    t.id,
+    `"${t.name.replace(/"/g, '""')}"`,
+    `"${t.plan.replace(/"/g, '""')}"`,
+    t.amount.toString(),
+    `"${t.method.replace(/"/g, '""')}"`,
+    t.date,
+    t.status,
+  ]);
+  const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `bms-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function StatCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) {
@@ -573,12 +594,29 @@ export default function AdminPortal() {
 
               {/* Transactions table */}
               <div>
-                <div className="flex items-center gap-2.5 mb-4">
-                  <div className="w-7 h-7 rounded-sm flex items-center justify-center"
-                    style={{ background: "#d4af3712", border: "1px solid #d4af3728" }}>
-                    <CreditCard className="w-3.5 h-3.5 text-primary/75" />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-sm flex items-center justify-center"
+                      style={{ background: "#d4af3712", border: "1px solid #d4af3728" }}>
+                      <CreditCard className="w-3.5 h-3.5 text-primary/75" />
+                    </div>
+                    <p className="font-cinzel text-[10px] tracking-[0.28em] text-primary/85 uppercase">Recent Transactions</p>
+                    {paymentStats && (
+                      <span className="font-cinzel text-[8px] tracking-wider text-white/35 uppercase">
+                        {paymentStats.recentTransactions.length} records
+                      </span>
+                    )}
                   </div>
-                  <p className="font-cinzel text-[10px] tracking-[0.28em] text-primary/85 uppercase">Recent Transactions</p>
+                  <button
+                    onClick={() => paymentStats && exportTransactionsCSV(paymentStats.recentTransactions)}
+                    disabled={!paymentStats || paymentStats.recentTransactions.length === 0}
+                    className="group flex items-center gap-1.5 px-3 py-1.5 border border-primary/25 bg-primary/5 hover:bg-primary/12 hover:border-primary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    <Download className="w-3 h-3 text-primary/70 group-hover:text-primary transition-colors" />
+                    <span className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-primary/70 group-hover:text-primary transition-colors">
+                      Export CSV
+                    </span>
+                  </button>
                 </div>
                 <div className="bg-[#1c1809] border border-white/9 overflow-hidden">
                   <div className="overflow-x-auto">
