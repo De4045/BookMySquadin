@@ -22,74 +22,235 @@ function normalizeCategory(raw: string): string {
   return s || "VENDOR";
 }
 
+const Q = "w=800&h=520&fit=crop&q=85&auto=format";
+
 const CATEGORY_IMAGES: Record<string, string[]> = {
+  /* ── Decorator / Decor ─────────────────────────────────────────── */
   "DECOR": [
-    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=75",
-    "https://images.unsplash.com/photo-1563697873-fc42501a3e53?w=600&q=75",
-    "https://images.unsplash.com/photo-1525772764200-be829a350797?w=600&q=75",
-    "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=600&q=75",
-    "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&q=75",
-    "https://images.unsplash.com/photo-1510076857177-7470076d4098?w=600&q=75",
-    "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=75",
-    "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&q=75",
+    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
+    `https://images.unsplash.com/photo-1563697873-fc42501a3e53?${Q}`,
+    `https://images.unsplash.com/photo-1525772764200-be829a350797?${Q}`,
+    `https://images.unsplash.com/photo-1531058020387-3be344556be6?${Q}`,
+    `https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?${Q}`,
+    `https://images.unsplash.com/photo-1510076857177-7470076d4098?${Q}`,
+    `https://images.unsplash.com/photo-1530103862676-de8c9debad1d?${Q}`,
+    `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
   ],
+
+  /* ── Wedding Planners ──────────────────────────────────────────── */
   "WEDDING PLANNERS": [
-    "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=75",
-    "https://images.unsplash.com/photo-1550005809-91ad75fb315f?w=600&q=75",
-    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600&q=75",
-    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=600&q=75",
-    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=75",
-    "https://images.unsplash.com/photo-1478146059778-26028b07395a?w=600&q=75",
-    "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&q=75",
-    "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=75",
+    `https://images.unsplash.com/photo-1606800052052-a08af7148866?${Q}`,
+    `https://images.unsplash.com/photo-1550005809-91ad75fb315f?${Q}`,
+    `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
+    `https://images.unsplash.com/photo-1583939003579-730e3918a45a?${Q}`,
+    `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
+    `https://images.unsplash.com/photo-1478146059778-26028b07395a?${Q}`,
+    `https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?${Q}`,
+    `https://images.unsplash.com/photo-1559827260-dc66d52bef19?${Q}`,
   ],
+
+  /* ── Makeup Artist ─────────────────────────────────────────────── */
   "MAKEUP ARTIST": [
-    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=75",
-    "https://images.unsplash.com/photo-1487412840181-71b61d8d3d7d?w=600&q=75",
-    "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&q=75",
-    "https://images.unsplash.com/photo-1526045612212-70caf35c14df?w=600&q=75",
-    "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=75",
-    "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=600&q=75",
-    "https://images.unsplash.com/photo-1521561987953-e4e9c9ee8040?w=600&q=75",
-    "https://images.unsplash.com/photo-1571646034647-52e6ea84b28f?w=600&q=75",
+    `https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?${Q}`,
+    `https://images.unsplash.com/photo-1487412840181-71b61d8d3d7d?${Q}`,
+    `https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?${Q}`,
+    `https://images.unsplash.com/photo-1526045612212-70caf35c14df?${Q}`,
+    `https://images.unsplash.com/photo-1620916566398-39f1143ab7be?${Q}`,
+    `https://images.unsplash.com/photo-1519014816548-bf5fe059798b?${Q}`,
+    `https://images.unsplash.com/photo-1521561987953-e4e9c9ee8040?${Q}`,
+    `https://images.unsplash.com/photo-1571646034647-52e6ea84b28f?${Q}`,
   ],
+
+  /* ── Photography ───────────────────────────────────────────────── */
   "PHOTOGRAPHER": [
-    "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=600&q=75",
-    "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=75",
-    "https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?w=600&q=75",
-    "https://images.unsplash.com/photo-1529543544282-ea669407fca3?w=600&q=75",
-    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=75",
-    "https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=600&q=75",
-    "https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&q=75",
-    "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=600&q=75",
+    `https://images.unsplash.com/photo-1554048612-b6a482bc67e5?${Q}`,
+    `https://images.unsplash.com/photo-1606216794074-735e91aa2c92?${Q}`,
+    `https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?${Q}`,
+    `https://images.unsplash.com/photo-1529543544282-ea669407fca3?${Q}`,
+    `https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?${Q}`,
+    `https://images.unsplash.com/photo-1460978812857-470ed1c77af0?${Q}`,
+    `https://images.unsplash.com/photo-1537633552985-df8429e8048b?${Q}`,
+    `https://images.unsplash.com/photo-1426604966848-d7adac402bff?${Q}`,
   ],
+
+  /* ── Catering ──────────────────────────────────────────────────── */
   "CATERER": [
-    "https://images.unsplash.com/photo-1555244162-803834f70033?w=600&q=75",
-    "https://images.unsplash.com/photo-1481833761820-0509d3217039?w=600&q=75",
-    "https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&q=75",
-    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=75",
-    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=75",
-    "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=600&q=75",
-    "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=75",
-    "https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=75",
+    `https://images.unsplash.com/photo-1555244162-803834f70033?${Q}`,
+    `https://images.unsplash.com/photo-1481833761820-0509d3217039?${Q}`,
+    `https://images.unsplash.com/photo-1567521464027-f127ff144326?${Q}`,
+    `https://images.unsplash.com/photo-1414235077428-338989a2e8c0?${Q}`,
+    `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?${Q}`,
+    `https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?${Q}`,
+    `https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?${Q}`,
+    `https://images.unsplash.com/photo-1547592180-85f173990554?${Q}`,
   ],
+
+  /* ── Music & DJ ────────────────────────────────────────────────── */
   "MUSIC & DJ": [
-    "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=75",
-    "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=75",
-    "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&q=75",
-    "https://images.unsplash.com/photo-1504680177321-2e6a879aac86?w=600&q=75",
-    "https://images.unsplash.com/photo-1545128485-c400e7702796?w=600&q=75",
-    "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=75",
-    "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=600&q=75",
-    "https://images.unsplash.com/photo-1510797215324-95aa89f43c33?w=600&q=75",
+    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
+    `https://images.unsplash.com/photo-1470225620780-dba8ba36b745?${Q}`,
+    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
+    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
+    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
+    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
+    `https://images.unsplash.com/photo-1571330735066-03aaa9429d89?${Q}`,
+    `https://images.unsplash.com/photo-1510797215324-95aa89f43c33?${Q}`,
+  ],
+
+  /* ── Camera Team (reuses Photographer pool) ────────────────────── */
+  "CAMERA TEAM": [
+    `https://images.unsplash.com/photo-1554048612-b6a482bc67e5?${Q}`,
+    `https://images.unsplash.com/photo-1606216794074-735e91aa2c92?${Q}`,
+    `https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?${Q}`,
+    `https://images.unsplash.com/photo-1529543544282-ea669407fca3?${Q}`,
+    `https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?${Q}`,
+    `https://images.unsplash.com/photo-1460978812857-470ed1c77af0?${Q}`,
+    `https://images.unsplash.com/photo-1537633552985-df8429e8048b?${Q}`,
+    `https://images.unsplash.com/photo-1426604966848-d7adac402bff?${Q}`,
+  ],
+
+  /* ── Anchor / Host ─────────────────────────────────────────────── */
+  "ANCHOR": [
+    `https://images.unsplash.com/photo-1540575467063-178a50c2df87?${Q}`,
+    `https://images.unsplash.com/photo-1475721027785-f74eccf877e2?${Q}`,
+    `https://images.unsplash.com/photo-1511578314322-379afb476865?${Q}`,
+    `https://images.unsplash.com/photo-1459749411175-04bf5292ceea?${Q}`,
+    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
+    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
+    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
+    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
+  ],
+
+  /* ── Choreographer / Dance ─────────────────────────────────────── */
+  "CHOREOGRAPHER": [
+    `https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?${Q}`,
+    `https://images.unsplash.com/photo-1518611012118-696072aa579a?${Q}`,
+    `https://images.unsplash.com/photo-1535525153412-5a42439a210d?${Q}`,
+    `https://images.unsplash.com/photo-1547153760-18fc86324498?${Q}`,
+    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
+    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
+    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
+    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
+  ],
+
+  /* ── Sound & Light ─────────────────────────────────────────────── */
+  "SOUND & LIGHT": [
+    `https://images.unsplash.com/photo-1514525253161-7a46d19cd819?${Q}`,
+    `https://images.unsplash.com/photo-1459749411175-04bf5292ceea?${Q}`,
+    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
+    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
+    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
+    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
+    `https://images.unsplash.com/photo-1470225620780-dba8ba36b745?${Q}`,
+    `https://images.unsplash.com/photo-1510797215324-95aa89f43c33?${Q}`,
+  ],
+
+  /* ── Production ────────────────────────────────────────────────── */
+  "PRODUCTION": [
+    `https://images.unsplash.com/photo-1514525253161-7a46d19cd819?${Q}`,
+    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
+    `https://images.unsplash.com/photo-1540575467063-178a50c2df87?${Q}`,
+    `https://images.unsplash.com/photo-1511578314322-379afb476865?${Q}`,
+    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
+    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
+    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
+    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
+  ],
+
+  /* ── Fashion Designer / Bridal Wear ────────────────────────────── */
+  "FASHION DESIGNER": [
+    `https://images.unsplash.com/photo-1585914924626-15adac1e6402?${Q}`,
+    `https://images.unsplash.com/photo-1594938298603-c8148c4b4d8e?${Q}`,
+    `https://images.unsplash.com/photo-1517751882-35566ec4d3fd?${Q}`,
+    `https://images.unsplash.com/photo-1583939003579-730e3918a45a?${Q}`,
+    `https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?${Q}`,
+    `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
+    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
+    `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
+  ],
+
+  /* ── Hospitality ───────────────────────────────────────────────── */
+  "HOSPITALITY": [
+    `https://images.unsplash.com/photo-1566073771259-6a8506099945?${Q}`,
+    `https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?${Q}`,
+    `https://images.unsplash.com/photo-1582719508461-20c36d798ef3?${Q}`,
+    `https://images.unsplash.com/photo-1414235077428-338989a2e8c0?${Q}`,
+    `https://images.unsplash.com/photo-1567521464027-f127ff144326?${Q}`,
+    `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
+    `https://images.unsplash.com/photo-1478146059778-26028b07395a?${Q}`,
+    `https://images.unsplash.com/photo-1559827260-dc66d52bef19?${Q}`,
+  ],
+
+  /* ── Transport / Luxury Vehicles ───────────────────────────────── */
+  "TRANSPORT": [
+    `https://images.unsplash.com/photo-1503376780353-7e6692767b70?${Q}`,
+    `https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?${Q}`,
+    `https://images.unsplash.com/photo-1568605114967-8130f3a36994?${Q}`,
+    `https://images.unsplash.com/photo-1494976388531-d1058494cdd8?${Q}`,
+    `https://images.unsplash.com/photo-1517519014922-8fc06b814a0e?${Q}`,
+    `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?${Q}`,
+    `https://images.unsplash.com/photo-1502877338535-766e1452684a?${Q}`,
+    `https://images.unsplash.com/photo-1511919884226-fd3cad34687c?${Q}`,
+  ],
+
+  /* ── Travel ────────────────────────────────────────────────────── */
+  "TRAVEL": [
+    `https://images.unsplash.com/photo-1469474968028-56623f02e42e?${Q}`,
+    `https://images.unsplash.com/photo-1476514525405-368ec0b6df7c?${Q}`,
+    `https://images.unsplash.com/photo-1502602503153-38219f6fef05?${Q}`,
+    `https://images.unsplash.com/photo-1530521954074-e64f6810b32d?${Q}`,
+    `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?${Q}`,
+    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
+    `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
+    `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
+  ],
+
+  /* ── Mehendi / Henna Art ───────────────────────────────────────── */
+  "MEHENDI": [
+    `https://images.unsplash.com/photo-1583391265042-f606bd38d3c6?${Q}`,
+    `https://images.unsplash.com/photo-1617369120004-4806cc963f47?${Q}`,
+    `https://images.unsplash.com/photo-1594898254668-c77d62fba28a?${Q}`,
+    `https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?${Q}`,
+    `https://images.unsplash.com/photo-1487412840181-71b61d8d3d7d?${Q}`,
+    `https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?${Q}`,
+    `https://images.unsplash.com/photo-1519014816548-bf5fe059798b?${Q}`,
+    `https://images.unsplash.com/photo-1571646034647-52e6ea84b28f?${Q}`,
+  ],
+
+  /* ── Venue Styling ─────────────────────────────────────────────── */
+  "VENUE STYLING": [
+    `https://images.unsplash.com/photo-1519167758481-83f550bb49b3?${Q}`,
+    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
+    `https://images.unsplash.com/photo-1563697873-fc42501a3e53?${Q}`,
+    `https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?${Q}`,
+    `https://images.unsplash.com/photo-1510076857177-7470076d4098?${Q}`,
+    `https://images.unsplash.com/photo-1530103862676-de8c9debad1d?${Q}`,
+    `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
+    `https://images.unsplash.com/photo-1531058020387-3be344556be6?${Q}`,
+  ],
+
+  /* ── Printing / Stationery ─────────────────────────────────────── */
+  "PRINTING": [
+    `https://images.unsplash.com/photo-1512936040-7b76e51f1c10?${Q}`,
+    `https://images.unsplash.com/photo-1586281380349-632531db7ed4?${Q}`,
+    `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
+    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
+    `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
+    `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
+    `https://images.unsplash.com/photo-1563697873-fc42501a3e53?${Q}`,
+    `https://images.unsplash.com/photo-1606800052052-a08af7148866?${Q}`,
   ],
 };
 
 const DEFAULT_IMAGES = [
-  "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=75",
-  "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=75",
-  "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=75",
-  "https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=600&q=75",
+  `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
+  `https://images.unsplash.com/photo-1606800052052-a08af7148866?${Q}`,
+  `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
+  `https://images.unsplash.com/photo-1554048612-b6a482bc67e5?${Q}`,
+  `https://images.unsplash.com/photo-1519167758481-83f550bb49b3?${Q}`,
+  `https://images.unsplash.com/photo-1563697873-fc42501a3e53?${Q}`,
+  `https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?${Q}`,
+  `https://images.unsplash.com/photo-1583939003579-730e3918a45a?${Q}`,
 ];
 
 function getVendorImage(vendor: { image?: string }, cat: string, idx: number): string {
@@ -105,6 +266,18 @@ const CAT_COLOR: Record<string, string> = {
   "PHOTOGRAPHER":     "#50e3c2",
   "CATERER":          "#f5a623",
   "MUSIC & DJ":       "#bd10e0",
+  "CAMERA TEAM":      "#50e3c2",
+  "ANCHOR":           "#a78bfa",
+  "CHOREOGRAPHER":    "#f472b6",
+  "SOUND & LIGHT":    "#38bdf8",
+  "PRODUCTION":       "#34d399",
+  "FASHION DESIGNER": "#fb923c",
+  "HOSPITALITY":      "#facc15",
+  "TRANSPORT":        "#94a3b8",
+  "TRAVEL":           "#6ee7b7",
+  "MEHENDI":          "#f9a8d4",
+  "VENUE STYLING":    "#c084fc",
+  "PRINTING":         "#d4af37",
 };
 
 const SORT_OPTIONS = [
@@ -312,11 +485,11 @@ export default function Vendors() {
                     style={isInfinity ? { borderColor: "rgba(212,175,55,0.3)", boxShadow: "0 4px 24px rgba(212,175,55,0.08)" } : {}}
                   >
                     {/* Cover photo */}
-                    <div className="relative h-44 overflow-hidden shrink-0">
+                    <div className="relative h-52 overflow-hidden shrink-0">
                       <img
                         src={coverImg}
                         alt={vendor.company || vendor.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#1a1510] via-[#1a1510]/20 to-transparent" />
