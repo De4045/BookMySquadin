@@ -65,6 +65,28 @@ function exportTransactionsCSV(transactions: PaymentStats["recentTransactions"])
   URL.revokeObjectURL(url);
 }
 
+function exportEnquiriesCSV(enquiries: Array<{ id: number; type: string; name: string; email: string; phone: string; category?: string; businessName?: string; city?: string; message: string; createdAt: string }>) {
+  const headers = ["ID", "Type", "Name", "Email", "Phone", "Date", "City", "Detail"];
+  const rows = enquiries.map(e => [
+    e.id.toString(),
+    e.type,
+    `"${e.name.replace(/"/g, '""')}"`,
+    `"${e.email.replace(/"/g, '""')}"`,
+    e.phone,
+    new Date(e.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+    e.city ?? "",
+    `"${(e.category || e.businessName || e.message).replace(/"/g, '""').slice(0, 120)}"`,
+  ]);
+  const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `bms-enquiries-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function StatCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent?: string }) {
   const color = accent || "#d4af37";
   return (
@@ -367,13 +389,28 @@ export default function AdminPortal() {
           {/* ──────────────── ENQUIRIES TAB ──────────────── */}
           {tab === "enquiries" && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-              <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
-                <div>
-                  <p className="font-cinzel text-[10px] tracking-[0.35em] text-primary/85 uppercase mb-1.5">✦ All Enquiries ✦</p>
-                  <h2 className="font-cormorant text-3xl font-light text-white"
-                    style={{ textShadow: "0 0 24px rgba(212,175,55,0.1)" }}>
-                    Enquiry <span className="text-primary italic font-semibold">Inbox</span>
-                  </h2>
+              <div className="mb-6">
+                <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
+                  <div>
+                    <p className="font-cinzel text-[10px] tracking-[0.35em] text-primary/85 uppercase mb-1.5">✦ All Enquiries ✦</p>
+                    <h2 className="font-cormorant text-3xl font-light text-white"
+                      style={{ textShadow: "0 0 24px rgba(212,175,55,0.1)" }}>
+                      Enquiry <span className="text-primary italic font-semibold">Inbox</span>
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => exportEnquiriesCSV(filteredEnquiries)}
+                    disabled={filteredEnquiries.length === 0}
+                    className="group flex items-center gap-1.5 px-3 py-1.5 border border-primary/25 bg-primary/5 hover:bg-primary/12 hover:border-primary/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all mt-1"
+                  >
+                    <Download className="w-3 h-3 text-primary/70 group-hover:text-primary transition-colors" />
+                    <span className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-primary/70 group-hover:text-primary transition-colors">
+                      Export CSV
+                    </span>
+                    <span className="font-cinzel text-[8px] text-white/30 group-hover:text-white/50 transition-colors">
+                      ({filteredEnquiries.length})
+                    </span>
+                  </button>
                 </div>
                 <div className="flex gap-1.5 flex-wrap">
                   {["all", "venue", "vendor", "contact", "listing"].map(f => (
