@@ -86,19 +86,19 @@ const PHOTOS = [
     tag: "Details",
   },
   {
-    src: "https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=900&q=88",
-    alt: "Couple's first dance at wedding reception",
+    src: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=900&q=88",
+    alt: "Romantic outdoor wedding ceremony with bokeh fairy lights",
+    tag: "Ceremony",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1519821172144-4f87d85de2a1?w=900&q=88",
+    alt: "Elegant candlelit reception table setting with floral centrepieces",
     tag: "Reception",
   },
   {
-    src: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=700&q=88",
-    alt: "Bridal jewellery — intricate gold necklace and maang tikka",
-    tag: "Jewellery",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1475695752828-7735b96bfcb3?w=900&q=88",
-    alt: "Outdoor twilight wedding ceremony with fairy lights",
-    tag: "Ceremony",
+    src: "https://images.unsplash.com/photo-1472653816316-3ad6f10a6592?w=900&q=88",
+    alt: "Couple's golden-hour romantic outdoor wedding portrait",
+    tag: "Garden",
   },
 ];
 
