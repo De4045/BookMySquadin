@@ -33,7 +33,7 @@ const SELECT_CLS = INPUT_CLS + " cursor-pointer appearance-none";
 type GstStatus = "idle" | "loading" | "verified" | "inactive" | "error";
 interface GstData {
   gstin: string;
-  status: "Active" | "Cancelled" | "Suspended";
+  status: "Active" | "Cancelled" | "Suspended" | "Format Verified";
   businessName: string;
   taxpayerType: string;
   registrationDate: string;
@@ -388,80 +388,104 @@ function GstVerificationPanel({
         )}
       </AnimatePresence>
 
-      {/* SUCCESS — Verified Active */}
+      {/* SUCCESS — Verified (Active or Format Verified) */}
       <AnimatePresence>
-        {gstStatus === "verified" && gstData && (
-          <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative overflow-hidden rounded-sm border border-green-500/30"
-            style={{ background: "linear-gradient(145deg, #081a0d 0%, #061208 100%)" }}
-          >
-            {/* Top line */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-green-400/70 to-transparent" />
-            <div className="p-6">
-              {/* Verified badge header */}
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center">
-                    <BadgeCheck className="w-5 h-5 text-green-400" />
+        {gstStatus === "verified" && gstData && (() => {
+          const isLive = gstData.status === "Active";
+          const accent = isLive
+            ? { border: "border-green-500/30", bg: "linear-gradient(145deg,#081a0d 0%,#061208 100%)", topLine: "via-green-400/70", icon: "bg-green-500/15 border-green-500/30", iconText: "text-green-400", label: "text-green-400/80", statusText: "text-green-300", gstin: "text-green-400/50 bg-green-500/10 border-green-500/20", divider: "border-green-500/15", ts: "text-green-400/50", tsIcon: "text-green-400/60", bottomLine: "via-green-500/20" }
+            : { border: "border-primary/30", bg: "linear-gradient(145deg,#1a1400 0%,#100d00 100%)", topLine: "via-primary/70", icon: "bg-primary/15 border-primary/30", iconText: "text-primary", label: "text-primary/80", statusText: "text-primary", gstin: "text-primary/50 bg-primary/10 border-primary/20", divider: "border-primary/15", ts: "text-primary/50", tsIcon: "text-primary/60", bottomLine: "via-primary/20" };
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.4 }}
+              className={`relative overflow-hidden rounded-sm border ${accent.border}`}
+              style={{ background: accent.bg }}
+            >
+              <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent ${accent.topLine} to-transparent`} />
+              <div className="p-6">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-full ${accent.icon} flex items-center justify-center`}>
+                      <BadgeCheck className={`w-5 h-5 ${accent.iconText}`} />
+                    </div>
+                    <div>
+                      <p className={`font-cinzel text-[9px] tracking-[0.3em] uppercase ${accent.label}`}>
+                        {isLive ? "GST Verified" : "GSTIN Structure Verified"}
+                      </p>
+                      <p className={`font-cormorant text-lg ${accent.statusText} font-semibold leading-tight`}>{gstData.status}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-cinzel text-[9px] tracking-[0.3em] uppercase text-green-400/80">GST Verified</p>
-                    <p className="font-cormorant text-lg text-green-300 font-semibold leading-tight">{gstData.status}</p>
+                  <div className={`font-mono text-[10px] ${accent.gstin} border px-2.5 py-1 rounded-sm tracking-widest`}>
+                    {gstData.gstin}
                   </div>
                 </div>
-                <div className="font-mono text-[10px] text-green-400/50 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-sm tracking-widest">
-                  {gstData.gstin}
-                </div>
-              </div>
 
-              {/* Business details grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">Business Name</p>
-                  <p className="font-manrope text-sm text-white/80 font-medium leading-snug">{gstData.businessName}</p>
+                {/* Details grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {gstData.businessName ? (
+                    <div className="space-y-1">
+                      <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">Business Name</p>
+                      <p className="font-manrope text-sm text-white/80 font-medium leading-snug">{gstData.businessName}</p>
+                    </div>
+                  ) : null}
+                  <div className="space-y-1">
+                    <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">Entity Type</p>
+                    <p className="font-manrope text-sm text-white/80">{gstData.taxpayerType}</p>
+                  </div>
+                  {gstData.registrationDate ? (
+                    <div className="space-y-1">
+                      <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
+                        <Calendar className="w-2.5 h-2.5" /> Registration Date
+                      </p>
+                      <p className="font-manrope text-sm text-white/80">
+                        {new Date(gstData.registrationDate).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                      </p>
+                    </div>
+                  ) : null}
+                  <div className="space-y-1">
+                    <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
+                      <Globe className="w-2.5 h-2.5" /> State
+                    </p>
+                    <p className="font-manrope text-sm text-white/80">{gstData.stateName}</p>
+                  </div>
+                  {gstData.address ? (
+                    <div className="space-y-1 md:col-span-2">
+                      <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
+                        <MapPin className="w-2.5 h-2.5" /> Registered Address
+                      </p>
+                      <p className="font-manrope text-sm text-white/65 leading-relaxed">{gstData.address}</p>
+                    </div>
+                  ) : null}
                 </div>
-                <div className="space-y-1">
-                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">Taxpayer Type</p>
-                  <p className="font-manrope text-sm text-white/80">{gstData.taxpayerType}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
-                    <Calendar className="w-2.5 h-2.5" /> Registration Date
-                  </p>
-                  <p className="font-manrope text-sm text-white/80">
-                    {new Date(gstData.registrationDate).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
-                    <Globe className="w-2.5 h-2.5" /> State
-                  </p>
-                  <p className="font-manrope text-sm text-white/80">{gstData.stateName}</p>
-                </div>
-                <div className="space-y-1 md:col-span-2">
-                  <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase flex items-center gap-1">
-                    <MapPin className="w-2.5 h-2.5" /> Registered Address
-                  </p>
-                  <p className="font-manrope text-sm text-white/65 leading-relaxed">{gstData.address}</p>
-                </div>
-              </div>
 
-              {/* Verified timestamp */}
-              <div className="mt-4 pt-4 border-t border-green-500/15 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-green-400/60 shrink-0" />
-                <p className="font-manrope text-[10px] text-green-400/50">
-                  Verified on {new Date(gstData.verifiedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
-                </p>
+                {/* Footer */}
+                <div className={`mt-4 pt-4 border-t ${accent.divider} flex items-center justify-between gap-2`}>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className={`w-3.5 h-3.5 ${accent.tsIcon} shrink-0`} />
+                    <p className={`font-manrope text-[10px] ${accent.ts}`}>
+                      {isLive ? "Live verified" : "Structure validated"} · {new Date(gstData.verifiedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                    </p>
+                  </div>
+                  {!isLive && (
+                    <a
+                      href="https://services.gst.gov.in/services/searchtp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-cinzel text-[8px] tracking-[0.15em] uppercase text-primary/40 hover:text-primary/70 transition-colors underline underline-offset-2"
+                    >
+                      Confirm on GST Portal
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-            {/* Bottom line */}
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
-          </motion.div>
-        )}
+              <div className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${accent.bottomLine} to-transparent`} />
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
 
       {/* ERROR — Inactive / Cancelled / Suspended */}
@@ -692,9 +716,9 @@ function VendorForm({ onSuccess }: { onSuccess: (name: string, gstVerified: bool
       };
       setGstData(gst);
 
-      if (data.status === "Active") {
+      if (data.status === "Active" || data.status === "Format Verified") {
         setGstStatus("verified");
-        // Auto-fill all available fields from GST records (always overwrite with authoritative data)
+        // Auto-fill fields from GST data — only overwrite if the API returned a value
         const detectedCity = extractCityFromAddress(gst.address);
         setForm(f => ({
           ...f,
