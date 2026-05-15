@@ -37,6 +37,13 @@ interface VenueEnquiry {
   status: string; createdAt: string;
 }
 interface User { id: number; name: string; email: string; role: string; createdAt: string; }
+interface GstConfig {
+  hasApiKey: boolean;
+  mode: "live" | "format-only";
+  provider: string | null;
+  envKey: string;
+  optionalEnvKey: string;
+}
 
 const ROLE_COLOR: Record<string, string> = {
   admin: "text-red-400 bg-red-400/10 border-red-400/30",
@@ -112,6 +119,7 @@ export default function AdminPortal() {
   const [venueEnquiries, setVenueEnquiries] = useState<VenueEnquiry[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [paymentStats, setPaymentStats] = useState<PaymentStats | null>(null);
+  const [gstConfig, setGstConfig] = useState<GstConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [enquiryFilter, setEnquiryFilter] = useState("all");
 
@@ -124,18 +132,20 @@ export default function AdminPortal() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [statsRes, enqRes, venueEnqRes, usersRes, payRes] = await Promise.all([
+      const [statsRes, enqRes, venueEnqRes, usersRes, payRes, gstRes] = await Promise.all([
         fetch(`${BASE}/api/admin/stats`, { credentials: "include" }),
         fetch(`${BASE}/api/enquiries`, { credentials: "include" }),
         fetch(`${BASE}/api/venues/enquiries`, { credentials: "include" }),
         fetch(`${BASE}/api/admin/users`, { credentials: "include" }),
         fetch(`${BASE}/api/admin/payments`, { credentials: "include" }),
+        fetch(`${BASE}/api/gst/config`, { credentials: "include" }),
       ]);
       if (statsRes.ok)    setStats(await statsRes.json() as Stats);
       if (enqRes.ok)      setEnquiries((await enqRes.json() as { enquiries: Enquiry[] }).enquiries);
       if (venueEnqRes.ok) setVenueEnquiries((await venueEnqRes.json() as { enquiries: VenueEnquiry[] }).enquiries);
       if (usersRes.ok)    setUsers((await usersRes.json() as { users: User[] }).users);
       if (payRes.ok)      setPaymentStats(await payRes.json() as PaymentStats);
+      if (gstRes.ok)      setGstConfig(await gstRes.json() as GstConfig);
     } finally {
       setLoading(false);
     }
@@ -215,12 +225,128 @@ export default function AdminPortal() {
                 <h2 className="font-cormorant text-4xl font-light text-white">Admin <span className="text-primary italic font-semibold">Dashboard</span></h2>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatCard label="Registered Users" value={stats?.totalUsers ?? "—"} sub={`${stats?.breakdown.vendors ?? 0} vendors · ${stats?.breakdown.venues ?? 0} venues`} accent="#d4af37" />
                 <StatCard label="Total Venues" value={stats?.totalVenues ?? 436} sub="Across India" accent="#4a90e2" />
                 <StatCard label="Total Vendors" value={stats?.totalVendors ?? 255} accent="#50e3c2" />
                 <StatCard label="All Enquiries" value={allEnquiries.length} sub="Lifetime" accent="#e8a4c8" />
               </div>
+
+              {/* ── GST Integration Status ──────────────────────────────────── */}
+              {gstConfig && (
+                <div className={`relative overflow-hidden mb-8 border rounded-sm ${
+                  gstConfig.mode === "live"
+                    ? "border-green-500/25 bg-green-500/5"
+                    : "border-primary/20 bg-primary/5"
+                }`}>
+                  {/* Top accent line */}
+                  <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent ${
+                    gstConfig.mode === "live" ? "via-green-400/60" : "via-primary/60"
+                  } to-transparent`} />
+
+                  {gstConfig.mode === "live" ? (
+                    /* ── Live mode banner ── */
+                    <div className="px-6 py-4 flex items-center gap-4">
+                      <div className="w-8 h-8 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center shrink-0">
+                        <BadgeCheck className="w-4 h-4 text-green-400" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-cinzel text-[9px] tracking-[0.25em] uppercase text-green-400/70 mb-0.5">GST Verification — Live Mode</p>
+                        <p className="font-manrope text-sm text-white/65">
+                          Masters India API connected. Live Active / Suspended / Cancelled status checks are enabled for all vendor registrations.
+                        </p>
+                      </div>
+                      <span className="shrink-0 font-cinzel text-[8px] tracking-[0.2em] uppercase text-green-400/70 border border-green-500/25 bg-green-500/10 px-3 py-1.5 rounded-sm">
+                        Connected ✓
+                      </span>
+                    </div>
+                  ) : (
+                    /* ── Format-only setup guide ── */
+                    <div className="p-6">
+                      {/* Header */}
+                      <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
+                            <Zap className="w-5 h-5 text-primary/80" />
+                          </div>
+                          <div>
+                            <p className="font-cinzel text-[9px] tracking-[0.25em] uppercase text-primary/60 mb-0.5">GST Integration · Action Required</p>
+                            <p className="font-cormorant text-2xl text-white font-semibold leading-tight">
+                              Upgrade to Live Status Verification
+                            </p>
+                          </div>
+                        </div>
+                        <span className="font-cinzel text-[8px] tracking-[0.15em] uppercase text-yellow-400/80 border border-yellow-500/30 bg-yellow-500/10 px-3 py-1.5 rounded-sm shrink-0">
+                          Format-Only Mode
+                        </span>
+                      </div>
+
+                      <p className="font-manrope text-sm text-white/45 leading-relaxed mb-6">
+                        Vendor GSTINs are currently verified by structural format only — state and entity type are extracted,
+                        but live <strong className="text-white/65">Active / Suspended / Cancelled</strong> status from the government
+                        database requires a Masters India API key. Set it up in 4 steps:
+                      </p>
+
+                      {/* 4-step guide */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                        {[
+                          {
+                            n: "1",
+                            title: "Create Account",
+                            body: "Sign up free at mastersindia.co/developer — includes 100 free API calls per month.",
+                          },
+                          {
+                            n: "2",
+                            title: "Copy API Key",
+                            body: "In the developer dashboard, copy your Bearer token (API key) from the credentials section.",
+                          },
+                          {
+                            n: "3",
+                            title: "Add to Secrets",
+                            body: `In Replit → Secrets tab, add: MASTERS_INDIA_API_KEY = your Bearer token.`,
+                          },
+                          {
+                            n: "4",
+                            title: "Restart Server",
+                            body: "Restart the API Server workflow. This card will turn green once the key is detected.",
+                          },
+                        ].map(({ n, title, body }) => (
+                          <div key={n} className="p-4 bg-black/25 border border-white/6 rounded-sm">
+                            <div
+                              className="font-cormorant text-4xl font-bold mb-2 leading-none"
+                              style={{ color: "#d4af3730" }}
+                            >
+                              {n}
+                            </div>
+                            <p className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-white/55 mb-1.5">{title}</p>
+                            <p className="font-manrope text-xs text-white/30 leading-snug">{body}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* CTA row */}
+                      <div className="flex items-center gap-4 flex-wrap">
+                        <a
+                          href="https://mastersindia.co/developer"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-[#080604] font-cinzel text-[9px] tracking-[0.2em] uppercase font-bold hover:bg-primary/90 transition-colors"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          Get Free API Key
+                        </a>
+                        <div className="flex items-center gap-2 font-mono text-xs text-primary/60 bg-primary/8 border border-primary/15 px-3 py-2 rounded-sm">
+                          <span className="text-white/20">secret:</span>
+                          <span className="text-primary/70 select-all">{gstConfig.envKey}</span>
+                        </div>
+                        <span className="font-manrope text-xs text-white/25">
+                          Optional: <span className="text-white/40 font-mono">{gstConfig.optionalEnvKey}</span> (Client ID)
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Breakdown */}

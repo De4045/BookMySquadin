@@ -314,4 +314,25 @@ router.post("/gst/verify", async (req, res) => {
   res.json({ valid: true, ...result });
 });
 
+/* ── Route: GET /api/gst/config (admin only) ─────────────────────────── */
+/*
+ * Returns the current GST verification mode without exposing the API key.
+ * Used by the admin portal to surface the setup guide when no key is set.
+ */
+router.get("/gst/config", (req, res) => {
+  const session = req.session as Record<string, unknown>;
+  if (!session["userId"] || session["userRole"] !== "admin") {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const hasApiKey = Boolean(process.env["MASTERS_INDIA_API_KEY"]);
+  res.json({
+    hasApiKey,
+    mode: hasApiKey ? "live" : "format-only",
+    provider: hasApiKey ? "masters-india" : null,
+    envKey: "MASTERS_INDIA_API_KEY",
+    optionalEnvKey: "MASTERS_INDIA_CLIENT_ID",
+  });
+});
+
 export default router;
