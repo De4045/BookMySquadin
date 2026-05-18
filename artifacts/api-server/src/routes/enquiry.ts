@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { sendEnquiryReceipt } from "../lib/mailer.js";
 
 const router: IRouter = Router();
 
@@ -51,6 +52,11 @@ router.post("/enquiry/contact", (req, res) => {
   };
   enquiries.push(enquiry);
   req.log.info({ enquiryId: enquiry.id }, "Contact enquiry received");
+  sendEnquiryReceipt(enquiry.email, {
+    name: enquiry.name,
+    subject: "General Contact",
+    message: enquiry.message,
+  }).catch(() => {});
   res.status(201).json({ success: true, message: "Thank you for reaching out! We'll respond within 24 hours.", id: enquiry.id });
 });
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell } from "lucide-react";
+import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 import { useAuth } from "@/context/AuthContext";
@@ -12,6 +12,7 @@ const navLinks = [
   { label: "Photos", href: "/photos" },
   { label: "Weddings", href: "/weddings" },
   { label: "Blog", href: "/blog" },
+  { label: "Checklist", href: "/checklist" },
   { label: "Why Us", href: "/why-choose-us" },
 ];
 
@@ -37,11 +38,29 @@ export function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<{
+    cities: string[];
+    vendors: { name: string; category: string; city: string }[];
+    venues: { name: string; city: string; type: string }[];
+  } | null>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifRef    = useRef<HTMLDivElement>(null);
   const searchRef   = useRef<HTMLInputElement>(null);
   const [notifOpen, setNotifOpen] = useState(false);
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
+
+  const BASE_API = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+
+  useEffect(() => {
+    if (!searchQuery || searchQuery.length < 2) { setSuggestions(null); return; }
+    const id = setTimeout(async () => {
+      try {
+        const res = await fetch(`${BASE_API}/api/search?q=${encodeURIComponent(searchQuery)}`);
+        if (res.ok) setSuggestions(await res.json() as typeof suggestions);
+      } catch { setSuggestions(null); }
+    }, 180);
+    return () => clearTimeout(id);
+  }, [searchQuery]);
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -367,6 +386,52 @@ export function Navbar() {
                     Search
                   </button>
                 </div>
+                {suggestions && (suggestions.cities.length > 0 || suggestions.vendors.length > 0 || suggestions.venues.length > 0) && (
+                  <div className="absolute top-full left-0 right-0 z-[100] bg-[#0d0a07] border border-primary/20 border-t-0 shadow-[0_20px_60px_rgba(0,0,0,0.9)] max-h-72 overflow-y-auto">
+                    {suggestions.cities.length > 0 && (
+                      <div className="p-2">
+                        <p className="font-cinzel text-[8px] tracking-[0.25em] text-primary/40 uppercase px-3 py-1">Cities</p>
+                        {suggestions.cities.map(city => (
+                          <button key={city} type="button" onClick={() => { navigate(`/venues?city=${encodeURIComponent(city)}`); setSearchOpen(false); setSuggestions(null); setSearchQuery(""); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-white/5 transition-colors text-left">
+                            <MapPin className="w-3 h-3 text-primary/40 shrink-0" />
+                            <span className="font-manrope text-sm text-white/70">{city}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {suggestions.vendors.length > 0 && (
+                      <div className={suggestions.cities.length > 0 ? "border-t border-white/5 p-2" : "p-2"}>
+                        <p className="font-cinzel text-[8px] tracking-[0.25em] text-primary/40 uppercase px-3 py-1">Vendors</p>
+                        {suggestions.vendors.map(v => (
+                          <button key={v.name} type="button" onClick={() => { navigate(`/vendors?search=${encodeURIComponent(v.name)}`); setSearchOpen(false); setSuggestions(null); setSearchQuery(""); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-white/5 transition-colors text-left">
+                            <Briefcase className="w-3 h-3 text-primary/40 shrink-0" />
+                            <div className="min-w-0">
+                              <span className="font-manrope text-sm text-white/70 block truncate">{v.name}</span>
+                              <span className="font-cinzel text-[8px] tracking-[0.1em] text-primary/35 uppercase">{v.category} · {v.city}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {suggestions.venues.length > 0 && (
+                      <div className={(suggestions.cities.length > 0 || suggestions.vendors.length > 0) ? "border-t border-white/5 p-2" : "p-2"}>
+                        <p className="font-cinzel text-[8px] tracking-[0.25em] text-primary/40 uppercase px-3 py-1">Venues</p>
+                        {suggestions.venues.map(v => (
+                          <button key={v.name} type="button" onClick={() => { navigate(`/venues?search=${encodeURIComponent(v.name)}`); setSearchOpen(false); setSuggestions(null); setSearchQuery(""); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-white/5 transition-colors text-left">
+                            <Building2 className="w-3 h-3 text-primary/40 shrink-0" />
+                            <div className="min-w-0">
+                              <span className="font-manrope text-sm text-white/70 block truncate">{v.name}</span>
+                              <span className="font-cinzel text-[8px] tracking-[0.1em] text-primary/35 uppercase">{v.type} · {v.city}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="mt-2 flex gap-2 flex-wrap">
                   {["Wedding Venues", "Photography", "Bridal Makeup", "Catering", "DJ & Music"].map(tag => (
                     <button

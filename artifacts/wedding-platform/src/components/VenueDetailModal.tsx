@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Phone, Users, Bed, UtensilsCrossed, Heart, CheckCircle2, ChevronRight, Lock, BadgeCheck } from "lucide-react";
+import { X, MapPin, Phone, MessageCircle, Users, Bed, UtensilsCrossed, Heart, CheckCircle2, ChevronRight, Lock, BadgeCheck } from "lucide-react";
 import { type Venue } from "@/data/venues";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useAuth } from "@/context/AuthContext";
@@ -8,6 +8,12 @@ import { isVenueVerified } from "@/data/subscriptions";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+
+function whatsappUrl(num: string) {
+  const digits = num.replace(/\D/g, "");
+  const full = digits.startsWith("91") && digits.length >= 12 ? digits : `91${digits.slice(-10)}`;
+  return `https://wa.me/${full}`;
+}
 
 const VENUE_IMAGE_POOLS: Record<string, string[]> = {
   HOTEL: [
@@ -229,10 +235,18 @@ export function VenueDetailModal({ venue, onClose }: Props) {
                     </div>
                   )}
                   {venue.contact_number && (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <Phone className="w-3.5 h-3.5 text-primary/50 shrink-0" />
-                      <a href={`tel:${venue.contact_number}`} className="font-mono text-sm text-white/60 hover:text-primary transition-colors">
+                      <a href={`tel:${venue.contact_number}`} className="font-mono text-sm text-white/60 hover:text-primary transition-colors flex-1">
                         {venue.contact_number}
+                      </a>
+                      <a
+                        href={whatsappUrl(venue.contact_number)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] font-cinzel text-[8px] tracking-[0.12em] uppercase hover:bg-[#25D366]/20 transition-all shrink-0"
+                      >
+                        <MessageCircle className="w-3 h-3" /> WhatsApp
                       </a>
                     </div>
                   )}

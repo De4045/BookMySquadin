@@ -6,7 +6,7 @@ import { useShortlist } from "@/context/ShortlistContext";
 import {
   LayoutDashboard, MessageSquare, Users, LogOut, ExternalLink, RefreshCw,
   ShieldCheck, Heart, MapPin, Trash2, Building2, Briefcase, CreditCard,
-  TrendingUp, BadgeCheck, Crown, Zap, Download, CalendarCheck2,
+  TrendingUp, BadgeCheck, Crown, Zap, Download, CalendarCheck2, KanbanSquare,
   Clock, CheckCircle2, XCircle, ChevronDown, Newspaper, FileText, X as XIc, Plus,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area } from "recharts";
@@ -207,7 +207,7 @@ export default function AdminPortal() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const { items: shortlist, remove: removeShortlist } = useShortlist();
-  const [tab, setTab] = useState<"overview" | "bookings" | "enquiries" | "users" | "payments" | "saved" | "content">("overview");
+  const [tab, setTab] = useState<"overview" | "bookings" | "enquiries" | "users" | "payments" | "saved" | "content" | "pipeline">("overview");
   const [stats, setStats] = useState<Stats | null>(null);
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [venueEnquiries, setVenueEnquiries] = useState<VenueEnquiry[]>([]);
@@ -321,6 +321,7 @@ export default function AdminPortal() {
     { key: "payments",  label: "Payments",                           icon: CreditCard },
     { key: "saved",     label: `Saved (${shortlist.length})`,        icon: Heart },
     { key: "content",   label: `Blog CMS (${articles.length})`,      icon: Newspaper },
+    { key: "pipeline",  label: "Pipeline",                            icon: KanbanSquare },
   ] as const;
 
   if (loading) return (
@@ -1114,6 +1115,63 @@ export default function AdminPortal() {
                     </div>
                   ))
                 )}
+              </div>
+            </motion.div>
+          )}
+
+          {tab === "pipeline" && (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+              <div className="mb-7">
+                <p className="font-cinzel text-[10px] tracking-[0.35em] text-primary/85 uppercase mb-1.5">✦ Booking Flow ✦</p>
+                <h2 className="font-cormorant text-4xl font-light text-white">Booking <span className="text-primary italic font-semibold">Pipeline</span></h2>
+                <p className="font-manrope text-sm text-white/40 mt-2">Move bookings through stages using the dropdown on each card</p>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {([
+                  { status: "pending"      as const, label: "Pending",      color: "#f59e0b" },
+                  { status: "advance_paid" as const, label: "Advance Paid", color: "#d4af37" },
+                  { status: "confirmed"    as const, label: "Confirmed",    color: "#60a5fa" },
+                  { status: "completed"    as const, label: "Completed",    color: "#4ade80" },
+                ]).map(col => {
+                  const colBookings = bookings.filter(b => b.status === col.status);
+                  return (
+                    <div key={col.status} className="border border-white/8 bg-white/[0.015] p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase" style={{ color: col.color }}>{col.label}</span>
+                        <span className="font-manrope text-xs px-2 py-0.5 rounded-full" style={{ color: col.color, background: `${col.color}18` }}>{colBookings.length}</span>
+                      </div>
+                      <div className="space-y-3 min-h-[100px]">
+                        {colBookings.length === 0 && (
+                          <p className="font-manrope text-xs text-white/15 text-center pt-8">No bookings</p>
+                        )}
+                        {colBookings.map(b => (
+                          <div key={b.id} className="bg-[#0d0a07] border border-white/8 p-3">
+                            <p className="font-manrope text-sm text-white font-medium truncate">{b.name}</p>
+                            <p className="font-cinzel text-[9px] tracking-[0.1em] text-primary/60 uppercase truncate mt-0.5">{b.vendorName}</p>
+                            <p className="font-manrope text-xs text-white/40 mt-1 truncate">{b.packageName}</p>
+                            <p className="font-manrope text-[10px] text-white/30 mt-0.5">
+                              {b.eventDate ? new Date(b.eventDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—"}
+                            </p>
+                            <div className="mt-2 pt-2 border-t border-white/5">
+                              <select
+                                value={b.status}
+                                onChange={e => updateBookingStatus(b.id, e.target.value as Booking["status"])}
+                                className="w-full text-[10px] font-cinzel tracking-[0.1em] uppercase text-white/50 border border-white/10 px-2 py-1 focus:outline-none focus:border-primary/40 cursor-pointer"
+                                style={{ background: "#0d0a07" }}
+                              >
+                                <option value="pending"      className="bg-[#0d0a07]">Pending</option>
+                                <option value="advance_paid" className="bg-[#0d0a07]">Advance Paid</option>
+                                <option value="confirmed"    className="bg-[#0d0a07]">Confirmed</option>
+                                <option value="completed"    className="bg-[#0d0a07]">Completed</option>
+                                <option value="cancelled"    className="bg-[#0d0a07]">Cancelled</option>
+                              </select>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </motion.div>
           )}

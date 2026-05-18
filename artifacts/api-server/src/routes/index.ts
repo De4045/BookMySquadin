@@ -10,6 +10,7 @@ import paymentsRouter from "./payments.js";
 import bookingsRouter from "./bookings.js";
 import reviewsRouter from "./reviews.js";
 import articlesRouter from "./articles.js";
+import searchRouter from "./search.js";
 import {
   authLimiter,
   registerLimiter,
@@ -42,5 +43,6 @@ router.use(paymentsRouter);
 router.use(bookingsRouter);
 router.use(reviewsRouter);
 router.use(articlesRouter);
+router.use(searchRouter);
 
 export default router;

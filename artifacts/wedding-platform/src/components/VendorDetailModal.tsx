@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Phone, Heart, CheckCircle2, ChevronRight, Building2, Lock, BadgeCheck, CalendarDays, Star } from "lucide-react";
+import { X, MapPin, Phone, MessageCircle, Heart, CheckCircle2, ChevronRight, Building2, Lock, BadgeCheck, CalendarDays, Star } from "lucide-react";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { isVendorVerified } from "@/data/subscriptions";
 import { BookingModal } from "@/components/BookingModal";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+
+function whatsappUrl(num: string) {
+  const digits = num.replace(/\D/g, "");
+  const full = digits.startsWith("91") && digits.length >= 12 ? digits : `91${digits.slice(-10)}`;
+  return `https://wa.me/${full}`;
+}
 
 const CAT_IMAGES: Record<string, string> = {
   "PHOTOGRAPHER":     "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1200&q=85",
@@ -262,9 +268,17 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
             )}
             {vendor.contact && (
               user ? (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Phone className="w-4 h-4 text-primary/50 shrink-0" />
-                  <a href={`tel:${vendor.contact}`} className="font-mono text-sm text-white/65 hover:text-primary transition-colors">{vendor.contact}</a>
+                  <a href={`tel:${vendor.contact}`} className="font-mono text-sm text-white/65 hover:text-primary transition-colors flex-1">{vendor.contact}</a>
+                  <a
+                    href={whatsappUrl(vendor.contact)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] font-cinzel text-[8px] tracking-[0.12em] uppercase hover:bg-[#25D366]/20 transition-all shrink-0"
+                  >
+                    <MessageCircle className="w-3 h-3" /> WhatsApp
+                  </a>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/15 rounded-sm">

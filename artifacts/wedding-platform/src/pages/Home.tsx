@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useMeta } from "@/hooks/useMeta";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -51,6 +52,7 @@ function matchToCity(raw: string): string {
 }
 
 export default function Home() {
+  useMeta();
   const [, navigate] = useLocation();
   const [city, setCity] = useState("");
   const [eventType, setEventType] = useState("");

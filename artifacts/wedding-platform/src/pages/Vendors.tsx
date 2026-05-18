@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useMeta } from "@/hooks/useMeta";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star, Lock, BadgeCheck, Scale } from "lucide-react";
@@ -308,6 +309,7 @@ const SORT_OPTIONS = [
 ];
 
 export default function Vendors() {
+  useMeta({ title: "Vendors", description: "Browse India's top wedding vendors — photographers, decorators, makeup artists, caterers and more.", keywords: "wedding vendors india, wedding photographers, wedding decorators, makeup artists" });
   const { has, toggle } = useShortlist();
   const { user } = useAuth();
   const comparison = useComparison();

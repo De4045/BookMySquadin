@@ -2,7 +2,9 @@ import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { MapPin, Phone, Users, Bed, Search, ChevronDown, X, ArrowUpDown, UtensilsCrossed, Heart, Lock, BadgeCheck } from "lucide-react";
+import { MapPin, Phone, Users, Bed, Search, ChevronDown, X, ArrowUpDown, UtensilsCrossed, Heart, Lock, BadgeCheck, Map as MapIcon, LayoutGrid } from "lucide-react";
+import { VenueMap, type MapVenue } from "@/components/VenueMap";
+import { useMeta } from "@/hooks/useMeta";
 import { VenueDetailModal } from "@/components/VenueDetailModal";
 import { useShortlist } from "@/context/ShortlistContext";
 import { type Venue } from "@/data/venues";
@@ -79,6 +81,9 @@ export default function Venues() {
   const [typeFilter, setTypeFilter]  = useState("");
   const [sortBy, setSortBy]          = useState("default");
   const [selected, setSelected]      = useState<Venue | null>(null);
+  const [viewMode, setViewMode]      = useState<"grid" | "map">("grid");
+
+  useMeta({ title: "Venues", description: "Discover India's most exquisite wedding venues. Browse hotels, banquet halls, resorts and more across all major cities.", keywords: "wedding venues india, banquet halls, wedding venues" });
 
   // Fetch venues from API on mount
   useEffect(() => {
@@ -216,6 +221,16 @@ export default function Venues() {
                 </select>
                 <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
               </div>
+              <div className="flex items-center gap-1 shrink-0 ml-1">
+                <button onClick={() => setViewMode("grid")} title="Grid view"
+                  className={`p-2.5 border transition-all ${viewMode === "grid" ? "border-primary/50 bg-primary/10 text-primary" : "border-white/10 text-white/40 hover:text-white/70"}`}>
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+                <button onClick={() => setViewMode("map")} title="Map view"
+                  className={`p-2.5 border transition-all ${viewMode === "map" ? "border-primary/50 bg-primary/10 text-primary" : "border-white/10 text-white/40 hover:text-white/70"}`}>
+                  <MapIcon className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -240,7 +255,17 @@ export default function Venues() {
           </AnimatePresence>
         </div>
 
-        {/* Grid */}
+        {viewMode === "map" && (
+          <section className="py-8 px-6 md:px-12 bg-[#080604]">
+            <div className="max-w-7xl mx-auto">
+              <VenueMap
+                venues={filtered as unknown as MapVenue[]}
+                onVenueClick={name => { const v = filtered.find(f => f.property_name === name); if (v) setSelected(v); }}
+              />
+            </div>
+          </section>
+        )}
+        {viewMode === "grid" && (
         <section className="py-16 px-6 md:px-12 bg-[#080604]">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
@@ -380,6 +405,7 @@ export default function Venues() {
             </motion.div>
           )}
         </section>
+        )}
       </main>
 
       <Footer />

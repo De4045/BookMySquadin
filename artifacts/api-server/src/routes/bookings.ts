@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { sendBookingConfirmation } from "../lib/mailer.js";
 import { requireAuth, requireAdmin } from "../middlewares/auth.js";
 
 const router: IRouter = Router();
@@ -78,6 +79,15 @@ router.post("/bookings", (req, res) => {
 
   bookings.push(booking);
   req.log.info({ bookingId: booking.id, vendorName, status: booking.status }, "New booking created");
+  sendBookingConfirmation(booking.email, {
+    name: booking.name,
+    vendorName: booking.vendorName,
+    packageName: booking.packageName,
+    eventDate: booking.eventDate,
+    eventType: booking.eventType,
+    advancePaid: booking.advancePaid,
+    advanceAmount: booking.advanceAmount,
+  }).catch(() => {});
   res.status(201).json({ success: true, booking, id: booking.id });
 });
 

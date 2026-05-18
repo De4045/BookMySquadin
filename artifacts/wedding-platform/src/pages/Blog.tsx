@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useMeta } from "@/hooks/useMeta";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -62,6 +63,7 @@ const STATIC_POSTS: Post[] = [
 ];
 
 export default function Blog() {
+  useMeta({ title: "Blog", description: "Wedding planning tips, inspiration, and expert advice from Book My Squad.", keywords: "wedding blog, wedding tips, wedding planning india" });
   const [openPost, setOpenPost] = useState<Post | null>(null);
   const [apiPosts, setApiPosts] = useState<Post[]>([]);
 
