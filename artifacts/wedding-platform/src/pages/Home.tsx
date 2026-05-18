@@ -315,9 +315,9 @@ export default function Home() {
       <section className="py-28 px-6 md:px-12" style={{background: '#080604'}}>
         <div className="max-w-7xl mx-auto">
           <div ref={venueHeadRef} className="mb-16 text-center">
-            <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Curated For You ✦</p>
+            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Curated For You ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
               Popular <span className="text-primary italic font-semibold">Venue</span> Searches
             </h2>
           </div>
@@ -470,9 +470,9 @@ export default function Home() {
       <section className="py-24 px-6 md:px-12 bg-[#0a0804]">
         <div className="max-w-7xl mx-auto">
           <div ref={inhouseHeadRef} className="mb-16 text-center">
-            <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
+            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
               <span className="text-primary italic font-semibold">Signature</span> Services
             </h2>
           </div>
@@ -507,9 +507,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div ref={catHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="flex-1">
-              <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Vendor Categories ✦</p>
+              <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Vendor Categories ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
+              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
                 Explore <span className="text-primary italic font-semibold">Categories</span>
               </h2>
             </div>
@@ -561,9 +561,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div ref={dreamHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="flex-1">
-              <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Inspiration ✦</p>
+              <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
+              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
                 Dream <span className="text-primary italic font-semibold">Weddings</span>
               </h2>
             </div>
@@ -714,9 +714,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.05)_0%,transparent_60%)] pointer-events-none" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-20">
-            <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Journey ✦</p>
+            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Journey ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
               How It <span className="text-primary italic font-semibold">Works</span>
             </h2>
             <p className="font-manrope text-white/72 text-base font-light mt-4 max-w-lg mx-auto leading-relaxed">
@@ -797,9 +797,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div ref={magazineHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="flex-1">
-              <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Editorial ✦</p>
+              <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Editorial ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
+              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
                 Wedding <span className="text-primary italic font-semibold">Magazine</span>
               </h2>
             </div>
@@ -909,9 +909,9 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div ref={testHeadRef} className="mb-20 text-center">
-            <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Love Stories ✦</p>
+            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Love Stories ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
               Words of <span className="text-primary italic font-semibold">Praise</span>
             </h2>
           </div>
@@ -945,8 +945,8 @@ export default function Home() {
         <div className="flex flex-col md:flex-row">
           <div ref={ctaTextRef} className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
-            <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Join The Network ✦</p>
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal leading-tight mb-8">
+            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Join The Network ✦</p>
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal leading-tight mb-8">
               Are you a <span className="text-primary italic font-semibold">Premium</span> Vendor?
             </h2>
             <ul className="space-y-4 mb-12">
