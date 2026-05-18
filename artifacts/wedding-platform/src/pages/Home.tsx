@@ -423,10 +423,10 @@ export default function Home() {
       <section className="py-24 px-6 md:px-12 bg-[#0a0804]">
         <div className="max-w-7xl mx-auto">
           <div ref={inhouseHeadRef} className="mb-16 text-center">
-            <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Premium Services ✦</p>
+            <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
-              <span className="text-primary italic font-semibold">Inhouse</span> Services
+              <span className="text-primary italic font-semibold">Signature</span> Services
             </h2>
           </div>
 
