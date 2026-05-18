@@ -12,7 +12,6 @@ const navLinks = [
   { label: "Photos", href: "/photos" },
   { label: "Weddings", href: "/weddings" },
   { label: "Blog", href: "/blog" },
-  { label: "Checklist", href: "/checklist" },
   { label: "Why Us", href: "/why-choose-us" },
 ];
 
