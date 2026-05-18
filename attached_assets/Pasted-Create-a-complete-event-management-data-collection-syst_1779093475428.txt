@@ -1,0 +1,121 @@
+Create a complete event management data collection system for my luxury event planning website.
+
+The system should automatically collect and organize all customer, payment, vendor, and venue booking information into structured Excel sheets.
+
+Include the following modules:
+
+1. CUSTOMER BOOKING DATA
+Collect:
+- Full Name
+- Phone Number
+- Email
+- Event Type
+- Event Date
+- Number of Guests
+- Budget Range
+- Event Location
+- Selected Package
+- Special Requirements
+- Booking Status
+- Created Date
+
+2. PAYMENT MANAGEMENT
+Track:
+- Customer Name
+- Invoice Number
+- Payment ID
+- Total Amount
+- Advance Paid
+- Remaining Balance
+- Payment Method
+- Payment Date
+- Payment Status
+- Refund Status
+- GST/Tax
+- Auto-generated Receipt
+
+3. VENUE BOOKING MANAGEMENT
+Store:
+- Venue Name
+- Venue Address
+- Venue Capacity
+- Venue Price
+- Booking Date
+- Time Slot
+- Availability Status
+- Customer Assigned
+- Venue Contact Details
+- Decoration Requirements
+- Catering Included (Yes/No)
+
+4. VENDOR MANAGEMENT
+Track:
+- Vendor Name
+- Vendor Category
+  (Photographer, Caterer, Decorator, DJ, Makeup Artist, etc.)
+- Phone Number
+- Email
+- Service Cost
+- Assigned Event
+- Availability Status
+- Vendor Rating
+- Payment Status
+- Contract Upload
+
+5. EVENT TRACKER
+Include:
+- Event Timeline
+- Task Progress
+- Assigned Team Members
+- Pending Payments
+- Vendor Status
+- Guest Count
+- Final Event Status
+
+6. EXCEL EXPORT FEATURES
+The system must:
+- Automatically generate Excel sheets
+- Create separate sheets for:
+  - Customers
+  - Payments
+  - Vendors
+  - Venues
+  - Events
+- Allow filtering and sorting
+- Support CSV and XLSX export
+- Auto-update data in real-time
+
+7. DASHBOARD FEATURES
+Add:
+- Total Revenue
+- Upcoming Events
+- Pending Payments
+- Vendor Statistics
+- Booking Analytics
+- Monthly Revenue Charts
+
+8. ADMIN FEATURES
+Allow admin to:
+- Edit bookings
+- Update payment status
+- Assign vendors
+- Approve venue bookings
+- Download reports
+- Search customer records
+
+Use a modern admin dashboard UI with:
+- Sidebar navigation
+- Data tables
+- Charts
+- Search bar
+- Filters
+- Mobile responsiveness
+
+Tech stack:
+Frontend: React + Tailwind CSS
+Backend: Node.js + Express
+Database: MongoDB
+Excel Export: SheetJS (xlsx)
+Authentication: JWT Admin Login
+
+Create production-ready code with proper folder structure and API integration.
