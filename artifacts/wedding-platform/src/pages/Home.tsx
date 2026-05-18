@@ -635,6 +635,89 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SECTION 7B: HOW IT WORKS */}
+      <section className="py-28 px-6 md:px-12 bg-[#050403] relative overflow-hidden border-t border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.05)_0%,transparent_60%)] pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-20">
+            <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ The Journey ✦</p>
+            <div className="gold-line w-16 mx-auto mb-6" />
+            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+              How It <span className="text-primary italic font-semibold">Works</span>
+            </h2>
+            <p className="font-manrope text-white/45 text-base font-light mt-4 max-w-lg mx-auto leading-relaxed">
+              From your first search to your last dance — we make every step effortless.
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Connecting line (desktop only) */}
+            <div className="hidden md:block absolute top-12 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
+              {[
+                {
+                  num: "01",
+                  icon: "🔍",
+                  title: "Search & Discover",
+                  desc: "Browse 6,346+ verified vendors and 436 curated venues across 76 Indian cities.",
+                  color: "#d4af37",
+                },
+                {
+                  num: "02",
+                  icon: "❤️",
+                  title: "Compare & Shortlist",
+                  desc: "Read genuine reviews, compare packages side-by-side, and save your favourites.",
+                  color: "#e8a4c8",
+                },
+                {
+                  num: "03",
+                  icon: "📋",
+                  title: "Book & Secure",
+                  desc: "Select your package, confirm the date, and pay a refundable ₹2,000 advance in minutes.",
+                  color: "#50e3c2",
+                },
+                {
+                  num: "04",
+                  icon: "🎊",
+                  title: "Celebrate in Style",
+                  desc: "Sit back and let India's finest wedding professionals create your unforgettable day.",
+                  color: "#4ade80",
+                },
+              ].map((step, i) => (
+                <div key={i} className="flex flex-col items-center text-center group">
+                  {/* Step number circle */}
+                  <div className="relative mb-8">
+                    <div
+                      className="w-24 h-24 rounded-full flex items-center justify-center relative border transition-all duration-500 group-hover:scale-105"
+                      style={{ backgroundColor: step.color + "12", borderColor: step.color + "40", boxShadow: `0 0 40px ${step.color}15` }}
+                    >
+                      <span className="text-3xl">{step.icon}</span>
+                      <div
+                        className="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center font-cinzel text-[10px] font-bold"
+                        style={{ backgroundColor: step.color, color: "#000" }}
+                      >
+                        {step.num}
+                      </div>
+                    </div>
+                  </div>
+                  <h3 className="font-cinzel text-sm tracking-[0.1em] uppercase mb-3" style={{ color: step.color }}>{step.title}</h3>
+                  <p className="font-manrope text-white/50 text-sm leading-relaxed font-light max-w-xs">{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-16 text-center">
+            <Link href="/vendors">
+              <button className="px-10 py-4 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.25em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow rounded-sm">
+                Start Your Search
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* SECTION 8: WEDDING MAGAZINE */}
       <section className="py-28 px-6 md:px-12 bg-[#080604]">
         <div className="max-w-7xl mx-auto">

@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed, Heart, MapPin, Trash2, Briefcase, CalendarDays, ChevronLeft, CreditCard } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Building2, LogOut, ExternalLink, RefreshCw, ChevronRight, CheckCircle2, Users, Bed, Heart, MapPin, Trash2, Briefcase, CalendarDays, ChevronLeft, CreditCard, ClipboardList } from "lucide-react";
 import { PaymentTab } from "./PaymentTab";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
@@ -12,6 +12,13 @@ interface VenueEnquiry {
   id: number; name: string; email: string; phone: string;
   venueName?: string; eventDate?: string; message: string;
   status: string; createdAt: string;
+}
+
+interface Booking {
+  id: number; vendorName: string; vendorCategory: string; city: string;
+  packageName: string; packagePrice: number; eventDate: string; eventType: string;
+  guestCount: number; name: string; email: string; phone: string;
+  advancePaid: boolean; advanceAmount: number; status: string; createdAt: string;
 }
 
 function fmt(iso: string) {
@@ -33,8 +40,9 @@ export default function VenuePortal() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const { items: shortlist, remove: removeShortlist } = useShortlist();
-  const [tab, setTab] = useState<"dashboard" | "enquiries" | "venue" | "saved" | "payment">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "enquiries" | "bookings" | "venue" | "saved" | "payment">("dashboard");
   const [enquiries, setEnquiries] = useState<VenueEnquiry[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
   /* Booking calendar state */
@@ -85,10 +93,17 @@ export default function VenuePortal() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch(`${BASE}/api/venues/enquiries`, { credentials: "include" });
-      if (res.ok) {
-        const data = await res.json() as { enquiries: VenueEnquiry[] };
+      const [eRes, bRes] = await Promise.all([
+        fetch(`${BASE}/api/venues/enquiries`, { credentials: "include" }),
+        fetch(`${BASE}/api/bookings/portal`, { credentials: "include" }),
+      ]);
+      if (eRes.ok) {
+        const data = await eRes.json() as { enquiries: VenueEnquiry[] };
         setEnquiries(data.enquiries);
+      }
+      if (bRes.ok) {
+        const data = await bRes.json() as { bookings: Booking[] };
+        setBookings(data.bookings ?? []);
       }
     } finally {
       setLoading(false);
@@ -100,6 +115,7 @@ export default function VenuePortal() {
   const TABS = [
     { key: "dashboard", label: "Dashboard",                       icon: LayoutDashboard },
     { key: "enquiries", label: `Enquiries (${enquiries.length})`, icon: MessageSquare },
+    { key: "bookings",  label: `Bookings (${bookings.length})`,   icon: ClipboardList },
     { key: "venue",     label: "My Venue",                        icon: Building2 },
     { key: "saved",     label: `Saved (${shortlist.length})`,     icon: Heart },
     { key: "payment",   label: "Subscription",                    icon: CreditCard },
@@ -468,6 +484,86 @@ export default function VenuePortal() {
             </motion.div>
           )}
           {/* PAYMENT TAB */}
+          {tab === "bookings" && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <div className="mb-8">
+                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/50 uppercase mb-2">Venue Overview</p>
+                <h2 className="font-cormorant text-3xl text-white font-light">Booking <span className="text-primary italic">Requests</span></h2>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {[
+                  { label: "Total Bookings",  value: bookings.length,                                           color: "#d4af37" },
+                  { label: "Pending",         value: bookings.filter(b => b.status === "pending").length,        color: "#f59e0b" },
+                  { label: "Advance Paid",    value: bookings.filter(b => b.status === "advance_paid").length,   color: "#50e3c2" },
+                  { label: "Confirmed",       value: bookings.filter(b => b.status === "confirmed").length,      color: "#4ade80" },
+                ].map((s, i) => (
+                  <div key={i} className="luxury-card p-5 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: s.color }} />
+                    <div className="font-cormorant text-3xl font-semibold mb-1" style={{ color: s.color }}>{s.value}</div>
+                    <div className="font-cinzel text-[9px] tracking-[0.2em] text-white/40 uppercase">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {bookings.length === 0 ? (
+                <div className="luxury-card p-16 text-center">
+                  <ClipboardList className="w-12 h-12 text-white/15 mx-auto mb-4" />
+                  <h3 className="font-cormorant text-2xl text-white mb-2">No Bookings Yet</h3>
+                  <p className="font-manrope text-white/40 text-sm">Booking requests from couples will appear here.</p>
+                </div>
+              ) : (
+                <div className="luxury-card overflow-hidden">
+                  <div className="px-6 py-4 border-b border-white/8 flex items-center justify-between">
+                    <h3 className="font-cinzel text-xs tracking-[0.2em] text-white/60 uppercase">Recent Bookings</h3>
+                    <span className="font-manrope text-xs text-white/30">{bookings.length} total</span>
+                  </div>
+                  <div className="divide-y divide-white/5">
+                    {bookings.map(b => {
+                      const statusColors: Record<string, string> = {
+                        pending: "#f59e0b", confirmed: "#4ade80",
+                        advance_paid: "#d4af37", completed: "#60a5fa", cancelled: "#f87171",
+                      };
+                      const sc = statusColors[b.status] ?? "#888";
+                      return (
+                        <div key={b.id} className="px-6 py-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 hover:bg-white/[0.02] transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="font-cormorant text-base text-white font-semibold truncate">{b.name}</span>
+                              <span className="font-manrope text-[10px] text-white/30 shrink-0">{b.email}</span>
+                            </div>
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <span className="font-cinzel text-[9px] tracking-[0.15em] text-primary/70 uppercase">{b.vendorName}</span>
+                              <span className="w-1 h-1 rounded-full bg-white/20 shrink-0" />
+                              <span className="font-manrope text-xs text-white/45">{b.packageName}</span>
+                              {b.advancePaid && (
+                                <span className="font-cinzel text-[8px] tracking-[0.1em] text-emerald-400/80 bg-emerald-400/10 border border-emerald-400/20 px-1.5 py-0.5 rounded-sm uppercase">Advance Paid</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 shrink-0">
+                            <div className="text-right">
+                              <p className="font-manrope text-xs text-white/35">Event Date</p>
+                              <p className="font-manrope text-sm text-white/70">{b.eventDate ? new Date(b.eventDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—"}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-manrope text-xs text-white/35">Amount</p>
+                              <p className="font-manrope text-sm font-medium" style={{ color: sc }}>₹{b.packagePrice?.toLocaleString("en-IN")}</p>
+                            </div>
+                            <div className="px-2.5 py-1 rounded-sm font-cinzel text-[8px] tracking-[0.15em] uppercase font-bold border"
+                              style={{ color: sc, borderColor: sc + "40", background: sc + "12" }}>
+                              {b.status.replace("_", " ")}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
+
           {tab === "payment" && <PaymentTab role="venue" />}
 
           {/* SAVED TAB */}

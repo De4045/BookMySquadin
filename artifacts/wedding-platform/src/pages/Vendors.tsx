@@ -282,6 +282,7 @@ const CAT_COLOR: Record<string, string> = {
 
 const SORT_OPTIONS = [
   { value: "default", label: "Default Order" },
+  { value: "rating",  label: "Rating: Best First" },
   { value: "name-az", label: "Name A → Z" },
   { value: "name-za", label: "Name Z → A" },
   { value: "company", label: "Company A → Z" },
@@ -341,6 +342,7 @@ export default function Vendors() {
       case "name-za":  list = [...list].sort((a, b) => b.name.localeCompare(a.name)); break;
       case "company":  list = [...list].sort((a, b) => (a.company || "").localeCompare(b.company || "")); break;
       case "city":     list = [...list].sort((a, b) => (a.city || "").localeCompare(b.city || "")); break;
+      case "rating":   list = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
     }
     return list;
   }, [vendors, search, filterCategory, cityFilter, sortBy]);

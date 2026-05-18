@@ -101,6 +101,14 @@ router.get("/bookings/my", requireAuth, (req, res) => {
   res.json({ bookings: sorted, total: sorted.length });
 });
 
+/* ── Get bookings for vendor/venue portal (auth required) ── */
+router.get("/bookings/portal", requireAuth, (_req, res) => {
+  const sorted = [...bookings].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+  res.json({ bookings: sorted.slice(0, 100), total: sorted.length });
+});
+
 /* ── Update booking status (admin) ── */
 router.patch("/bookings/:id/status", requireAdmin, (req, res) => {
   const id = Number(req.params["id"]);
