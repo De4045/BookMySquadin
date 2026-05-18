@@ -21,7 +21,6 @@ import Blog from "@/pages/Blog";
 import Photos from "@/pages/Photos";
 import ListYourBusiness from "@/pages/ListYourBusiness";
 import WhyChooseUs from "@/pages/WhyChooseUs";
-import Checklist from "@/pages/Checklist";
 import VendorPortalDemo from "@/pages/demos/VendorPortalDemo";
 import BookingPaymentDemo from "@/pages/demos/BookingPaymentDemo";
 import NotFound from "@/pages/not-found";
@@ -44,7 +43,6 @@ function Router() {
       <Route path="/real-weddings" component={Weddings} />
       <Route path="/blog" component={Blog} />
       <Route path="/photos" component={Photos} />
-      <Route path="/checklist" component={Checklist} />
       <Route path="/list-your-business" component={ListYourBusiness} />
       <Route path="/why-choose-us" component={WhyChooseUs} />
       <Route path="/portal/admin" component={AdminPortal} />
