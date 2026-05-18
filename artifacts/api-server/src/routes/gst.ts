@@ -323,7 +323,7 @@ router.post("/gst/verify", async (req, res) => {
  * Used by the admin portal to surface the setup guide when no key is set.
  */
 router.get("/gst/config", (req, res) => {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   if (!session["userId"] || session["userRole"] !== "admin") {
     res.status(401).json({ error: "Unauthorized" });
     return;

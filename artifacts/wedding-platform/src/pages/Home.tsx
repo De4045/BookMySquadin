@@ -264,7 +264,7 @@ export default function Home() {
 
             {/* Popular tags */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-              <span className="font-cinzel text-[10px] tracking-[0.3em] text-white/40 uppercase mr-2">Popular:</span>
+              <span className="font-cinzel text-[10px] tracking-[0.3em] text-white/65 uppercase mr-2">Popular:</span>
               {[
                 { label: "Wedding Venues", href: "/venues" },
                 { label: "Photography", href: "/vendors" },
@@ -291,7 +291,7 @@ export default function Home() {
           transition={{ delay: 2 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
-          <span className="font-cinzel text-[9px] tracking-[0.4em] text-white/30 uppercase">Scroll</span>
+          <span className="font-cinzel text-[9px] tracking-[0.4em] text-white/55 uppercase">Scroll</span>
           <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
             <ChevronDown className="w-4 h-4 text-white/30" />
           </motion.div>
@@ -317,7 +317,7 @@ export default function Home() {
           <div ref={venueHeadRef} className="mb-16 text-center">
             <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Curated For You ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
               Popular <span className="text-primary italic font-semibold">Venue</span> Searches
             </h2>
           </div>
@@ -344,12 +344,12 @@ export default function Home() {
                   <h3 className="font-cormorant text-[2.1rem] text-white font-semibold leading-tight mb-3">
                     4 Star &amp; Above Hotels
                   </h3>
-                  <p className="font-manrope text-sm text-white/45 font-light leading-relaxed mb-5">
+                  <p className="font-manrope text-sm text-white/70 font-light leading-relaxed mb-5">
                     Grand ballrooms and pool-side lawns in India's finest luxury hotel properties.
                   </p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-5">
                     {["Mumbai", "Bangalore", "Delhi", "Pune", "Hyderabad"].map(c => (
-                      <span key={c} className="font-manrope text-[10px] text-white/45 border-b border-white/20 pb-0.5 group-hover:text-white/65 group-hover:border-white/30 transition-colors duration-300">{c}</span>
+                      <span key={c} className="font-manrope text-[10px] text-white/70 border-b border-white/25 pb-0.5 group-hover:text-white/90 group-hover:border-white/40 transition-colors duration-300">{c}</span>
                     ))}
                   </div>
                   <div className="flex items-center gap-2 translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
@@ -406,10 +406,57 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                       <div className="flex flex-wrap gap-x-3 gap-y-1">
                         {card.cities.map(c => (
-                          <span key={c} className="font-manrope text-[9px] text-white/38 border-b border-white/12 pb-0.5 group-hover:text-white/60 group-hover:border-white/25 transition-colors duration-300">{c}</span>
+                          <span key={c} className="font-manrope text-[9px] text-white/65 border-b border-white/20 pb-0.5 group-hover:text-white/85 group-hover:border-white/35 transition-colors duration-300">{c}</span>
                         ))}
                       </div>
                       <span className="text-primary/50 group-hover:text-primary text-base transition-colors duration-300 ml-2 shrink-0">→</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Second row — 3 more venue types */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=85",
+                type: "Heritage",
+                title: "Palace & Heritage Venues",
+                desc: "Palaces and havelis steeped in royal Indian grandeur.",
+                cities: ["Jaipur", "Udaipur", "Jodhpur"],
+              },
+              {
+                img: "https://images.unsplash.com/photo-1540541338537-d5d77a6c8c0c?w=800&q=85",
+                type: "Poolside",
+                title: "Poolside & Lawn Venues",
+                desc: "Lush lawns and shimmering poolside settings under open skies.",
+                cities: ["Goa", "Mumbai", "Pune"],
+              },
+              {
+                img: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=85",
+                type: "Hilltop",
+                title: "Scenic Hilltop Retreats",
+                desc: "Breathtaking mountain backdrops for intimate celebrations.",
+                cities: ["Shimla", "Mussoorie", "Ooty"],
+              },
+            ].map((card, i) => (
+              <Link key={`extra-${i}`} href="/venues">
+                <div className="relative overflow-hidden group cursor-pointer h-[220px] w-full transition-transform duration-500 hover:scale-[1.02]">
+                  <img src={card.img} alt={card.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/30 to-black/5 group-hover:via-black/20 transition-all duration-600" />
+                  <div className="absolute inset-0 border border-white/[0.05] group-hover:border-primary/40 transition-all duration-500" />
+                  <div className="absolute inset-x-0 top-0 h-[1.5px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
+                  <div className="absolute bottom-5 left-5 right-5">
+                    <span className="font-cinzel text-[8px] tracking-[0.4em] text-primary/75 uppercase block mb-1.5">{card.type}</span>
+                    <h3 className="font-cormorant text-xl text-white font-semibold leading-tight mb-2">{card.title}</h3>
+                    <p className="font-manrope text-[11px] text-white/70 mb-2 leading-relaxed">{card.desc}</p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1">
+                      {card.cities.map(c => (
+                        <span key={c} className="font-manrope text-[9px] text-white/60 border-b border-white/20 pb-0.5">{c}</span>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -425,7 +472,7 @@ export default function Home() {
           <div ref={inhouseHeadRef} className="mb-16 text-center">
             <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
               <span className="text-primary italic font-semibold">Signature</span> Services
             </h2>
           </div>
@@ -443,7 +490,7 @@ export default function Home() {
                   </div>
                   <div className="flex flex-col flex-1 text-center items-center justify-center">
                     <h3 className="text-white font-cormorant text-3xl font-semibold mb-3">{svc.title}</h3>
-                    <p className="font-manrope text-white/60 font-light text-sm mb-6">{svc.desc}</p>
+                    <p className="font-manrope text-white/75 font-light text-sm mb-6">{svc.desc}</p>
                     <span className="mt-auto font-cinzel text-primary text-[10px] tracking-[0.2em] font-semibold flex items-center gap-2 group-hover:gap-3 transition-all uppercase">
                       Discover More <ArrowRight className="w-3 h-3" />
                     </span>
@@ -462,7 +509,7 @@ export default function Home() {
             <div className="flex-1">
               <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Vendor Categories ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
                 Explore <span className="text-primary italic font-semibold">Categories</span>
               </h2>
             </div>
@@ -516,7 +563,7 @@ export default function Home() {
             <div className="flex-1">
               <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
                 Dream <span className="text-primary italic font-semibold">Weddings</span>
               </h2>
             </div>
@@ -574,6 +621,33 @@ export default function Home() {
                 span: "",
                 aspect: "aspect-square",
               },
+              {
+                img: "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=700&q=85",
+                title: "Grand Reception",
+                names: "Kavya & Aditya",
+                city: "Delhi",
+                style: "Contemporary",
+                span: "",
+                aspect: "aspect-square",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=700&q=85",
+                title: "Royal Banquet",
+                names: "Simran & Arjun",
+                city: "Jaipur",
+                style: "Traditional",
+                span: "",
+                aspect: "aspect-square",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1521339246620-34873ccf2999?w=700&q=85",
+                title: "Heritage Wedding",
+                names: "Meera & Rohan",
+                city: "Udaipur",
+                style: "Heritage",
+                span: "",
+                aspect: "aspect-square",
+              },
             ].map((wedding, i) => (
               <Link key={i} href="/weddings" className={wedding.span}>
                 <div className="group cursor-pointer h-full">
@@ -590,9 +664,9 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="absolute bottom-5 left-5 right-5">
-                      <h3 className="font-cinzel text-[10px] tracking-[0.15em] text-white/50 uppercase mb-1">{wedding.title}</h3>
+                      <h3 className="font-cinzel text-[10px] tracking-[0.15em] text-white/80 uppercase mb-1">{wedding.title}</h3>
                       <p className="font-cormorant italic text-xl md:text-2xl text-primary mb-1 leading-tight">{wedding.names}</p>
-                      <p className="font-manrope text-xs text-white/40 flex items-center gap-1">
+                      <p className="font-manrope text-xs text-white/65 flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-primary/50 shrink-0" /> {wedding.city}
                       </p>
                     </div>
@@ -628,7 +702,7 @@ export default function Home() {
                 className="flex-1 py-8 md:py-0 text-center flex flex-col items-center justify-center"
               >
                 <div className="text-4xl md:text-6xl font-cinzel text-shimmer mb-3">{stat.num}</div>
-                <div className="font-manrope text-white/50 text-[10px] uppercase tracking-[0.3em] font-medium">{stat.label}</div>
+                <div className="font-manrope text-white/72 text-[10px] uppercase tracking-[0.3em] font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -642,10 +716,10 @@ export default function Home() {
           <div className="text-center mb-20">
             <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Journey ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
               How It <span className="text-primary italic font-semibold">Works</span>
             </h2>
-            <p className="font-manrope text-white/45 text-base font-light mt-4 max-w-lg mx-auto leading-relaxed">
+            <p className="font-manrope text-white/72 text-base font-light mt-4 max-w-lg mx-auto leading-relaxed">
               From your first search to your last dance — we make every step effortless.
             </p>
           </div>
@@ -702,7 +776,7 @@ export default function Home() {
                     </div>
                   </div>
                   <h3 className="font-cinzel text-sm tracking-[0.1em] uppercase mb-3" style={{ color: step.color }}>{step.title}</h3>
-                  <p className="font-manrope text-white/50 text-sm leading-relaxed font-light max-w-xs">{step.desc}</p>
+                  <p className="font-manrope text-white/72 text-sm leading-relaxed font-light max-w-xs">{step.desc}</p>
                 </div>
               ))}
             </div>
@@ -725,7 +799,7 @@ export default function Home() {
             <div className="flex-1">
               <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Editorial ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+              <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
                 Wedding <span className="text-primary italic font-semibold">Magazine</span>
               </h2>
             </div>
@@ -753,13 +827,13 @@ export default function Home() {
                 </div>
                 <div className="flex items-center gap-4 mb-4">
                   <span className="font-cinzel text-[10px] tracking-[0.2em] text-primary uppercase border border-primary/30 px-3 py-1">Bridal Fashion</span>
-                  <span className="font-manrope font-light text-xs text-white/40">5 min read</span>
-                  <span className="font-manrope font-light text-xs text-white/30">May 2026</span>
+                  <span className="font-manrope font-light text-xs text-white/65">5 min read</span>
+                  <span className="font-manrope font-light text-xs text-white/55">May 2026</span>
                 </div>
                 <h3 className="font-cormorant text-4xl text-white font-medium mb-3 group-hover:text-primary transition-colors leading-tight">
                   15 Stunning Lehenga Trends for 2026 Brides
                 </h3>
-                <p className="font-manrope text-white/50 text-sm font-light leading-relaxed mb-5 flex-grow">
+                <p className="font-manrope text-white/72 text-sm font-light leading-relaxed mb-5 flex-grow">
                   From hand-embroidered Banarasi silk to contemporary mirror-work silhouettes — our fashion editors curate this season's most coveted bridal looks.
                 </p>
                 <div className="flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold">
@@ -803,7 +877,7 @@ export default function Home() {
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="font-cinzel text-[9px] tracking-[0.2em] text-primary uppercase">{post.tag}</span>
                         <span className="w-0.5 h-0.5 rounded-full bg-white/20" />
-                        <span className="font-manrope text-[10px] text-white/35">{post.time}</span>
+                        <span className="font-manrope text-[10px] text-white/60">{post.time}</span>
                       </div>
                       <h3 className="font-cormorant text-lg text-white font-medium leading-snug group-hover:text-primary transition-colors">
                         {post.title}
@@ -837,7 +911,7 @@ export default function Home() {
           <div ref={testHeadRef} className="mb-20 text-center">
             <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Love Stories ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
+            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal">
               Words of <span className="text-primary italic font-semibold">Praise</span>
             </h2>
           </div>
@@ -859,7 +933,7 @@ export default function Home() {
                 <p className="font-cormorant italic text-xl text-white/80 leading-relaxed mb-10 flex-grow relative z-10">{review.text}</p>
                 <div className="w-16 h-px bg-primary/40 mb-6" />
                 <h4 className="font-cinzel text-sm text-primary uppercase tracking-[0.1em] mb-1">{review.name}</h4>
-                <p className="font-manrope text-xs text-white/40 font-light">{review.date}</p>
+                <p className="font-manrope text-xs text-white/65 font-light">{review.date}</p>
               </div>
             ))}
           </div>
@@ -872,7 +946,7 @@ export default function Home() {
           <div ref={ctaTextRef} className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
             <p className="font-cinzel text-[13px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Join The Network ✦</p>
-            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light leading-tight mb-8">
+            <h2 className="font-cormorant text-5xl md:text-6xl text-white font-normal leading-tight mb-8">
               Are you a <span className="text-primary italic font-semibold">Premium</span> Vendor?
             </h2>
             <ul className="space-y-4 mb-12">

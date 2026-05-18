@@ -12,6 +12,7 @@ const navLinks = [
   { label: "Photos", href: "/photos" },
   { label: "Weddings", href: "/weddings" },
   { label: "Blog", href: "/blog" },
+  { label: "Checklist", href: "/checklist" },
   { label: "Why Us", href: "/why-choose-us" },
 ];
 
@@ -341,7 +342,7 @@ export function Navbar() {
               initial={{ opacity: 0, y: -16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.25 }}
               className="fixed top-[90px] left-1/2 -translate-x-1/2 z-[91] w-full max-w-2xl px-4"
             >
               <form onSubmit={handleSearchSubmit} className="relative">

@@ -22,7 +22,7 @@ export function SplashScreen({ onComplete }: Props) {
           key="splash"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.04 }}
-          transition={{ duration: 0.65, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 0.65 }}
           className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden select-none"
           style={{ background: "radial-gradient(ellipse at 50% 42%, #140d04 0%, #080604 60%)" }}
         >
@@ -44,7 +44,7 @@ export function SplashScreen({ onComplete }: Props) {
           <motion.div
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ duration: 0.9, delay: 0.15, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.9, delay: 0.15 }}
             className="absolute"
             style={{
               top: "calc(50% - 110px)",
@@ -60,7 +60,7 @@ export function SplashScreen({ onComplete }: Props) {
           <motion.div
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ duration: 0.9, delay: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.9, delay: 0.25 }}
             className="absolute"
             style={{
               top: "calc(50% + 110px)",
@@ -100,7 +100,7 @@ export function SplashScreen({ onComplete }: Props) {
               alt="Book My Squad"
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.75, delay: 0.3, ease: [0.34, 1.4, 0.64, 1] }}
+              transition={{ duration: 0.75, delay: 0.3 }}
               className="object-contain"
               style={{
                 width: 88,

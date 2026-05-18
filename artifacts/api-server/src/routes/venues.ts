@@ -84,7 +84,7 @@ const enquiries: Array<{
 let enquiryId = 1;
 
 function sessionUserId(req: Parameters<Parameters<typeof router.post>[1]>[0]): number | undefined {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const uid = session["userId"];
   return typeof uid === "number" ? uid : undefined;
 }
@@ -100,7 +100,7 @@ router.get("/venues/stats", (_req, res) => {
 });
 
 router.get("/venues/enquiries", (req, res) => {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"];
   if (!userId) {
     res.status(401).json({ error: "Not authenticated" });
@@ -190,7 +190,7 @@ router.post("/venues/enquiry", (req, res) => {
  * Venue manager marks an enquiry as contacted or booked.
  */
 router.patch("/venues/enquiries/:id/status", (req, res) => {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   if (!session["userId"]) {
     res.status(401).json({ error: "Not authenticated" });
     return;

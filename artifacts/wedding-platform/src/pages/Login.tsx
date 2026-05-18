@@ -9,13 +9,13 @@ import { useAuth } from "@/context/AuthContext";
 
 const pageVariants = {
   initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
   exit: { opacity: 0, y: -24, transition: { duration: 0.35 } },
 };
 
 const fieldVariants = {
   initial: { opacity: 0, height: 0, marginBottom: 0 },
-  animate: { opacity: 1, height: "auto", marginBottom: 16, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } },
+  animate: { opacity: 1, height: "auto", marginBottom: 16, transition: { duration: 0.35 } },
   exit: { opacity: 0, height: 0, marginBottom: 0, transition: { duration: 0.25 } },
 };
 
@@ -138,7 +138,7 @@ export default function Login() {
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6 }}
           className="text-center px-8 relative z-10"
         >
           <motion.div
@@ -184,7 +184,7 @@ export default function Login() {
         <motion.img
           initial={{ scale: 1.08 }}
           animate={{ scale: 1 }}
-          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1.4 }}
           src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1000&q=90"
           alt="Wedding"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
@@ -238,7 +238,7 @@ export default function Login() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ delay: 0.2, duration: 0.7 }}
           className="w-full max-w-md relative z-10"
         >
           {/* Logo — desktop back link */}

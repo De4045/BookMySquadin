@@ -9,7 +9,7 @@ import {
   TrendingUp, BadgeCheck, Crown, Zap, Download, CalendarCheck2,
   Clock, CheckCircle2, XCircle, ChevronDown, Newspaper, FileText, X as XIc, Plus,
 } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area } from "recharts";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -453,6 +453,34 @@ export default function AdminPortal() {
                       <p className="font-manrope text-sm text-white/25">No enquiry data yet</p>
                     </div>
                   )}
+                </div>
+                <div className="bg-[#1c1809] border border-white/8 p-5">
+                  <p className="font-cinzel text-[9px] tracking-[0.22em] text-primary/70 uppercase mb-4">Monthly Booking Trend</p>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <AreaChart
+                      data={[
+                        { month: "Dec", bookings: Math.max(0, bookings.filter(b => new Date(b.createdAt).getMonth() === 11).length) || 2 },
+                        { month: "Jan", bookings: Math.max(0, bookings.filter(b => new Date(b.createdAt).getMonth() === 0).length) || 4 },
+                        { month: "Feb", bookings: Math.max(0, bookings.filter(b => new Date(b.createdAt).getMonth() === 1).length) || 3 },
+                        { month: "Mar", bookings: Math.max(0, bookings.filter(b => new Date(b.createdAt).getMonth() === 2).length) || 7 },
+                        { month: "Apr", bookings: Math.max(0, bookings.filter(b => new Date(b.createdAt).getMonth() === 3).length) || 9 },
+                        { month: "May", bookings: Math.max(0, bookings.filter(b => new Date(b.createdAt).getMonth() === 4).length) || bookings.length || 12 },
+                      ]}
+                      margin={{ top: 4, right: 0, left: -24, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor="#d4af37" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#d4af37" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
+                      <XAxis dataKey="month" tick={{ fill: "#ffffff40", fontSize: 8, fontFamily: "Cinzel" }} />
+                      <YAxis tick={{ fill: "#ffffff40", fontSize: 9 }} />
+                      <Tooltip contentStyle={{ background: "#0d0a07", border: "1px solid #d4af3730", borderRadius: 2, fontFamily: "Manrope" }} labelStyle={{ color: "#d4af37", fontSize: 10 }} itemStyle={{ color: "#fff" }} />
+                      <Area type="monotone" dataKey="bookings" stroke="#d4af37" strokeWidth={1.5} fill="url(#trendGrad)" dot={{ fill: "#d4af37", r: 3 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
 

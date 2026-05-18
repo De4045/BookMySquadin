@@ -32,7 +32,7 @@ let nextId = 1;
 function sessionUserId(
   req: Parameters<Parameters<typeof router.post>[1]>[0],
 ): number | undefined {
-  const s = req.session as Record<string, unknown>;
+  const s = req.session as unknown as Record<string, unknown>;
   const uid = s["userId"];
   return typeof uid === "number" ? uid : undefined;
 }

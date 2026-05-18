@@ -70,7 +70,7 @@ router.post("/auth/register", async (req, res) => {
     isActive: true,
   });
 
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   session["userId"] = user.id;
 
   req.log.info({ userId: user.id, role: assignedRole }, "New user registered");
@@ -132,7 +132,7 @@ router.post("/auth/login", async (req, res) => {
 
   resetLoginAttempts(emailLower);
 
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   session["userId"] = user.id;
 
   req.log.info({ userId: user.id }, "User logged in");
@@ -153,7 +153,7 @@ router.post("/auth/logout", (req, res) => {
 });
 
 router.get("/auth/me", (req, res) => {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"] as number | undefined;
 
   if (!userId) {
@@ -228,7 +228,7 @@ router.patch("/admin/users/:id/activate", requireAdmin, (req, res) => {
 });
 
 router.patch("/auth/profile", requireAuth, (req, res) => {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"] as number;
   const user = getUserById(userId);
   if (!user) { res.status(401).json({ error: "Not authenticated." }); return; }

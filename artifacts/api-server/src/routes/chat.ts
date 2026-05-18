@@ -45,7 +45,7 @@ router.post("/chat", async (req, res) => {
     });
 
     const reply = completion.choices[0]?.message?.content || "I'm here to help with your wedding planning! Please try again.";
-    req.log.info({ userId: (req.session as Record<string, unknown>)["userId"] }, "Chat message processed");
+    req.log.info({ userId: (req.session as unknown as Record<string, unknown>)["userId"] }, "Chat message processed");
     res.json({ reply });
   } catch (err) {
     req.log.error({ err }, "Chat completion error");

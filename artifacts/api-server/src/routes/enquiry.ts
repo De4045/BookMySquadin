@@ -20,7 +20,7 @@ const enquiries: Enquiry[] = [];
 let nextId = 1;
 
 function sessionUserId(req: Parameters<Parameters<typeof router.post>[1]>[0]): number | undefined {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const uid = session["userId"];
   return typeof uid === "number" ? uid : undefined;
 }
@@ -113,7 +113,7 @@ router.post("/enquiry/vendor", (req, res) => {
 
 // Get all enquiries (admin)
 router.get("/enquiries", (req, res) => {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"];
   if (!userId) {
     res.status(401).json({ error: "Not authenticated" });

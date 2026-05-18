@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { getUserById } from "../lib/usersStore.js";
 
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"] as number | undefined;
 
   if (!userId) {
@@ -27,7 +27,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
 }
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
-  const session = req.session as Record<string, unknown>;
+  const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"] as number | undefined;
 
   if (!userId) {
@@ -46,7 +46,7 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction): v
 
 export function requireRole(...roles: string[]) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const session = req.session as Record<string, unknown>;
+    const session = req.session as unknown as Record<string, unknown>;
     const userId = session["userId"] as number | undefined;
 
     if (!userId) {
