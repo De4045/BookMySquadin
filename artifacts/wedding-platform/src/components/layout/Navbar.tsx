@@ -125,7 +125,7 @@ export function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="font-cinzel text-[10px] tracking-[0.2em] uppercase text-white/75 hover:text-primary transition-colors duration-300 whitespace-nowrap"
+                className="relative font-cinzel text-[12px] tracking-[0.2em] uppercase text-white/90 hover:text-primary transition-colors duration-300 whitespace-nowrap pb-1 after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary hover:after:w-full after:transition-all after:duration-300"
               >
                 {link.label}
               </Link>
@@ -301,7 +301,7 @@ export function Navbar() {
               /* Not logged in */
               <Link
                 href="/login"
-                className="hidden md:block font-cinzel text-[10px] tracking-[0.2em] uppercase text-white/75 hover:text-primary transition-colors"
+                className="relative hidden md:block font-cinzel text-[12px] tracking-[0.2em] uppercase text-white/90 hover:text-primary transition-colors pb-1 after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary hover:after:w-full after:transition-all after:duration-300"
               >
                 Login
               </Link>
@@ -309,7 +309,7 @@ export function Navbar() {
 
             <Link
               href="/list-your-business"
-              className="hidden lg:block font-cinzel text-[9px] tracking-[0.15em] uppercase bg-primary text-black px-4 py-2 hover:bg-primary/85 transition-colors font-bold"
+              className="hidden lg:block font-cinzel text-[11px] tracking-[0.15em] uppercase bg-primary text-black px-5 py-2.5 hover:bg-primary/85 transition-colors font-bold"
             >
               List Business
             </Link>
