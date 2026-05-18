@@ -7,6 +7,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { CursorGlow } from "@/components/CursorGlow";
 import { ChatBot } from "@/components/ChatBot";
 import { SplashScreen } from "@/components/SplashScreen";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AuthProvider } from "@/context/AuthContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
 import Home from "@/pages/Home";
@@ -74,6 +75,7 @@ function App() {
                 <CursorGlow />
                 <Router />
                 <ChatBot />
+                <MobileBottomNav />
               </WouterRouter>
             </SmoothScroll>
           </ShortlistProvider>

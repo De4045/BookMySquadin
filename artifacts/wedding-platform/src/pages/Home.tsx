@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2 } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useScrollAnimation, useStaggerAnimation } from "@/hooks/useScrollAnimation";
 
 const CITY_LIST = [
   "Agra","Alwar","Bangalore","Bareilly","Bikaner","Chennai","Dehradun","Delhi",
@@ -77,7 +78,7 @@ export default function Home() {
           const matched = matchToCity(raw);
           if (matched) setCity(matched);
         } catch {
-          // silent fallback — leave city as-is
+          // silent fallback
         } finally {
           setGeoLoading(false);
         }
@@ -106,9 +107,25 @@ export default function Home() {
     }
   };
 
+  /* ── GSAP scroll animation refs ── */
+  const venueHeadRef    = useScrollAnimation<HTMLDivElement>({ type: "fadeUp", duration: 1 });
+  const venueGridRef    = useStaggerAnimation<HTMLDivElement>({ type: "scaleIn", stagger: 0.08, start: "top 90%" });
+  const inhouseHeadRef  = useScrollAnimation<HTMLDivElement>({ type: "fadeUp", duration: 1 });
+  const inhouseGridRef  = useStaggerAnimation<HTMLDivElement>({ type: "fadeUp", stagger: 0.12 });
+  const catHeadRef      = useScrollAnimation<HTMLDivElement>({ type: "fadeUp", duration: 1 });
+  const catGridRef      = useStaggerAnimation<HTMLDivElement>({ type: "fadeUp", stagger: 0.08 });
+  const dreamHeadRef    = useScrollAnimation<HTMLDivElement>({ type: "fadeUp", duration: 1 });
+  const dreamGridRef    = useStaggerAnimation<HTMLDivElement>({ type: "scaleIn", stagger: 0.1 });
+  const statsRef        = useStaggerAnimation<HTMLDivElement>({ type: "fadeUp", stagger: 0.15, start: "top 85%" });
+  const magazineHeadRef = useScrollAnimation<HTMLDivElement>({ type: "fadeUp", duration: 1 });
+  const magazineGridRef = useStaggerAnimation<HTMLDivElement>({ type: "fadeUp", stagger: 0.12 });
+  const testHeadRef     = useScrollAnimation<HTMLDivElement>({ type: "fadeUp", duration: 1 });
+  const testGridRef     = useStaggerAnimation<HTMLDivElement>({ type: "fadeUp", stagger: 0.15 });
+  const ctaTextRef      = useScrollAnimation<HTMLDivElement>({ type: "slideRight", duration: 1, start: "top 80%" });
+  const ctaImgRef       = useScrollAnimation<HTMLDivElement>({ type: "imageReveal", duration: 1.2, start: "top 80%" });
 
   return (
-    <div className="min-h-screen bg-[#080604] w-full overflow-x-hidden font-sans">
+    <div className="min-h-screen bg-[#080604] w-full overflow-x-hidden font-sans pb-mobile-nav lg:pb-0">
       <Navbar />
 
       {/* SECTION 1: HERO */}
@@ -297,7 +314,7 @@ export default function Home() {
       {/* SECTION 3: POPULAR VENUE SEARCHES */}
       <section className="py-28 px-6 md:px-12" style={{background: '#080604'}}>
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16 text-center">
+          <div ref={venueHeadRef} className="mb-16 text-center">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Curated For You ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
@@ -305,29 +322,23 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Bento grid — fixed row heights for perfect visual balance */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[310px_310px] gap-4">
+          {/* Bento grid */}
+          <div ref={venueGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-[310px_310px] gap-4">
 
-            {/* ── Large left card — spans 2 rows ── */}
+            {/* Large left card — spans 2 rows */}
             <Link href="/venues" className="md:col-span-2 lg:col-span-1 lg:row-span-2">
-              <motion.div
-                className="relative overflow-hidden group cursor-pointer h-[420px] md:h-[380px] lg:h-full w-full"
-                whileHover={{ scale: 1.015 }}
-                transition={{ duration: 0.55, ease: "easeOut" }}
+              <div
+                className="relative overflow-hidden group cursor-pointer h-[420px] md:h-[380px] lg:h-full w-full transition-transform duration-500 hover:scale-[1.015]"
               >
                 <img
                   src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&q=85"
                   alt="Luxury Hotels"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                {/* Cinematic gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/5 group-hover:via-black/25 transition-all duration-600" />
-                {/* Gold border on hover */}
                 <div className="absolute inset-0 border border-white/[0.06] group-hover:border-primary/45 transition-all duration-500" />
-                {/* Top shimmer on hover */}
                 <div className="absolute inset-x-0 top-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
-
                 <div className="absolute bottom-8 left-8 right-8">
                   <span className="font-cinzel text-[9px] tracking-[0.45em] text-primary/65 uppercase block mb-2">Hotels</span>
                   <h3 className="font-cormorant text-[2.1rem] text-white font-semibold leading-tight mb-3">
@@ -346,10 +357,10 @@ export default function Home() {
                     <span className="text-primary text-sm">→</span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </Link>
 
-            {/* ── Four equal small cards (2 × 2 right grid) ── */}
+            {/* Four equal small cards */}
             {[
               {
                 img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=85",
@@ -377,24 +388,18 @@ export default function Home() {
               },
             ].map((card, i) => (
               <Link key={i} href="/venues">
-                <motion.div
-                  className="relative overflow-hidden group cursor-pointer h-[240px] md:h-[260px] lg:h-full w-full"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
+                <div
+                  className="relative overflow-hidden group cursor-pointer h-[240px] md:h-[260px] lg:h-full w-full transition-transform duration-500 hover:scale-[1.02]"
                 >
                   <img
                     src={card.img}
                     alt={card.title}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  {/* Dark editorial gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/30 to-black/5 group-hover:via-black/20 transition-all duration-600" />
-                  {/* Border glow */}
                   <div className="absolute inset-0 border border-white/[0.05] group-hover:border-primary/40 transition-all duration-500" />
-                  {/* Top shimmer on hover */}
                   <div className="absolute inset-x-0 top-0 h-[1.5px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
-
                   <div className="absolute bottom-5 left-5 right-5">
                     <span className="font-cinzel text-[8px] tracking-[0.4em] text-primary/60 uppercase block mb-1.5">{card.type}</span>
                     <h3 className="font-cormorant text-[1.3rem] text-white font-semibold leading-tight mb-3">{card.title}</h3>
@@ -407,7 +412,7 @@ export default function Home() {
                       <span className="text-primary/50 group-hover:text-primary text-base transition-colors duration-300 ml-2 shrink-0">→</span>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </Link>
             ))}
           </div>
@@ -417,7 +422,7 @@ export default function Home() {
       {/* SECTION 4: INHOUSE SERVICES */}
       <section className="py-24 px-6 md:px-12 bg-[#0a0804]">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16 text-center">
+          <div ref={inhouseHeadRef} className="mb-16 text-center">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Premium Services ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
@@ -425,30 +430,25 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div ref={inhouseGridRef} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {[
               { img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80", title: "Wedding Planning", desc: "End-to-end meticulous planning by our luxury expert team", href: "/vendors" },
               { img: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=700&q=80", title: "Photography & Films", desc: "Cinematic captures of your most treasured moments", href: "/vendors" },
               { img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80", title: "Bridal Artistry", desc: "Top makeup artists curating your flawless special day look", href: "/vendors" },
-            ].map((service, i) => (
-              <Link key={i} href={service.href}>
-                <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: i * 0.12 }}
-                  className="luxury-card p-6 flex flex-col group cursor-pointer hover:gold-glow rounded-sm"
-                >
+            ].map((svc, i) => (
+              <Link key={i} href={svc.href}>
+                <div className="luxury-card p-6 flex flex-col group cursor-pointer hover:gold-glow rounded-sm">
                   <div className="w-full aspect-square mb-6 overflow-hidden border border-primary/20 group-hover:border-primary/50 transition-colors">
-                    <img src={service.img} alt={service.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src={svc.img} alt={svc.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   </div>
                   <div className="flex flex-col flex-1 text-center items-center justify-center">
-                    <h3 className="text-white font-cormorant text-3xl font-semibold mb-3">{service.title}</h3>
-                    <p className="font-manrope text-white/60 font-light text-sm mb-6">{service.desc}</p>
+                    <h3 className="text-white font-cormorant text-3xl font-semibold mb-3">{svc.title}</h3>
+                    <p className="font-manrope text-white/60 font-light text-sm mb-6">{svc.desc}</p>
                     <span className="mt-auto font-cinzel text-primary text-[10px] tracking-[0.2em] font-semibold flex items-center gap-2 group-hover:gap-3 transition-all uppercase">
                       Discover More <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>
-                </motion.div>
+                </div>
               </Link>
             ))}
           </div>
@@ -458,7 +458,7 @@ export default function Home() {
       {/* SECTION 5: BROWSE BY CATEGORY */}
       <section className="py-28 px-6 md:px-12 bg-[#080604] border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+          <div ref={catHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="flex-1">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Vendor Categories ✦</p>
               <div className="gold-line w-16 mb-6" />
@@ -471,7 +471,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div ref={catGridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { name: "Venues",        num: "01", image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=700&q=80", sub: ["Lawn", "Farmhouse", "Banquet", "Hotel", "Resort"],                   href: "/venues" },
               { name: "Makeup",        num: "02", image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80", sub: ["Bridal Makeup", "Groom Makeup", "Party Makeup"],                     href: "/vendors" },
@@ -481,12 +481,7 @@ export default function Home() {
               { name: "Entertainment", num: "06", image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=700&q=80", sub: ["DJ", "Comedian", "Magician", "Tarot Card Reader"],                   href: "/vendors" },
             ].map((vendor, i) => (
               <Link key={i} href={vendor.href}>
-                <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: i * 0.08 }}
-                  className="group relative overflow-hidden rounded-sm h-[400px] cursor-pointer border border-transparent hover:gold-border-glow transition-all duration-500"
-                >
+                <div className="group relative overflow-hidden rounded-sm h-[400px] cursor-pointer border border-transparent hover:gold-border-glow transition-all duration-500">
                   <img src={vendor.image} alt={vendor.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 group-hover:from-black/95 transition-colors duration-500" />
                   <div className="absolute top-6 right-6 font-cinzel text-xl text-primary/80 font-bold opacity-80 group-hover:opacity-100 group-hover:text-primary transition-all">
@@ -502,7 +497,7 @@ export default function Home() {
                       ))}
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </Link>
             ))}
           </div>
@@ -517,7 +512,7 @@ export default function Home() {
       {/* SECTION 6: DREAM WEDDINGS */}
       <section className="py-28 px-6 md:px-12 bg-[#0d0a07]">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+          <div ref={dreamHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="flex-1">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />
@@ -532,8 +527,7 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* 2-column featured + 2-column grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div ref={dreamGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
                 img: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=85",
@@ -582,12 +576,7 @@ export default function Home() {
               },
             ].map((wedding, i) => (
               <Link key={i} href="/weddings" className={wedding.span}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="group cursor-pointer h-full"
-                >
+                <div className="group cursor-pointer h-full">
                   <div className={`overflow-hidden relative ${wedding.aspect} ${wedding.span ? 'h-full min-h-[480px]' : ''} border border-white/5 group-hover:border-primary/40 transition-colors duration-500`}>
                     <img
                       src={wedding.img}
@@ -595,13 +584,11 @@ export default function Home() {
                       className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    {/* Style tag */}
                     <div className="absolute top-4 left-4">
                       <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase text-primary bg-black/50 border border-primary/30 px-2 py-1 backdrop-blur-sm">
                         {wedding.style}
                       </span>
                     </div>
-                    {/* Bottom info */}
                     <div className="absolute bottom-5 left-5 right-5">
                       <h3 className="font-cinzel text-[10px] tracking-[0.15em] text-white/50 uppercase mb-1">{wedding.title}</h3>
                       <p className="font-cormorant italic text-xl md:text-2xl text-primary mb-1 leading-tight">{wedding.names}</p>
@@ -610,7 +597,7 @@ export default function Home() {
                       </p>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </Link>
             ))}
           </div>
@@ -628,7 +615,7 @@ export default function Home() {
       {/* SECTION 7: STATS COUNTER */}
       <section className="py-24 bg-black relative border-y border-primary/20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_60%)] pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+        <div ref={statsRef} className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
           <div className="flex flex-col md:flex-row justify-between divide-y md:divide-y-0 md:divide-x divide-primary/20">
             {[
               { num: "6,346+", label: "Verified Vendors" },
@@ -636,16 +623,13 @@ export default function Home() {
               { num: "63,346+", label: "Happy Couples" },
               { num: "436", label: "Wedding Venues" }
             ].map((stat, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
                 className="flex-1 py-8 md:py-0 text-center flex flex-col items-center justify-center"
               >
                 <div className="text-4xl md:text-6xl font-cinzel text-shimmer mb-3">{stat.num}</div>
                 <div className="font-manrope text-white/50 text-[10px] uppercase tracking-[0.3em] font-medium">{stat.label}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -654,7 +638,7 @@ export default function Home() {
       {/* SECTION 8: WEDDING MAGAZINE */}
       <section className="py-28 px-6 md:px-12 bg-[#080604]">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
+          <div ref={magazineHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="flex-1">
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ The Editorial ✦</p>
               <div className="gold-line w-16 mb-6" />
@@ -667,15 +651,10 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div ref={magazineGridRef} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Featured Post — spans 2 columns */}
             <Link href="/blog" className="lg:col-span-2">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="group cursor-pointer h-full flex flex-col"
-              >
+              <div className="group cursor-pointer h-full flex flex-col">
                 <div className="overflow-hidden h-[420px] mb-6 relative border border-white/5 group-hover:border-primary/40 transition-all duration-500">
                   <img
                     src="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1000&q=85"
@@ -703,7 +682,7 @@ export default function Home() {
                 <div className="flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold">
                   Read Article <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
                 </div>
-              </motion.div>
+              </div>
             </Link>
 
             {/* Side articles */}
@@ -713,31 +692,23 @@ export default function Home() {
                   img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=85",
                   tag: "Planning",
                   title: "How to Plan Your Wedding Budget Without Stress",
-                  excerpt: "A practical guide to allocating your wedding budget across venues, catering, décor and photography.",
                   time: "7 min read",
                 },
                 {
                   img: "https://images.unsplash.com/photo-1478146059778-26028b07395a?w=600&q=85",
                   tag: "Décor",
                   title: "Minimalist Décor Ideas That Look Expensive",
-                  excerpt: "Less is more — discover how restrained colour palettes and quality florals create a luxury atmosphere.",
                   time: "4 min read",
                 },
                 {
                   img: "https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600&q=85",
                   tag: "Photography",
                   title: "Golden Hour Portraits: Tips From Top Wedding Photographers",
-                  excerpt: "India's leading wedding photographers share their secrets for capturing those unforgettable moments.",
                   time: "6 min read",
                 },
               ].map((post, i) => (
                 <Link key={i} href="/blog">
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.15 + i * 0.1 }}
-                    className="group cursor-pointer flex gap-4"
-                  >
+                  <div className="group cursor-pointer flex gap-4">
                     <div className="w-24 h-24 shrink-0 overflow-hidden border border-white/5 group-hover:border-primary/40 transition-colors duration-500">
                       <img
                         src={post.img}
@@ -755,7 +726,7 @@ export default function Home() {
                         {post.title}
                       </h3>
                     </div>
-                  </motion.div>
+                  </div>
                 </Link>
               ))}
 
@@ -780,7 +751,7 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="mb-20 text-center">
+          <div ref={testHeadRef} className="mb-20 text-center">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Love Stories ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light">
@@ -788,17 +759,14 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div ref={testGridRef} className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { text: "The planning was flawless. Every detail was curated with such precision and elegance. Our guests are still talking about the magnificent decor and seamless experience.", name: "Rohan & Sneha", date: "Married in Jaipur" },
               { text: "Finding vendors through BMS was the best decision. The platform's luxury partners delivered beyond our wildest expectations. A truly 5-star experience from start to finish.", name: "Vikram & Aisha", date: "Married in Udaipur" },
               { text: "They understood our vision for a minimalist yet opulent celebration immediately. The venue recommendation was breathtaking and the execution was pure perfection.", name: "Karan & Meera", date: "Married in Goa" }
             ].map((review, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
                 className="luxury-card p-10 flex flex-col items-center text-center rounded-sm relative"
               >
                 <div className="font-cormorant text-8xl text-primary/20 absolute top-4 left-6 leading-none">"</div>
@@ -809,7 +777,7 @@ export default function Home() {
                 <div className="w-16 h-px bg-primary/40 mb-6" />
                 <h4 className="font-cinzel text-sm text-primary uppercase tracking-[0.1em] mb-1">{review.name}</h4>
                 <p className="font-manrope text-xs text-white/40 font-light">{review.date}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -818,14 +786,12 @@ export default function Home() {
       {/* SECTION 10: VENDOR CTA */}
       <section className="bg-[#080604] border-y border-white/10">
         <div className="flex flex-col md:flex-row">
-          <div className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
+          <div ref={ctaTextRef} className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
-
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Join The Network ✦</p>
             <h2 className="font-cormorant text-5xl md:text-6xl text-white font-light leading-tight mb-8">
               Are you a <span className="text-primary italic font-semibold">Premium</span> Vendor?
             </h2>
-
             <ul className="space-y-4 mb-12">
               {[
                 "Showcase your portfolio to high-net-worth clients",
@@ -838,7 +804,6 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-
             <Link href="/list-your-business">
               <button className="self-start px-8 py-4 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow rounded-sm">
                 List Your Business
@@ -846,7 +811,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="w-full md:w-1/2 min-h-[400px] md:min-h-full relative">
+          <div ref={ctaImgRef} className="w-full md:w-1/2 min-h-[400px] md:min-h-full relative">
             <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1200&q=80" alt="Luxury Event" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#080604] to-transparent md:via-transparent md:to-transparent" />
           </div>

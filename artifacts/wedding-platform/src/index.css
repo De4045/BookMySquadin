@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Manrope:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Manrope:wght@200;300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -153,9 +153,12 @@
 }
 
 /* LUXURY EFFECTS */
-.font-cinzel { font-family: 'Cinzel', serif; }
+.font-cinzel    { font-family: 'Cinzel', serif; }
 .font-cormorant { font-family: 'Cormorant Garamond', serif; }
-.font-manrope { font-family: 'Manrope', sans-serif; }
+.font-playfair  { font-family: 'Playfair Display', serif; }
+.font-poppins   { font-family: 'Poppins', sans-serif; }
+.font-inter     { font-family: 'Inter', sans-serif; }
+.font-manrope   { font-family: 'Manrope', sans-serif; }
 
 /* Gold glow effect */
 .gold-glow {
@@ -225,7 +228,7 @@
   opacity: 0.4;
 }
 
-/* Section reveal */
+/* Section reveal (CSS fallback for non-GSAP usage) */
 .reveal-up {
   opacity: 0;
   transform: translateY(40px);
@@ -234,6 +237,36 @@
 .reveal-up.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* GSAP scroll animation base states */
+[data-gsap="fadeUp"] {
+  opacity: 0;
+  transform: translateY(48px);
+}
+[data-gsap="fadeIn"] {
+  opacity: 0;
+}
+[data-gsap="slideLeft"] {
+  opacity: 0;
+  transform: translateX(48px);
+}
+[data-gsap="slideRight"] {
+  opacity: 0;
+  transform: translateX(-48px);
+}
+[data-gsap="scaleIn"] {
+  opacity: 0;
+  transform: scale(0.88);
+}
+[data-gsap="imageReveal"] {
+  clip-path: inset(100% 0% 0% 0%);
+  -webkit-clip-path: inset(100% 0% 0% 0%);
+}
+
+/* Safe area bottom padding for mobile nav */
+.pb-mobile-nav {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
 }
 
 /* Video overlay gradient */
