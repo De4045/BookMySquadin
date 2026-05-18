@@ -9,12 +9,44 @@ import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
-const TYPE_IMAGES: Record<string, string> = {
-  HOTEL:     "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=85",
-  RESORT:    "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1200&q=85",
-  FARMHOUSE: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=85",
-  BANQUET:   "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=85",
+const VENUE_IMAGE_POOLS: Record<string, string[]> = {
+  HOTEL: [
+    "1566073771259-6a8506099945","1542314831-068cd1dbfeeb","1529290130-4ca3753253ae",
+    "1455587734955-081b22074882","1496417263034-38ec4f0b665a","1551882547-ff40c63fe5fa",
+    "1520250497591-112f2f40a3f4","1561501878-aabd62634533","1568084680786-a84f91d1153c",
+    "1471086569508-084aa489e9fb",
+  ],
+  RESORT: [
+    "1582719508461-905c673771fd","1571003123894-1f0594d2b5d9","1507525428034-b723cf961d3e",
+    "1540541338537-d5d77a6c8c0c","1476514525535-07fb3b4ae5f1","1519046904884-53103b34b206",
+    "1545558014-8692077e9b5c","1614267119077-51bdcfba6f19","1510414842594-a61c69b5ae57",
+    "1506197603052-3cc9c3a201bd",
+  ],
+  FARMHOUSE: [
+    "1600585154526-990dced4db0d","1564013799919-ab600027ffc6","1580587771525-78b9dba3b914",
+    "1568605114967-8130f3a36994","1512917774080-9991f1c4c750","1558618666-fcd25c85cd64",
+    "1516455590571-18256e5bb9ff","1598300042247-d088f8ab3a91","1572120360610-d971b9d7767c",
+    "1594938298603-c8148c4b4357",
+  ],
+  BANQUET: [
+    "1519167758481-83f550bb49b3","1478146059778-26028b07395a","1464366400600-7168b8af9bc3",
+    "1521339246620-34873ccf2999","1527529482837-4698179dc6ce","1530103862676-de8c9debad1d",
+    "1511795409834-ef04bbd61622","1469371670807-013ccf25f16a","1519225421980-715cb0215aed",
+    "1465495976277-f48b955d8070",
+  ],
 };
+
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function getVenueImage(propertyName: string, typeKey: string, size = "1200"): string {
+  const pool = VENUE_IMAGE_POOLS[typeKey] ?? VENUE_IMAGE_POOLS["BANQUET"];
+  const id = pool[hashStr(propertyName) % pool.length];
+  return `https://images.unsplash.com/photo-${id}?w=${size}&q=85`;
+}
 
 const INPUT = "w-full bg-white/[0.05] border border-white/10 focus:border-primary/50 outline-none px-4 py-3 font-manrope text-sm text-white placeholder:text-white/30 transition-colors rounded-sm";
 
@@ -34,7 +66,7 @@ export function VenueDetailModal({ venue, onClose }: Props) {
   if (!venue) return null;
 
   const typeKey = (venue.type || "").toUpperCase().trim();
-  const coverImg = TYPE_IMAGES[typeKey] || TYPE_IMAGES.BANQUET;
+  const coverImg = getVenueImage(venue.property_name, typeKey);
   const shortlistId = `venue-${venue.property_name}-${venue.city_sheet}`;
   const isShortlisted = has(shortlistId);
   const isVerified = isVenueVerified(venue.property_name);

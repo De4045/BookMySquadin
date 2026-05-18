@@ -41,7 +41,35 @@ const loginAttempts = new Map<string, LoginAttempt>();
     createdAt: new Date().toISOString(),
     isActive: true,
   });
-  logger.info("Admin account seeded");
+
+  const vendorHash = await bcrypt.hash("Vendor@2025!", SALT_ROUNDS);
+  users.push({
+    id: nextId++,
+    name: "Royal Photography Studio",
+    email: "vendor@bookmysquad.in",
+    passwordHash: vendorHash,
+    role: "vendor",
+    createdAt: new Date().toISOString(),
+    isActive: true,
+    phone: "+91 98765 43210",
+    city: "Mumbai",
+    bio: "Premium wedding photography & cinematography. Serving couples across India since 2018. Specialising in candid moments, cinematic films and fine-art albums.",
+  });
+
+  const customerHash = await bcrypt.hash("Customer@2025!", SALT_ROUNDS);
+  users.push({
+    id: nextId++,
+    name: "Anjali Mehta",
+    email: "customer@bookmysquad.in",
+    passwordHash: customerHash,
+    role: "user",
+    createdAt: new Date().toISOString(),
+    isActive: true,
+    phone: "+91 87654 32109",
+    city: "Delhi",
+  });
+
+  logger.info("Seeded accounts — admin, vendor (vendor@bookmysquad.in / Vendor@2025!), customer (customer@bookmysquad.in / Customer@2025!)");
 })();
 
 export function getUserById(id: number): User | undefined {

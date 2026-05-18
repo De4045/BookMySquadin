@@ -667,6 +667,8 @@ export default function Vendors() {
                 <button
                   disabled={comparison.items.length < 2}
                   onClick={() => setShowCompare(true)}
+                  aria-label="Open comparison modal"
+                  data-testid="open-comparison"
                   className="flex items-center gap-2 px-5 py-2 bg-primary text-black font-cinzel text-[9px] tracking-[0.18em] uppercase font-bold hover:bg-primary/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Scale className="w-3.5 h-3.5" /> Compare ({comparison.items.length})

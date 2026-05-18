@@ -18,6 +18,45 @@ const TYPE_COLOR: Record<string, string> = {
   BANQUET: "#bd10e0",
 };
 
+const VENUE_IMG_POOLS: Record<string, string[]> = {
+  HOTEL: [
+    "1566073771259-6a8506099945","1542314831-068cd1dbfeeb","1529290130-4ca3753253ae",
+    "1455587734955-081b22074882","1496417263034-38ec4f0b665a","1551882547-ff40c63fe5fa",
+    "1520250497591-112f2f40a3f4","1561501878-aabd62634533","1568084680786-a84f91d1153c",
+    "1471086569508-084aa489e9fb",
+  ],
+  RESORT: [
+    "1582719508461-905c673771fd","1571003123894-1f0594d2b5d9","1507525428034-b723cf961d3e",
+    "1540541338537-d5d77a6c8c0c","1476514525535-07fb3b4ae5f1","1519046904884-53103b34b206",
+    "1545558014-8692077e9b5c","1614267119077-51bdcfba6f19","1510414842594-a61c69b5ae57",
+    "1506197603052-3cc9c3a201bd",
+  ],
+  FARMHOUSE: [
+    "1600585154526-990dced4db0d","1564013799919-ab600027ffc6","1580587771525-78b9dba3b914",
+    "1568605114967-8130f3a36994","1512917774080-9991f1c4c750","1558618666-fcd25c85cd64",
+    "1516455590571-18256e5bb9ff","1598300042247-d088f8ab3a91","1572120360610-d971b9d7767c",
+    "1594938298603-c8148c4b4357",
+  ],
+  BANQUET: [
+    "1519167758481-83f550bb49b3","1478146059778-26028b07395a","1464366400600-7168b8af9bc3",
+    "1521339246620-34873ccf2999","1527529482837-4698179dc6ce","1530103862676-de8c9debad1d",
+    "1511795409834-ef04bbd61622","1469371670807-013ccf25f16a","1519225421980-715cb0215aed",
+    "1465495976277-f48b955d8070",
+  ],
+};
+
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function getVenueCardImg(name: string, type: string): string {
+  const pool = VENUE_IMG_POOLS[type] ?? VENUE_IMG_POOLS["BANQUET"];
+  const id = pool[hashStr(name) % pool.length];
+  return `https://images.unsplash.com/photo-${id}?w=800&q=80`;
+}
+
 const SORT_OPTIONS = [
   { value: "default",    label: "Default Order" },
   { value: "name-az",    label: "Name A → Z" },
@@ -216,6 +255,8 @@ export default function Venues() {
                 const slId       = `venue-${venue.property_name}-${venue.city_sheet}`;
                 const isSlisted  = has(slId);
 
+                const cardImg = getVenueCardImg(venue.property_name, typeKey);
+
                 return (
                   <motion.div
                     layout
@@ -227,36 +268,49 @@ export default function Venues() {
                     onClick={() => setSelected(venue)}
                     className="bg-[#1a1510] border border-white/5 rounded-sm overflow-hidden flex flex-col group hover:border-primary/40 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)] cursor-pointer"
                   >
-                    <div className="h-0.5 w-full transition-opacity opacity-60 group-hover:opacity-100" style={{ backgroundColor: typeColor }} />
-                    <div className="p-6 flex flex-col flex-grow">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="font-cinzel text-[9px] uppercase tracking-[0.2em] font-bold px-2 py-1 rounded-sm bg-black/40 border border-white/10" style={{ color: typeColor }}>
+                    <div className="relative h-44 overflow-hidden">
+                      <img
+                        src={cardImg}
+                        alt={venue.property_name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1510] via-[#1a1510]/30 to-transparent" />
+                      <div className="absolute bottom-3 left-3">
+                        <span
+                          className="font-cinzel text-[9px] uppercase tracking-[0.2em] font-bold px-2 py-1 rounded-sm bg-black/60 border border-white/10 backdrop-blur-sm"
+                          style={{ color: typeColor }}
+                        >
                           {typeKey || "VENUE"}
                         </span>
+                      </div>
+                      {isVenueVerified(venue.property_name) && (
+                        <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-sm border border-primary/20">
+                          <BadgeCheck className="w-3 h-3 text-primary" />
+                          <span className="font-cinzel text-[6.5px] tracking-[0.15em] text-primary uppercase">Verified</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6 flex flex-col flex-grow">
+                      <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           {venue.city_sheet && (
                             <span className="flex items-center gap-1 font-manrope text-[10px] text-white/35">
                               <MapPin className="w-3 h-3 text-primary/40" /> {venue.city_sheet}
                             </span>
                           )}
-                          <button
-                            onClick={e => { e.stopPropagation(); toggle({ id: slId, type: "venue", name: venue.property_name, city: venue.city_sheet }); }}
-                            className={`w-7 h-7 flex items-center justify-center rounded-sm transition-all ${isSlisted ? "text-primary" : "text-white/20 hover:text-primary/70"}`}
-                          >
-                            <Heart className={`w-3.5 h-3.5 ${isSlisted ? "fill-primary" : ""}`} />
-                          </button>
                         </div>
+                        <button
+                          onClick={e => { e.stopPropagation(); toggle({ id: slId, type: "venue", name: venue.property_name, city: venue.city_sheet }); }}
+                          className={`w-7 h-7 flex items-center justify-center rounded-sm transition-all ${isSlisted ? "text-primary" : "text-white/20 hover:text-primary/70"}`}
+                        >
+                          <Heart className={`w-3.5 h-3.5 ${isSlisted ? "fill-primary" : ""}`} />
+                        </button>
                       </div>
 
                       <h3 className="text-xl font-cormorant font-bold text-white mb-1 leading-tight group-hover:text-primary transition-colors duration-300">
                         {venue.property_name}
                       </h3>
-                      {isVenueVerified(venue.property_name) && (
-                        <div className="flex items-center gap-1 mb-1.5">
-                          <BadgeCheck className="w-3 h-3 text-primary" />
-                          <span className="font-cinzel text-[6.5px] tracking-[0.15em] text-primary uppercase">Verified Partner</span>
-                        </div>
-                      )}
                       {venue.location && venue.location !== venue.city_sheet && (
                         <p className="font-manrope text-white/40 text-xs mb-4">{venue.location}</p>
                       )}

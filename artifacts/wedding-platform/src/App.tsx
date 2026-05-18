@@ -22,6 +22,8 @@ import Photos from "@/pages/Photos";
 import ListYourBusiness from "@/pages/ListYourBusiness";
 import WhyChooseUs from "@/pages/WhyChooseUs";
 import Checklist from "@/pages/Checklist";
+import VendorPortalDemo from "@/pages/demos/VendorPortalDemo";
+import BookingPaymentDemo from "@/pages/demos/BookingPaymentDemo";
 import NotFound from "@/pages/not-found";
 import AdminPortal from "@/pages/portal/AdminPortal";
 import VendorPortal from "@/pages/portal/VendorPortal";
@@ -50,6 +52,8 @@ function Router() {
       <Route path="/portal/venue" component={VenuePortal} />
       <Route path="/portal/profile" component={Profile} />
       <Route path="/portal/saved" component={SavedFavorites} />
+      <Route path="/demo/vendor-portal" component={VendorPortalDemo} />
+      <Route path="/demo/booking-payment" component={BookingPaymentDemo} />
       <Route component={NotFound} />
     </Switch>
   );
