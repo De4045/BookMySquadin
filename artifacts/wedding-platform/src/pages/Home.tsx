@@ -317,7 +317,7 @@ export default function Home() {
           <div ref={venueHeadRef} className="mb-16 text-center">
             <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Curated For You ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               Popular <span className="text-primary italic font-semibold">Venue</span> Searches
             </h2>
           </div>
@@ -472,7 +472,7 @@ export default function Home() {
           <div ref={inhouseHeadRef} className="mb-16 text-center">
             <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               <span className="text-primary italic font-semibold">Signature</span> Services
             </h2>
           </div>
@@ -509,7 +509,7 @@ export default function Home() {
             <div className="flex-1">
               <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Vendor Categories ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
+              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
                 Explore <span className="text-primary italic font-semibold">Categories</span>
               </h2>
             </div>
@@ -563,7 +563,7 @@ export default function Home() {
             <div className="flex-1">
               <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
+              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
                 Dream <span className="text-primary italic font-semibold">Weddings</span>
               </h2>
             </div>
@@ -716,7 +716,7 @@ export default function Home() {
           <div className="text-center mb-20">
             <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Journey ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               How It <span className="text-primary italic font-semibold">Works</span>
             </h2>
             <p className="font-manrope text-white/72 text-base font-light mt-4 max-w-lg mx-auto leading-relaxed">
@@ -799,7 +799,7 @@ export default function Home() {
             <div className="flex-1">
               <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Editorial ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
+              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
                 Wedding <span className="text-primary italic font-semibold">Magazine</span>
               </h2>
             </div>
@@ -911,7 +911,7 @@ export default function Home() {
           <div ref={testHeadRef} className="mb-20 text-center">
             <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Love Stories ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               Words of <span className="text-primary italic font-semibold">Praise</span>
             </h2>
           </div>
@@ -946,7 +946,7 @@ export default function Home() {
           <div ref={ctaTextRef} className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
             <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Join The Network ✦</p>
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal leading-tight mb-8">
+            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal leading-tight mb-8 drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               Are you a <span className="text-primary italic font-semibold">Premium</span> Vendor?
             </h2>
             <ul className="space-y-4 mb-12">
