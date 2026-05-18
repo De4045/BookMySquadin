@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
@@ -7,8 +7,9 @@ import {
   LayoutDashboard, MessageSquare, Users, LogOut, ExternalLink, RefreshCw,
   ShieldCheck, Heart, MapPin, Trash2, Building2, Briefcase, CreditCard,
   TrendingUp, BadgeCheck, Crown, Zap, Download, CalendarCheck2,
-  Clock, CheckCircle2, XCircle, ChevronDown,
+  Clock, CheckCircle2, XCircle, ChevronDown, Newspaper, FileText, X as XIc, Plus,
 } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -57,6 +58,11 @@ interface Booking {
   advanceAmount: number;
   status: "pending" | "confirmed" | "advance_paid" | "completed" | "cancelled";
   createdAt: string;
+}
+
+interface Article {
+  id: number; title: string; tag: string; excerpt: string;
+  img: string; author: string; readTime: string; published: boolean; createdAt: string;
 }
 
 const ROLE_COLOR: Record<string, string> = {
@@ -201,7 +207,7 @@ export default function AdminPortal() {
   const { user, logout } = useAuth();
   const [, navigate] = useLocation();
   const { items: shortlist, remove: removeShortlist } = useShortlist();
-  const [tab, setTab] = useState<"overview" | "bookings" | "enquiries" | "users" | "payments" | "saved">("overview");
+  const [tab, setTab] = useState<"overview" | "bookings" | "enquiries" | "users" | "payments" | "saved" | "content">("overview");
   const [stats, setStats] = useState<Stats | null>(null);
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [venueEnquiries, setVenueEnquiries] = useState<VenueEnquiry[]>([]);
@@ -212,7 +218,13 @@ export default function AdminPortal() {
   const [loading, setLoading] = useState(true);
   const [enquiryFilter, setEnquiryFilter] = useState("all");
   const [bookingFilter, setBookingFilter] = useState<"all" | Booking["status"]>("all");
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [updatingId, setUpdatingId]   = useState<number | null>(null);
+  const [articles, setArticles]       = useState<Article[]>([]);
+  const [newArtTitle, setNewArtTitle] = useState("");
+  const [newArtTag, setNewArtTag]     = useState("Planning");
+  const [newArtExcerpt, setNewArtExcerpt] = useState("");
+  const [savingArticle, setSavingArticle] = useState(false);
+  const [deletingArtId, setDeletingArtId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) { navigate("/login"); return; }
@@ -223,7 +235,7 @@ export default function AdminPortal() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [statsRes, enqRes, venueEnqRes, usersRes, payRes, gstRes, bookingsRes] = await Promise.all([
+      const [statsRes, enqRes, venueEnqRes, usersRes, payRes, gstRes, bookingsRes, artRes] = await Promise.all([
         fetch(`${BASE}/api/admin/stats`, { credentials: "include" }),
         fetch(`${BASE}/api/enquiries`, { credentials: "include" }),
         fetch(`${BASE}/api/venues/enquiries`, { credentials: "include" }),
@@ -231,6 +243,7 @@ export default function AdminPortal() {
         fetch(`${BASE}/api/admin/payments`, { credentials: "include" }),
         fetch(`${BASE}/api/gst/config`, { credentials: "include" }),
         fetch(`${BASE}/api/bookings`, { credentials: "include" }),
+        fetch(`${BASE}/api/articles/all`, { credentials: "include" }),
       ]);
       if (statsRes.ok)    setStats(await statsRes.json() as Stats);
       if (enqRes.ok)      setEnquiries((await enqRes.json() as { enquiries: Enquiry[] }).enquiries);
@@ -239,6 +252,7 @@ export default function AdminPortal() {
       if (payRes.ok)      setPaymentStats(await payRes.json() as PaymentStats);
       if (gstRes.ok)      setGstConfig(await gstRes.json() as GstConfig);
       if (bookingsRes.ok) setBookings((await bookingsRes.json() as { bookings: Booking[] }).bookings);
+      if (artRes.ok)      setArticles((await artRes.json() as { articles: Article[] }).articles);
     } finally {
       setLoading(false);
     }
@@ -276,6 +290,29 @@ export default function AdminPortal() {
   const advancePaidCount = bookings.filter(b => b.advancePaid).length;
   const totalAdvance = bookings.filter(b => b.advancePaid).reduce((s, b) => s + b.advanceAmount, 0);
 
+  const bookingsByCategory = useMemo(() => {
+    const map: Record<string, number> = {};
+    bookings.forEach(b => { map[b.vendorCategory] = (map[b.vendorCategory] || 0) + 1; });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 6)
+      .map(([name, count]) => ({ name: name.length > 12 ? name.slice(0, 12) + "…" : name, count }));
+  }, [bookings]);
+
+  const bookingsByStatus = useMemo(() => [
+    { name: "Pending",   value: bookings.filter(b => b.status === "pending").length,      color: "#f59e0b" },
+    { name: "Adv.Paid",  value: bookings.filter(b => b.status === "advance_paid").length,  color: "#d4af37" },
+    { name: "Confirmed", value: bookings.filter(b => b.status === "confirmed").length,     color: "#4a90e2" },
+    { name: "Completed", value: bookings.filter(b => b.status === "completed").length,     color: "#4ade80" },
+    { name: "Cancelled", value: bookings.filter(b => b.status === "cancelled").length,     color: "#f43f5e" },
+  ].filter(s => s.value > 0), [bookings]);
+
+  const enquiryByType = useMemo(() => {
+    const map: Record<string, number> = {};
+    allEnquiries.forEach(e => { map[e.type] = (map[e.type] || 0) + 1; });
+    return Object.entries(map).map(([name, count]) => ({
+      name: name.charAt(0).toUpperCase() + name.slice(1), count,
+    }));
+  }, [allEnquiries]);
+
   const TABS = [
     { key: "overview",  label: "Overview",                           icon: LayoutDashboard },
     { key: "bookings",  label: `Bookings (${bookings.length})`,      icon: CalendarCheck2 },
@@ -283,6 +320,7 @@ export default function AdminPortal() {
     { key: "users",     label: `Users (${users.length})`,            icon: Users },
     { key: "payments",  label: "Payments",                           icon: CreditCard },
     { key: "saved",     label: `Saved (${shortlist.length})`,        icon: Heart },
+    { key: "content",   label: `Blog CMS (${articles.length})`,      icon: Newspaper },
   ] as const;
 
   if (loading) return (
@@ -355,6 +393,67 @@ export default function AdminPortal() {
                 <StatCard label="Total Venues"  value={stats?.totalVenues ?? 436}  sub="Across India" accent="#4a90e2" />
                 <StatCard label="Total Vendors" value={stats?.totalVendors ?? 255}  accent="#50e3c2" />
                 <StatCard label="All Bookings"  value={bookings.length} sub={`${advancePaidCount} advance paid`} accent="#e8a4c8" />
+              </div>
+
+              {/* ── Analytics Charts ── */}
+              <div className="mb-6">
+                <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/60 uppercase mb-4">Platform Analytics</p>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                  <div className="bg-[#1c1809] border border-white/8 p-5">
+                    <p className="font-cinzel text-[9px] tracking-[0.22em] text-primary/70 uppercase mb-4">Bookings by Category</p>
+                    {bookingsByCategory.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={168}>
+                        <BarChart data={bookingsByCategory} margin={{ top: 0, right: 0, left: -24, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
+                          <XAxis dataKey="name" tick={{ fill: "#ffffff40", fontSize: 8, fontFamily: "Cinzel" }} />
+                          <YAxis tick={{ fill: "#ffffff40", fontSize: 9 }} />
+                          <Tooltip contentStyle={{ background: "#0d0a07", border: "1px solid #d4af3730", borderRadius: 2, fontFamily: "Manrope" }} labelStyle={{ color: "#d4af37", fontSize: 10 }} itemStyle={{ color: "#fff" }} />
+                          <Bar dataKey="count" fill="#d4af37" radius={[2, 2, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-[168px] flex items-center justify-center">
+                        <p className="font-manrope text-sm text-white/25">No booking data yet</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="bg-[#1c1809] border border-white/8 p-5">
+                    <p className="font-cinzel text-[9px] tracking-[0.22em] text-primary/70 uppercase mb-4">Status Distribution</p>
+                    {bookingsByStatus.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={168}>
+                        <PieChart>
+                          <Pie data={bookingsByStatus} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={65} innerRadius={30} paddingAngle={2}>
+                            {bookingsByStatus.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                          </Pie>
+                          <Tooltip contentStyle={{ background: "#0d0a07", border: "1px solid #d4af3730", borderRadius: 2 }} itemStyle={{ color: "#fff", fontSize: 12 }} />
+                          <Legend iconType="circle" iconSize={7} formatter={(v: string) => <span style={{ fontFamily: "Cinzel", fontSize: 8, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: "0.12em" }}>{v}</span>} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-[168px] flex items-center justify-center">
+                        <p className="font-manrope text-sm text-white/25">No booking data yet</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="bg-[#1c1809] border border-white/8 p-5">
+                  <p className="font-cinzel text-[9px] tracking-[0.22em] text-primary/70 uppercase mb-4">Enquiries by Type</p>
+                  {enquiryByType.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={120}>
+                      <BarChart data={enquiryByType} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
+                        <XAxis type="number" tick={{ fill: "#ffffff40", fontSize: 9 }} />
+                        <YAxis type="category" dataKey="name" width={68} tick={{ fill: "#ffffff55", fontSize: 9, fontFamily: "Cinzel" }} />
+                        <Tooltip contentStyle={{ background: "#0d0a07", border: "1px solid #d4af3730", borderRadius: 2 }} itemStyle={{ color: "#fff" }} />
+                        <Bar dataKey="count" fill="#50e3c2" radius={[0, 2, 2, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[120px] flex items-center justify-center">
+                      <p className="font-manrope text-sm text-white/25">No enquiry data yet</p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* GST Integration */}
@@ -882,6 +981,112 @@ export default function AdminPortal() {
                   ))}
                 </div>
               )}
+            </motion.div>
+          )}
+
+          {/* ──────────────── BLOG CMS TAB ──────────────── */}
+          {tab === "content" && (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+              <div className="mb-6">
+                <p className="font-cinzel text-[10px] tracking-[0.35em] text-primary/85 uppercase mb-1.5">✦ Content Management ✦</p>
+                <h2 className="font-cormorant text-4xl font-light text-white">Blog <span className="text-primary italic font-semibold">CMS</span></h2>
+              </div>
+
+              {/* Create New Article */}
+              <div className="bg-[#1c1809] border border-white/8 p-5 mb-6">
+                <p className="font-cinzel text-[9px] tracking-[0.22em] text-primary/70 uppercase mb-4 flex items-center gap-2">
+                  <Plus className="w-3.5 h-3.5" /> New Article
+                </p>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="md:col-span-2">
+                      <label className="block font-cinzel text-[8px] tracking-[0.2em] text-white/35 uppercase mb-1.5">Title</label>
+                      <input value={newArtTitle} onChange={e => setNewArtTitle(e.target.value)}
+                        className="w-full px-3 py-2.5 bg-black/30 border border-white/10 text-white text-sm font-manrope focus:outline-none focus:border-primary/50"
+                        placeholder="Article title…" />
+                    </div>
+                    <div>
+                      <label className="block font-cinzel text-[8px] tracking-[0.2em] text-white/35 uppercase mb-1.5">Tag</label>
+                      <select value={newArtTag} onChange={e => setNewArtTag(e.target.value)}
+                        className="w-full px-3 py-2.5 bg-black/30 border border-white/10 text-white text-sm font-manrope focus:outline-none focus:border-primary/50 appearance-none">
+                        {["Planning", "Venues", "Vendors", "Style", "Budget", "Inspiration"].map(t => (
+                          <option key={t} value={t} className="bg-[#0d0a07]">{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block font-cinzel text-[8px] tracking-[0.2em] text-white/35 uppercase mb-1.5">Excerpt</label>
+                    <textarea value={newArtExcerpt} onChange={e => setNewArtExcerpt(e.target.value)} rows={2}
+                      className="w-full px-3 py-2.5 bg-black/30 border border-white/10 text-white text-sm font-manrope focus:outline-none focus:border-primary/50 resize-none"
+                      placeholder="Short description for the article listing…" />
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      disabled={savingArticle || !newArtTitle.trim() || !newArtExcerpt.trim()}
+                      onClick={async () => {
+                        setSavingArticle(true);
+                        try {
+                          const res = await fetch(`${BASE}/api/articles`, {
+                            method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
+                            body: JSON.stringify({ title: newArtTitle.trim(), tag: newArtTag, excerpt: newArtExcerpt.trim() }),
+                          });
+                          if (res.ok) {
+                            const data = await res.json() as { article: Article };
+                            setArticles(p => [data.article, ...p]);
+                            setNewArtTitle(""); setNewArtExcerpt("");
+                          }
+                        } finally { setSavingArticle(false); }
+                      }}
+                      className="flex items-center gap-2 px-5 py-2 bg-primary text-black font-cinzel text-[9px] tracking-[0.18em] uppercase font-bold hover:bg-primary/90 transition-all disabled:opacity-40"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> {savingArticle ? "Publishing…" : "Publish Article"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Articles List */}
+              <div className="space-y-3">
+                {articles.length === 0 ? (
+                  <div className="text-center py-16 border border-dashed border-white/8">
+                    <Newspaper className="w-8 h-8 text-white/15 mx-auto mb-3" />
+                    <p className="font-manrope text-sm text-white/30">No articles yet. Create your first one above.</p>
+                  </div>
+                ) : (
+                  articles.map(art => (
+                    <div key={art.id} className="bg-[#1c1809] border border-white/8 p-4 flex items-start gap-4">
+                      <div className="w-10 h-10 bg-primary/10 border border-primary/25 flex items-center justify-center shrink-0 mt-0.5">
+                        <FileText className="w-4 h-4 text-primary/60" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="font-cinzel text-[8px] tracking-[0.15em] uppercase text-primary/60 bg-primary/8 border border-primary/20 px-2 py-0.5">{art.tag}</span>
+                          <span className={`font-cinzel text-[7.5px] tracking-[0.12em] uppercase px-2 py-0.5 ${art.published ? "text-green-400 bg-green-400/8 border border-green-400/25" : "text-white/30 bg-white/5 border border-white/10"}`}>
+                            {art.published ? "Published" : "Draft"}
+                          </span>
+                        </div>
+                        <h4 className="font-cormorant text-lg text-white font-semibold leading-tight mb-1">{art.title}</h4>
+                        <p className="font-manrope text-xs text-white/40 leading-snug line-clamp-2">{art.excerpt}</p>
+                        <p className="font-cinzel text-[7.5px] tracking-[0.1em] text-white/25 uppercase mt-2">{new Date(art.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</p>
+                      </div>
+                      <button
+                        disabled={deletingArtId === art.id}
+                        onClick={async () => {
+                          setDeletingArtId(art.id);
+                          try {
+                            const res = await fetch(`${BASE}/api/articles/${art.id}`, { method: "DELETE", credentials: "include" });
+                            if (res.ok) setArticles(p => p.filter(a => a.id !== art.id));
+                          } finally { setDeletingArtId(null); }
+                        }}
+                        className="shrink-0 w-7 h-7 bg-white/4 border border-white/8 flex items-center justify-center text-white/30 hover:text-red-400 hover:border-red-400/30 transition-all disabled:opacity-40"
+                      >
+                        {deletingArtId === art.id ? <span className="text-[8px] text-white/30">…</span> : <XIc className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </motion.div>
           )}
 

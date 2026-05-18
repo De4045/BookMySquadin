@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useShortlist } from "@/context/ShortlistContext";
-import { LayoutDashboard, MessageSquare, User, LogOut, ExternalLink, Briefcase, Star, RefreshCw, ChevronRight, CheckCircle2, Heart, MapPin, Trash2, Building2, CreditCard, CalendarDays } from "lucide-react";
+import { LayoutDashboard, MessageSquare, User, LogOut, ExternalLink, Briefcase, Star, RefreshCw, ChevronRight, CheckCircle2, Heart, MapPin, Trash2, Building2, CreditCard, CalendarDays, Edit2, Save, X as XIcon } from "lucide-react";
 import { PaymentTab } from "./PaymentTab";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
@@ -32,6 +32,128 @@ function StatCard({ label, value, sub, color = "#d4af37" }: { label: string; val
       <div className="font-cormorant text-3xl font-semibold mb-1" style={{ color }}>{value}</div>
       {sub && <div className="font-manrope text-xs text-white/30">{sub}</div>}
     </div>
+  );
+}
+
+function ProfileTab({
+  user, fmt, initials,
+}: {
+  user: { id: number; name: string; email: string; role: string; createdAt: string; phone?: string; city?: string; bio?: string } | null;
+  fmt: (iso: string) => string;
+  initials: string;
+}) {
+  const [editMode, setEditMode] = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [saved, setSaved]       = useState(false);
+  const [form, setForm] = useState({
+    name: user?.name ?? "", phone: user?.phone ?? "", city: user?.city ?? "", bio: user?.bio ?? "",
+  });
+
+  const handleSave = async () => {
+    setSaving(true); setSaveError("");
+    try {
+      const res  = await fetch(`${BASE}/api/auth/profile`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        credentials: "include", body: JSON.stringify(form),
+      });
+      const data = await res.json() as { error?: string };
+      if (!res.ok) { setSaveError(data.error || "Failed to save."); return; }
+      setSaved(true); setEditMode(false);
+      setTimeout(() => setSaved(false), 3000);
+    } finally { setSaving(false); }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/50 uppercase mb-1">✦ Business Profile ✦</p>
+          <h2 className="font-cormorant text-3xl font-light text-white">My <span className="text-primary italic font-semibold">Profile</span></h2>
+        </div>
+        <div className="flex items-center gap-2">
+          {saved && <span className="font-cinzel text-[8px] tracking-[0.15em] text-green-400 uppercase">Saved!</span>}
+          {!editMode ? (
+            <button onClick={() => setEditMode(true)} className="flex items-center gap-1.5 px-4 py-2 border border-white/15 text-white/60 font-cinzel text-[9px] tracking-[0.18em] uppercase hover:border-primary/40 hover:text-primary transition-all">
+              <Edit2 className="w-3.5 h-3.5" /> Edit
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-black font-cinzel text-[9px] tracking-[0.18em] uppercase font-bold hover:bg-primary/90 transition-all disabled:opacity-60">
+                <Save className="w-3.5 h-3.5" /> {saving ? "Saving…" : "Save"}
+              </button>
+              <button onClick={() => { setEditMode(false); setSaveError(""); setForm({ name: user?.name ?? "", phone: user?.phone ?? "", city: user?.city ?? "", bio: user?.bio ?? "" }); }}
+                className="flex items-center gap-1.5 px-3 py-2 border border-white/15 text-white/50 font-cinzel text-[9px] tracking-[0.15em] uppercase hover:border-white/30 transition-all">
+                <XIcon className="w-3.5 h-3.5" /> Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      {saveError && <div className="mb-4 px-4 py-3 bg-red-500/10 border border-red-500/30 text-red-400 font-manrope text-sm">{saveError}</div>}
+      <div className="max-w-2xl space-y-4">
+        <div className="bg-[#1a1510] border border-white/8 p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 rounded-sm bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
+              <span className="font-cinzel text-2xl text-primary font-bold">{initials}</span>
+            </div>
+            <div>
+              <h3 className="font-cormorant text-2xl text-white font-semibold">{form.name || user?.name}</h3>
+              <p className="font-manrope text-sm text-white/45">{user?.email}</p>
+              <span className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-blue-400 bg-blue-400/10 border border-blue-400/30 px-2 py-0.5 mt-1 inline-block">Vendor</span>
+            </div>
+          </div>
+          {editMode ? (
+            <div className="space-y-3">
+              <div>
+                <label className="block font-cinzel text-[8.5px] tracking-[0.2em] text-white/40 uppercase mb-1.5">Display Name</label>
+                <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                  className="w-full px-3 py-2.5 bg-black/30 border border-white/12 text-white text-sm font-manrope focus:outline-none focus:border-primary/50" placeholder="Your full name" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-cinzel text-[8.5px] tracking-[0.2em] text-white/40 uppercase mb-1.5">Phone</label>
+                  <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                    className="w-full px-3 py-2.5 bg-black/30 border border-white/12 text-white text-sm font-manrope focus:outline-none focus:border-primary/50" placeholder="+91 98765 43210" />
+                </div>
+                <div>
+                  <label className="block font-cinzel text-[8.5px] tracking-[0.2em] text-white/40 uppercase mb-1.5">City</label>
+                  <input value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))}
+                    className="w-full px-3 py-2.5 bg-black/30 border border-white/12 text-white text-sm font-manrope focus:outline-none focus:border-primary/50" placeholder="Mumbai, Delhi…" />
+                </div>
+              </div>
+              <div>
+                <label className="block font-cinzel text-[8.5px] tracking-[0.2em] text-white/40 uppercase mb-1.5">Bio (max 500 chars)</label>
+                <textarea value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} rows={3} maxLength={500}
+                  className="w-full px-3 py-2.5 bg-black/30 border border-white/12 text-white text-sm font-manrope focus:outline-none focus:border-primary/50 resize-none" placeholder="Tell couples about your services…" />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-0">
+              {[
+                { label: "Member Since",   value: user ? fmt(user.createdAt) : "—" },
+                { label: "Account Status", value: "Active & Verified" },
+                { label: "Phone",          value: user?.phone || "Not set" },
+                { label: "City",           value: user?.city  || "Not set" },
+                { label: "Bio",            value: user?.bio   || "Not set" },
+              ].map(item => (
+                <div key={item.label} className="flex items-start justify-between py-2.5 border-b border-white/5">
+                  <span className="font-cinzel text-[9px] tracking-[0.2em] text-white/35 uppercase">{item.label}</span>
+                  <span className="font-manrope text-sm text-white/65 max-w-[60%] text-right leading-snug">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="bg-[#1a1510] border border-white/8 p-6">
+          <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/50 uppercase mb-4">List Your Business</p>
+          <p className="font-manrope text-sm text-white/50 mb-4">Get discovered by thousands of couples planning their dream wedding.</p>
+          <Link href="/list-your-business">
+            <button className="w-full py-3 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all gold-glow">Submit Your Listing →</button>
+          </Link>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -242,48 +364,7 @@ export default function VendorPortal() {
 
           {/* PROFILE TAB */}
           {tab === "profile" && (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <div className="mb-6">
-                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/50 uppercase mb-1">✦ Business Profile ✦</p>
-                <h2 className="font-cormorant text-3xl font-light text-white">My <span className="text-primary italic font-semibold">Profile</span></h2>
-              </div>
-              <div className="max-w-2xl space-y-4">
-                <div className="bg-[#1a1510] border border-white/8 p-6">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 rounded-sm bg-primary/15 border border-primary/30 flex items-center justify-center">
-                      <span className="font-cinzel text-2xl text-primary font-bold">{initials}</span>
-                    </div>
-                    <div>
-                      <h3 className="font-cormorant text-2xl text-white font-semibold">{user?.name}</h3>
-                      <p className="font-manrope text-sm text-white/45">{user?.email}</p>
-                      <span className="font-cinzel text-[8px] tracking-[0.2em] uppercase text-blue-400 bg-blue-400/10 border border-blue-400/30 px-2 py-0.5 mt-1 inline-block">Vendor</span>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    {[
-                      { label: "Member Since", value: user ? fmt(user.createdAt) : "—" },
-                      { label: "Account Status", value: "Active & Verified" },
-                      { label: "Platform", value: "Book My Squad Vendor Network" },
-                    ].map(item => (
-                      <div key={item.label} className="flex items-center justify-between py-2.5 border-b border-white/5">
-                        <span className="font-cinzel text-[9px] tracking-[0.2em] text-white/35 uppercase">{item.label}</span>
-                        <span className="font-manrope text-sm text-white/65">{item.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-[#1a1510] border border-white/8 p-6">
-                  <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/50 uppercase mb-4">List Your Business</p>
-                  <p className="font-manrope text-sm text-white/50 mb-4">Get discovered by thousands of couples planning their dream wedding.</p>
-                  <Link href="/list-your-business">
-                    <button className="w-full py-3 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all gold-glow">
-                      Submit Your Listing →
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
+            <ProfileTab user={user} fmt={fmt} initials={initials} />
           )}
           {/* PAYMENT TAB */}
           {tab === "bookings" && (

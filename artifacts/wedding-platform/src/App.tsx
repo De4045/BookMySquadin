@@ -10,6 +10,8 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AuthProvider } from "@/context/AuthContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
+import { ComparisonProvider } from "@/context/ComparisonContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import Home from "@/pages/Home";
 import Vendors from "@/pages/Vendors";
 import Venues from "@/pages/Venues";
@@ -19,6 +21,7 @@ import Blog from "@/pages/Blog";
 import Photos from "@/pages/Photos";
 import ListYourBusiness from "@/pages/ListYourBusiness";
 import WhyChooseUs from "@/pages/WhyChooseUs";
+import Checklist from "@/pages/Checklist";
 import NotFound from "@/pages/not-found";
 import AdminPortal from "@/pages/portal/AdminPortal";
 import VendorPortal from "@/pages/portal/VendorPortal";
@@ -39,6 +42,7 @@ function Router() {
       <Route path="/real-weddings" component={Weddings} />
       <Route path="/blog" component={Blog} />
       <Route path="/photos" component={Photos} />
+      <Route path="/checklist" component={Checklist} />
       <Route path="/list-your-business" component={ListYourBusiness} />
       <Route path="/why-choose-us" component={WhyChooseUs} />
       <Route path="/portal/admin" component={AdminPortal} />
@@ -66,19 +70,23 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <ShortlistProvider>
-            {/* Logo splash — shown once per session */}
-            {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
+          <NotificationProvider>
+            <ComparisonProvider>
+              <ShortlistProvider>
+                {/* Logo splash — shown once per session */}
+                {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
 
-            <SmoothScroll>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <CursorGlow />
-                <Router />
-                <ChatBot />
-                <MobileBottomNav />
-              </WouterRouter>
-            </SmoothScroll>
-          </ShortlistProvider>
+                <SmoothScroll>
+                  <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                    <CursorGlow />
+                    <Router />
+                    <ChatBot />
+                    <MobileBottomNav />
+                  </WouterRouter>
+                </SmoothScroll>
+              </ShortlistProvider>
+            </ComparisonProvider>
+          </NotificationProvider>
         </AuthProvider>
         <Toaster />
       </TooltipProvider>

@@ -9,6 +9,7 @@ import gstRouter from "./gst.js";
 import paymentsRouter from "./payments.js";
 import bookingsRouter from "./bookings.js";
 import reviewsRouter from "./reviews.js";
+import articlesRouter from "./articles.js";
 import {
   authLimiter,
   registerLimiter,
@@ -40,5 +41,6 @@ router.use(gstRouter);
 router.use(paymentsRouter);
 router.use(bookingsRouter);
 router.use(reviewsRouter);
+router.use(articlesRouter);
 
 export default router;

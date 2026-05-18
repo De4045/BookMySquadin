@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { ArrowRight, X, Clock, ChevronRight } from "lucide-react";
+import { ArrowRight, X, Clock } from "lucide-react";
 
-const POSTS = [
+const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+
+interface Post {
+  img: string; tag: string; title: string; time: string; excerpt: string; content: string;
+}
+
+const STATIC_POSTS: Post[] = [
   {
     img: "https://images.unsplash.com/photo-1583396618422-c6cf3b31e30c?w=900&q=85",
     tag: "Bridal Fashion",
@@ -56,8 +62,22 @@ const POSTS = [
 ];
 
 export default function Blog() {
-  const [openPost, setOpenPost] = useState<typeof POSTS[0] | null>(null);
-  const [featured, ...rest] = POSTS;
+  const [openPost, setOpenPost] = useState<Post | null>(null);
+  const [apiPosts, setApiPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    fetch(`${BASE}/api/articles`)
+      .then(r => r.ok ? r.json() : null)
+      .then((d: { articles: Array<{ img: string; tag: string; title: string; readTime: string; excerpt: string; content: string }> } | null) => {
+        if (d?.articles?.length) {
+          setApiPosts(d.articles.map(a => ({ img: a.img, tag: a.tag, title: a.title, time: a.readTime, excerpt: a.excerpt, content: a.content })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const allPosts = apiPosts.length > 0 ? apiPosts : STATIC_POSTS;
+  const [featured, ...rest] = allPosts;
 
   return (
     <div className="min-h-screen bg-[#080604] text-white font-sans flex flex-col">
@@ -81,40 +101,42 @@ export default function Blog() {
         <section className="py-12 px-6 md:px-12">
           <div className="max-w-7xl mx-auto">
             {/* Featured */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              onClick={() => setOpenPost(featured)}
-              className="group cursor-pointer mb-16 grid grid-cols-1 lg:grid-cols-2 gap-0 luxury-card overflow-hidden hover:border-primary/40 transition-all duration-500"
-            >
-              <div className="relative h-72 lg:h-auto overflow-hidden">
-                <img src={featured.img} alt={featured.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute top-4 left-4">
-                  <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase text-primary bg-black/60 border border-primary/30 px-2.5 py-1 backdrop-blur-sm">Cover Story</span>
-                </div>
-              </div>
-              <div className="p-8 flex flex-col justify-center">
-                <span className="font-cinzel text-[10px] tracking-[0.3em] text-primary uppercase border border-primary/30 px-3 py-1 self-start mb-4">{featured.tag}</span>
-                <h2 className="font-cormorant text-3xl md:text-4xl text-white font-medium mb-4 group-hover:text-primary transition-colors leading-snug">{featured.title}</h2>
-                <p className="font-manrope text-white/55 text-sm leading-relaxed mb-6">{featured.excerpt}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold">
-                    Read Article <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <div className="flex items-center gap-1.5 text-white/30">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span className="font-manrope text-xs">{featured.time}</span>
+            {featured && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                onClick={() => setOpenPost(featured)}
+                className="group cursor-pointer mb-16 grid grid-cols-1 lg:grid-cols-2 gap-0 luxury-card overflow-hidden hover:border-primary/40 transition-all duration-500"
+              >
+                <div className="relative h-72 lg:h-auto overflow-hidden">
+                  <img src={featured.img} alt={featured.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute top-4 left-4">
+                    <span className="font-cinzel text-[9px] tracking-[0.2em] uppercase text-primary bg-black/60 border border-primary/30 px-2.5 py-1 backdrop-blur-sm">Cover Story</span>
                   </div>
                 </div>
-              </div>
-            </motion.div>
+                <div className="p-8 flex flex-col justify-center">
+                  <span className="font-cinzel text-[10px] tracking-[0.3em] text-primary uppercase border border-primary/30 px-3 py-1 self-start mb-4">{featured.tag}</span>
+                  <h2 className="font-cormorant text-3xl md:text-4xl text-white font-medium mb-4 group-hover:text-primary transition-colors leading-snug">{featured.title}</h2>
+                  <p className="font-manrope text-white/55 text-sm leading-relaxed mb-6">{featured.excerpt}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 font-cinzel text-[10px] tracking-[0.2em] uppercase text-primary font-semibold">
+                      Read Article <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                    <div className="flex items-center gap-1.5 text-white/30">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span className="font-manrope text-xs">{featured.time}</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {rest.map((post, i) => (
                 <motion.div
-                  key={i}
+                  key={post.title + i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.08, duration: 0.5 }}

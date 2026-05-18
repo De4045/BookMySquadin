@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2 } from "lucide-react";
+import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationContext";
 
 const navLinks = [
   { label: "Venues", href: "/venues" },
@@ -37,7 +38,10 @@ export function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const notifRef    = useRef<HTMLDivElement>(null);
+  const searchRef   = useRef<HTMLInputElement>(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -137,6 +141,58 @@ export function Navbar() {
             >
               <Search className="w-4 h-4" />
             </button>
+
+            {/* Notification Bell */}
+            {user && (
+              <div ref={notifRef} className="relative">
+                <button
+                  onClick={() => setNotifOpen(o => !o)}
+                  className="relative text-white/70 hover:text-primary transition-colors p-1"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-black font-bold rounded-full flex items-center justify-center" style={{ fontSize: "7px" }}>
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+                <AnimatePresence>
+                  {notifOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-3 w-80 bg-[#0d0a07] border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.7)] z-50"
+                    >
+                      <div className="px-4 py-3 border-b border-white/8 flex items-center justify-between">
+                        <p className="font-cinzel text-[9px] tracking-[0.22em] text-white/60 uppercase">Notifications</p>
+                        {unreadCount > 0 && (
+                          <button onClick={markAllRead} className="font-cinzel text-[8px] tracking-[0.12em] text-primary/75 uppercase hover:text-primary transition-colors">Mark all read</button>
+                        )}
+                      </div>
+                      <div className="max-h-72 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <p className="font-manrope text-sm text-white/35 text-center py-8">No notifications yet</p>
+                        ) : (
+                          notifications.map(n => (
+                            <button key={n.id} onClick={() => { markRead(n.id); setNotifOpen(false); }}
+                              className={`w-full flex items-start gap-3 px-4 py-3 border-b border-white/5 text-left hover:bg-white/4 transition-colors ${!n.read ? "bg-primary/4" : ""}`}>
+                              <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${!n.read ? "bg-primary" : "bg-white/15"}`} />
+                              <div className="flex-1 min-w-0">
+                                <p className="font-cinzel text-[8.5px] tracking-[0.12em] uppercase text-white/75 mb-0.5">{n.title}</p>
+                                <p className="font-manrope text-xs text-white/45 leading-snug">{n.message}</p>
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
             {user ? (
               /* Logged-in user avatar + dropdown */

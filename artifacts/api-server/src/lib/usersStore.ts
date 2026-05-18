@@ -10,6 +10,9 @@ export interface User {
   createdAt: string;
   isActive: boolean;
   lastLoginAt?: string;
+  phone?: string;
+  city?: string;
+  bio?: string;
 }
 
 interface LoginAttempt {
@@ -62,6 +65,9 @@ export function safeUser(u: User) {
     email: u.email,
     role: u.role,
     createdAt: u.createdAt,
+    phone: u.phone,
+    city: u.city,
+    bio: u.bio,
   };
 }
 

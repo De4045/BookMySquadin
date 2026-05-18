@@ -227,5 +227,29 @@ router.patch("/admin/users/:id/activate", requireAdmin, (req, res) => {
   res.json({ message: `User ${user.name} activated.`, user: safeUser(user) });
 });
 
+router.patch("/auth/profile", requireAuth, (req, res) => {
+  const session = req.session as Record<string, unknown>;
+  const userId = session["userId"] as number;
+  const user = getUserById(userId);
+  if (!user) { res.status(401).json({ error: "Not authenticated." }); return; }
+
+  const { name, phone, city, bio } = req.body as { name?: string; phone?: string; city?: string; bio?: string };
+
+  if (name !== undefined) {
+    const trimmed = name.trim();
+    if (trimmed.length < 2 || trimmed.length > 80) {
+      res.status(400).json({ error: "Name must be 2–80 characters." });
+      return;
+    }
+    user.name = trimmed;
+  }
+  if (phone !== undefined) user.phone = String(phone).trim().slice(0, 20);
+  if (city  !== undefined) user.city  = String(city ).trim().slice(0, 60);
+  if (bio   !== undefined) user.bio   = String(bio  ).trim().slice(0, 500);
+
+  req.log.info({ userId }, "User profile updated");
+  res.json(safeUser(user));
+});
+
 export { requireAuth };
 export default router;

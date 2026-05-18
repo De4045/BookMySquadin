@@ -1,15 +1,33 @@
 import { useState, useMemo, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star, Lock, BadgeCheck } from "lucide-react";
+import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star, Lock, BadgeCheck, Scale } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type Vendor } from "@/data/vendors";
 import { VendorDetailModal, type VendorLike } from "@/components/VendorDetailModal";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { isVendorVerified } from "@/data/subscriptions";
+import { useComparison } from "@/context/ComparisonContext";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+
+const CATEGORY_PRICE: Record<string, number> = {
+  "MAKEUP ARTIST":    15000,
+  "MUSIC & DJ":       25000,
+  "VENDOR":           25000,
+  "CATERER":          50000,
+  "DECOR":            75000,
+  "PHOTOGRAPHER":     75000,
+  "WEDDING PLANNERS": 150000,
+};
+
+const PRICE_RANGES = [
+  { value: "",          label: "Any Budget"       },
+  { value: "under50k",  label: "Under ₹50,000"    },
+  { value: "50k-1.5L",  label: "₹50k – ₹1.5L"    },
+  { value: "1.5L+",     label: "Above ₹1.5L"      },
+];
 
 function normalizeCategory(raw: string): string {
   const s = (raw || "").trim().toUpperCase();
@@ -292,11 +310,14 @@ const SORT_OPTIONS = [
 export default function Vendors() {
   const { has, toggle } = useShortlist();
   const { user } = useAuth();
+  const comparison = useComparison();
   const [vendors, setVendors]           = useState<Vendor[]>([]);
   const [search, setSearch]             = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [cityFilter, setCityFilter]     = useState("");
   const [sortBy, setSortBy]             = useState("default");
+  const [priceFilter, setPriceFilter]   = useState("");
+  const [showCompare, setShowCompare]   = useState(false);
   const [selected, setSelected]         = useState<VendorLike | null>(null);
 
   // Fetch vendors from API on mount
@@ -333,9 +354,16 @@ export default function Vendors() {
         (v.company || "").toLowerCase().includes(q) ||
         (v.city    || "").toLowerCase().includes(q) ||
         cat.toLowerCase().includes(q);
-      const matchCat  = !filterCategory || cat === filterCategory;
-      const matchCity = !cityFilter     || v.city === cityFilter;
-      return matchSearch && matchCat && matchCity;
+      const matchCat   = !filterCategory || cat === filterCategory;
+      const matchCity  = !cityFilter     || v.city === cityFilter;
+      const startPrice = CATEGORY_PRICE[cat] ?? 25000;
+      const matchPrice = !priceFilter || (
+        priceFilter === "under50k" ? startPrice < 50000 :
+        priceFilter === "50k-1.5L" ? startPrice >= 50000 && startPrice < 150000 :
+        priceFilter === "1.5L+"    ? startPrice >= 150000 :
+        true
+      );
+      return matchSearch && matchCat && matchCity && matchPrice;
     });
     switch (sortBy) {
       case "name-az":  list = [...list].sort((a, b) => a.name.localeCompare(b.name)); break;
@@ -345,17 +373,21 @@ export default function Vendors() {
       case "rating":   list = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)); break;
     }
     return list;
-  }, [vendors, search, filterCategory, cityFilter, sortBy]);
+  }, [vendors, search, filterCategory, cityFilter, sortBy, priceFilter]);
 
   const activeFilters: { label: string; clear: () => void }[] = [];
   if (search)         activeFilters.push({ label: `"${search}"`, clear: () => setSearch("") });
   if (filterCategory) activeFilters.push({ label: filterCategory, clear: () => setFilterCategory("") });
   if (cityFilter)     activeFilters.push({ label: cityFilter, clear: () => setCityFilter("") });
+  if (priceFilter) {
+    const p = PRICE_RANGES.find(r => r.value === priceFilter);
+    if (p) activeFilters.push({ label: p.label, clear: () => setPriceFilter("") });
+  }
   if (sortBy !== "default") {
     const s = SORT_OPTIONS.find(o => o.value === sortBy);
     if (s) activeFilters.push({ label: `Sort: ${s.label}`, clear: () => setSortBy("default") });
   }
-  const clearAll = () => { setSearch(""); setFilterCategory(""); setCityFilter(""); setSortBy("default"); };
+  const clearAll = () => { setSearch(""); setFilterCategory(""); setCityFilter(""); setSortBy("default"); setPriceFilter(""); };
   const topCategories = useMemo(() => uniqueCategories.slice(0, 5), [uniqueCategories]);
 
   return (
@@ -436,6 +468,14 @@ export default function Vendors() {
                 </select>
                 <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
               </div>
+              <div className="relative w-full md:w-44 bg-white/[0.04] border border-white/10 rounded-sm overflow-hidden">
+                <Scale className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
+                <select value={priceFilter} onChange={e => setPriceFilter(e.target.value)}
+                  className="w-full pl-8 pr-8 py-2.5 bg-transparent text-white text-sm font-manrope font-light appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/50">
+                  {PRICE_RANGES.map(r => <option key={r.value} value={r.value} className="bg-[#1a1510]">{r.label}</option>)}
+                </select>
+                <ChevronDown className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
+              </div>
             </div>
           </div>
           <AnimatePresence>
@@ -510,6 +550,13 @@ export default function Vendors() {
                           className={`w-7 h-7 flex items-center justify-center bg-[#0d0a07]/70 backdrop-blur-sm rounded-sm transition-all ${isSlisted ? "text-primary" : "text-white/50 hover:text-primary/70"}`}
                         >
                           <Heart className={`w-3.5 h-3.5 ${isSlisted ? "fill-primary" : ""}`} />
+                        </button>
+                        <button
+                          onClick={e => { e.stopPropagation(); comparison.has(vendor.name) ? comparison.remove(vendor.name) : comparison.add({ name: vendor.name, category: cat, city: vendor.city, state: vendor.state, contact: vendor.contact }); }}
+                          className={`w-7 h-7 flex items-center justify-center bg-[#0d0a07]/70 backdrop-blur-sm rounded-sm transition-all ${comparison.has(vendor.name) ? "text-primary border border-primary/40" : "text-white/50 hover:text-primary/70"}`}
+                          title={comparison.has(vendor.name) ? "Remove from comparison" : "Add to compare"}
+                        >
+                          <Scale className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -590,6 +637,109 @@ export default function Vendors() {
       </main>
 
       <Footer />
+
+      {/* Comparison Tray */}
+      <AnimatePresence>
+        {comparison.items.length > 0 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", damping: 32, stiffness: 300 }}
+            className="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-[#0d0a07]/98 backdrop-blur-xl border-t border-primary/30 px-5 py-3"
+          >
+            <div className="max-w-7xl mx-auto flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2 flex-1 flex-wrap min-w-0">
+                {comparison.items.map(v => (
+                  <div key={v.name} className="flex items-center gap-2 bg-primary/10 border border-primary/25 px-3 py-1.5 shrink-0">
+                    <span className="font-cinzel text-[8.5px] tracking-[0.12em] text-primary uppercase max-w-[110px] truncate">{v.name}</span>
+                    <button onClick={() => comparison.remove(v.name)} className="text-white/35 hover:text-red-400 transition-colors shrink-0"><X className="w-3 h-3" /></button>
+                  </div>
+                ))}
+                {Array.from({ length: Math.max(0, 3 - comparison.items.length) }).map((_, i) => (
+                  <div key={i} className="hidden md:flex items-center justify-center px-4 py-1.5 border border-dashed border-white/12">
+                    <span className="font-cinzel text-[8px] text-white/20 uppercase tracking-wider">+ Add</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <button onClick={comparison.clear} className="font-cinzel text-[8.5px] tracking-[0.15em] text-white/35 uppercase hover:text-white/60 transition-colors">Clear</button>
+                <button
+                  disabled={comparison.items.length < 2}
+                  onClick={() => setShowCompare(true)}
+                  className="flex items-center gap-2 px-5 py-2 bg-primary text-black font-cinzel text-[9px] tracking-[0.18em] uppercase font-bold hover:bg-primary/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Scale className="w-3.5 h-3.5" /> Compare ({comparison.items.length})
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Comparison Modal */}
+      <AnimatePresence>
+        {showCompare && comparison.items.length >= 2 && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowCompare(false)} className="fixed inset-0 bg-black/85 backdrop-blur-sm z-[60]" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="fixed inset-4 md:inset-10 lg:inset-16 bg-[#0d0a07] border border-primary/25 z-[61] overflow-y-auto"
+            >
+              <div className="sticky top-0 bg-[#0d0a07]/98 backdrop-blur-xl border-b border-white/8 px-6 py-4 flex items-center justify-between">
+                <div>
+                  <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/75 uppercase mb-0.5">Vendor Comparison</p>
+                  <p className="font-manrope text-xs text-white/35">Side-by-side overview</p>
+                </div>
+                <button onClick={() => setShowCompare(false)} className="w-8 h-8 bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors"><X className="w-4 h-4" /></button>
+              </div>
+              <div className={`p-6 grid gap-5 ${comparison.items.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+                {comparison.items.map((vendor) => {
+                  const cat = vendor.category;
+                  const accentColor = CAT_COLOR[cat] ?? "#c9a96e";
+                  const catImgs = CATEGORY_IMAGES[cat] ?? CATEGORY_IMAGES["DECOR"];
+                  return (
+                    <div key={vendor.name} className="bg-[#1a1510] border border-white/8 overflow-hidden">
+                      <div className="h-44 overflow-hidden relative">
+                        <img src={catImgs[0]} alt={vendor.name} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1510] to-transparent" />
+                        <div className="absolute top-3 left-3 font-cinzel text-[8px] uppercase tracking-[0.2em] px-2 py-1 bg-[#0d0a07]/80" style={{ color: accentColor, border: `1px solid ${accentColor}40` }}>{cat}</div>
+                      </div>
+                      <div className="p-5">
+                        <h3 className="font-cormorant text-xl font-semibold text-white mb-1">{vendor.name}</h3>
+                        {vendor.city && (
+                          <div className="flex items-center gap-1.5 mb-3">
+                            <MapPin className="w-3 h-3 text-primary/40" />
+                            <span className="font-cinzel text-[8.5px] tracking-wider text-white/40 uppercase">{vendor.city}</span>
+                          </div>
+                        )}
+                        <div className="space-y-2.5 border-t border-white/8 pt-4 mt-4">
+                          {[
+                            { label: "Rating",   value: (() => { const r = vendors.find(v => v.name === vendor.name)?.rating; return r ? `${r} ★` : "N/A"; })() },
+                            { label: "Verified", value: isVendorVerified(vendor.name) ? "✓ Yes" : "No", style: isVendorVerified(vendor.name) ? "text-primary" : "text-white/35" },
+                            { label: "Starting", value: `₹${((CATEGORY_PRICE[cat] ?? 25000) / 1000).toFixed(0)}k+`, style: "text-primary" },
+                          ].map(row => (
+                            <div key={row.label} className="flex items-center justify-between">
+                              <span className="font-cinzel text-[8.5px] tracking-[0.15em] text-white/35 uppercase">{row.label}</span>
+                              <span className={`font-manrope text-sm ${row.style ?? "text-white/70"}`}>{row.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => { setShowCompare(false); const v = vendors.find(vv => vv.name === vendor.name); if (v) setSelected(v); }}
+                          className="mt-4 w-full py-2 bg-primary text-black font-cinzel text-[9px] tracking-[0.18em] uppercase font-bold hover:bg-primary/90 transition-all"
+                        >View Profile →</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Detail modal */}
       {selected && <VendorDetailModal vendor={selected} onClose={() => setSelected(null)} />}
