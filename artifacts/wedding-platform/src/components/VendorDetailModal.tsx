@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Phone, Heart, CheckCircle2, ChevronRight, Building2, Lock, BadgeCheck } from "lucide-react";
+import { X, MapPin, Phone, Heart, CheckCircle2, ChevronRight, Building2, Lock, BadgeCheck, CalendarDays } from "lucide-react";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { isVendorVerified } from "@/data/subscriptions";
+import { BookingModal } from "@/components/BookingModal";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -59,6 +60,7 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [showBooking, setShowBooking] = useState(false);
 
   if (!vendor) return null;
 
@@ -108,6 +110,7 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
   };
 
   return (
+    <>
     <AnimatePresence>
       <motion.div
         key="backdrop"
@@ -236,9 +239,18 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
             ))}
           </div>
 
-          {/* Enquiry form */}
+          {/* Book / Enquire */}
           <div className="border-t border-white/8 pt-5">
-            <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/50 uppercase mb-5">Book / Enquire</p>
+            {/* Book Now CTA */}
+            <button
+              onClick={() => setShowBooking(true)}
+              className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 active:scale-[0.99] transition-all rounded-sm mb-4"
+              style={{ boxShadow: "0 4px 20px rgba(212,175,55,0.35)" }}
+            >
+              <CalendarDays className="w-4 h-4" /> Book Now — Choose Package & Confirm Date
+            </button>
+
+            <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/50 uppercase mb-5">— or send a quick enquiry —</p>
 
             {submitted ? (
               <div className="text-center py-10">
@@ -284,5 +296,14 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
         </div>
       </motion.div>
     </AnimatePresence>
+
+    {/* Full booking flow overlay */}
+    {showBooking && (
+      <BookingModal
+        vendor={{ name: vendor.name, category: cat, city: vendor.city, company: vendor.company }}
+        onClose={() => setShowBooking(false)}
+      />
+    )}
+  </>
   );
 }

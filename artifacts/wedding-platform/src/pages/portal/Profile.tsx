@@ -6,7 +6,7 @@ import { useShortlist } from "@/context/ShortlistContext";
 import {
   LogOut, ExternalLink, Heart, Building2, Briefcase, ShieldCheck, User,
   MapPin, ChevronRight, CreditCard, MessageSquare, Loader2, Inbox,
-  CalendarDays, Tag,
+  CalendarDays, Tag, CalendarCheck2, IndianRupee, CheckCircle2,
 } from "lucide-react";
 import { PaymentTab } from "./PaymentTab";
 
@@ -33,6 +33,23 @@ type EnquiryRow = {
   date: string;
 };
 
+interface BookingRow {
+  id: number;
+  vendorName: string;
+  vendorCategory: string;
+  packageName: string;
+  packagePrice: number;
+  eventDate: string;
+  eventType: string;
+  guestCount: number;
+  consultationDate?: string;
+  consultationTime?: string;
+  advancePaid: boolean;
+  advanceAmount: number;
+  status: "pending" | "confirmed" | "advance_paid" | "completed" | "cancelled";
+  createdAt: string;
+}
+
 const KIND_META: Record<EnquiryRow["kind"], { label: string; color: string }> = {
   vendor:  { label: "Vendor",   color: "text-blue-300 border-blue-400/30 bg-blue-400/10" },
   venue:   { label: "Venue",    color: "text-purple-300 border-purple-400/30 bg-purple-400/10" },
@@ -46,16 +63,31 @@ const STATUS_COLOR: Record<string, string> = {
   booked:    "text-green-300 border-green-400/30 bg-green-400/10",
 };
 
+const BOOKING_STATUS: Record<BookingRow["status"], { label: string; color: string }> = {
+  pending:      { label: "Pending",      color: "text-yellow-400 border-yellow-400/30 bg-yellow-400/10" },
+  confirmed:    { label: "Confirmed",    color: "text-blue-300 border-blue-400/30 bg-blue-400/10" },
+  advance_paid: { label: "Advance Paid", color: "text-primary border-primary/30 bg-primary/10" },
+  completed:    { label: "Completed",    color: "text-green-300 border-green-400/30 bg-green-400/10" },
+  cancelled:    { label: "Cancelled",    color: "text-red-400 border-red-400/30 bg-red-400/10" },
+};
+
+function fmtINR(n: number) {
+  return n.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+}
+
 export default function Profile() {
   const { user, logout } = useAuth();
   const { items, remove } = useShortlist();
   const [, navigate] = useLocation();
-  const [tab, setTab] = useState<"account" | "enquiries" | "shortlist" | "payment">("account");
+  const [tab, setTab] = useState<"account" | "bookings" | "enquiries" | "shortlist" | "payment">("account");
 
-  // ── My Enquiries state ──
   const [enquiries, setEnquiries] = useState<EnquiryRow[]>([]);
   const [enqLoading, setEnqLoading] = useState(false);
   const [enqError, setEnqError] = useState<string | null>(null);
+
+  const [bookings, setBookings] = useState<BookingRow[]>([]);
+  const [bkLoading, setBkLoading] = useState(false);
+  const [bkError, setBkError] = useState<string | null>(null);
 
   const fetchEnquiries = useCallback(async () => {
     setEnqLoading(true);
@@ -114,9 +146,28 @@ export default function Profile() {
     }
   }, []);
 
+  const fetchBookings = useCallback(async () => {
+    setBkLoading(true);
+    setBkError(null);
+    try {
+      const res = await fetch(`${BASE}/api/bookings/my`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json() as { bookings: BookingRow[] };
+        setBookings(data.bookings);
+      } else {
+        setBkError("Could not load bookings.");
+      }
+    } catch {
+      setBkError("Could not load bookings. Please try again.");
+    } finally {
+      setBkLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    if (tab === "enquiries") fetchEnquiries();
-  }, [tab, fetchEnquiries]);
+    if (tab === "enquiries") void fetchEnquiries();
+    if (tab === "bookings")  void fetchBookings();
+  }, [tab, fetchEnquiries, fetchBookings]);
 
   if (!user) {
     return (
@@ -138,10 +189,11 @@ export default function Profile() {
   const vendorItems = items.filter(i => i.type === "vendor");
 
   const tabs = [
-    { key: "account",   label: "Account",                       icon: User },
+    { key: "account",   label: "Account",                        icon: User },
+    { key: "bookings",  label: bookings.length > 0 ? `Bookings (${bookings.length})` : "Bookings", icon: CalendarCheck2 },
     { key: "enquiries", label: enquiries.length > 0 && tab !== "enquiries" ? `Enquiries (${enquiries.length})` : "Enquiries", icon: MessageSquare },
-    { key: "shortlist", label: `Saved (${items.length})`,       icon: Heart },
-    { key: "payment",   label: "Membership",                    icon: CreditCard },
+    { key: "shortlist", label: `Saved (${items.length})`,        icon: Heart },
+    { key: "payment",   label: "Membership",                     icon: CreditCard },
   ] as const;
 
   return (
@@ -244,6 +296,132 @@ export default function Profile() {
             </motion.div>
           )}
 
+          {/* ── My Bookings ── */}
+          {tab === "bookings" && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <div className="mb-6">
+                <p className="font-cinzel text-[10px] tracking-[0.4em] text-primary/50 uppercase mb-1">✦ Confirmed & Pending ✦</p>
+                <h2 className="font-cormorant text-3xl font-light text-white">My <span className="text-primary italic font-semibold">Bookings</span></h2>
+              </div>
+
+              {bkLoading && (
+                <div className="flex items-center justify-center py-20 bg-[#1a1510] border border-white/8">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                </div>
+              )}
+
+              {bkError && !bkLoading && (
+                <div className="bg-[#1a1510] border border-red-400/20 p-6 text-center">
+                  <p className="font-manrope text-sm text-red-400/70 mb-3">{bkError}</p>
+                  <button onClick={() => void fetchBookings()} className="font-cinzel text-[9px] tracking-widest uppercase text-primary hover:text-primary/80 transition-colors">
+                    Try Again
+                  </button>
+                </div>
+              )}
+
+              {!bkLoading && !bkError && bookings.length === 0 && (
+                <div className="text-center py-20 bg-[#1a1510] border border-white/8">
+                  <CalendarCheck2 className="w-12 h-12 text-white/10 mx-auto mb-4" />
+                  <p className="font-cormorant text-2xl text-white/40 mb-2">No Bookings Yet</p>
+                  <p className="font-manrope text-sm text-white/25 mb-6">When you book a vendor through BMS, your confirmed bookings will appear here.</p>
+                  <div className="flex justify-center gap-4">
+                    <Link href="/vendors"><button className="px-5 py-2.5 border border-primary/40 text-primary font-cinzel text-[9px] tracking-widest uppercase hover:bg-primary hover:text-black transition-all">Browse Vendors</button></Link>
+                    <Link href="/venues"><button className="px-5 py-2.5 border border-white/15 text-white/50 font-cinzel text-[9px] tracking-widest uppercase hover:border-primary/40 hover:text-primary transition-all">Browse Venues</button></Link>
+                  </div>
+                </div>
+              )}
+
+              {!bkLoading && !bkError && bookings.length > 0 && (
+                <>
+                  {/* Summary stats */}
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    {[
+                      { label: "Total",        value: bookings.length,                                    color: "text-primary" },
+                      { label: "Advance Paid", value: bookings.filter(b => b.advancePaid).length,         color: "text-green-400" },
+                      { label: "Completed",    value: bookings.filter(b => b.status === "completed").length, color: "text-blue-300" },
+                    ].map(s => (
+                      <div key={s.label} className="bg-[#1a1510] border border-white/8 p-4 text-center">
+                        <p className={`font-cinzel text-2xl font-bold mb-0.5 ${s.color}`}>{s.value}</p>
+                        <p className="font-cinzel text-[8px] tracking-[0.25em] text-white/30 uppercase">{s.label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <AnimatePresence>
+                    <div className="space-y-3">
+                      {bookings.map((b, i) => {
+                        const st = BOOKING_STATUS[b.status];
+                        return (
+                          <motion.div
+                            key={b.id}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: i * 0.04 }}
+                            className="bg-[#1a1510] border border-white/8 hover:border-primary/20 transition-colors p-5"
+                          >
+                            <div className="flex items-start justify-between gap-3 mb-3">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className={`font-cinzel text-[7px] tracking-[0.15em] uppercase px-2 py-0.5 border rounded-sm ${st.color}`}>{st.label}</span>
+                                {b.advancePaid && (
+                                  <span className="font-cinzel text-[7px] tracking-[0.15em] uppercase px-2 py-0.5 border border-green-400/35 bg-green-400/10 text-green-400 rounded-sm flex items-center gap-1">
+                                    <CheckCircle2 className="w-2.5 h-2.5" /> {fmtINR(b.advanceAmount)} Advance Paid
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <CalendarDays className="w-3 h-3 text-white/20" />
+                                <span className="font-cinzel text-[8px] tracking-wide text-white/25">{fmt(b.createdAt)}</span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-start gap-4 flex-wrap mb-3">
+                              <div className="min-w-0">
+                                <p className="font-cormorant text-lg text-primary/90 font-semibold leading-tight">{b.vendorName}</p>
+                                <p className="font-cinzel text-[8px] tracking-[0.15em] text-white/35 uppercase mt-0.5">{b.vendorCategory}</p>
+                              </div>
+                              <div className="w-px h-8 bg-white/8 hidden sm:block self-center" />
+                              <div className="min-w-0">
+                                <p className="font-manrope text-sm text-white/70 font-medium">{b.packageName}</p>
+                                <p className="font-cinzel text-[8px] tracking-[0.12em] text-primary/50 uppercase">{b.eventType}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-4 flex-wrap">
+                              {b.eventDate && (
+                                <div className="flex items-center gap-1.5">
+                                  <CalendarDays className="w-3 h-3 text-primary/35" />
+                                  <span className="font-manrope text-xs text-white/50">{fmt(b.eventDate)}</span>
+                                </div>
+                              )}
+                              {b.guestCount > 0 && (
+                                <span className="font-manrope text-xs text-white/40">~{b.guestCount} guests</span>
+                              )}
+                              {b.packagePrice > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <IndianRupee className="w-3 h-3 text-primary/35" />
+                                  <span className="font-manrope text-xs text-white/45">{fmtINR(b.packagePrice)}</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {b.consultationDate && b.consultationTime && (
+                              <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-primary/8 border border-primary/20 rounded-sm">
+                                <Tag className="w-3 h-3 text-primary/50 shrink-0" />
+                                <span className="font-cinzel text-[8px] tracking-[0.12em] text-primary/70 uppercase">
+                                  Consultation: {fmt(b.consultationDate)} · {b.consultationTime}
+                                </span>
+                              </div>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </AnimatePresence>
+                </>
+              )}
+            </motion.div>
+          )}
+
           {/* ── My Enquiries ── */}
           {tab === "enquiries" && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
@@ -252,7 +430,6 @@ export default function Profile() {
                 <h2 className="font-cormorant text-3xl font-light text-white">My <span className="text-primary italic font-semibold">Enquiries</span></h2>
               </div>
 
-              {/* Stats row */}
               {!enqLoading && enquiries.length > 0 && (
                 <div className="grid grid-cols-3 gap-3 mb-6">
                   {[
@@ -268,24 +445,21 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Loading */}
               {enqLoading && (
                 <div className="flex items-center justify-center py-20 bg-[#1a1510] border border-white/8">
                   <Loader2 className="w-6 h-6 text-primary animate-spin" />
                 </div>
               )}
 
-              {/* Error */}
               {enqError && !enqLoading && (
                 <div className="bg-[#1a1510] border border-red-400/20 p-6 text-center">
                   <p className="font-manrope text-sm text-red-400/70 mb-3">{enqError}</p>
-                  <button onClick={fetchEnquiries} className="font-cinzel text-[9px] tracking-widest uppercase text-primary hover:text-primary/80 transition-colors">
+                  <button onClick={() => void fetchEnquiries()} className="font-cinzel text-[9px] tracking-widest uppercase text-primary hover:text-primary/80 transition-colors">
                     Try Again
                   </button>
                 </div>
               )}
 
-              {/* Empty state */}
               {!enqLoading && !enqError && enquiries.length === 0 && (
                 <div className="text-center py-20 bg-[#1a1510] border border-white/8">
                   <Inbox className="w-12 h-12 text-white/10 mx-auto mb-4" />
@@ -298,7 +472,6 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* List */}
               {!enqLoading && !enqError && enquiries.length > 0 && (
                 <AnimatePresence>
                   <div className="space-y-2">
