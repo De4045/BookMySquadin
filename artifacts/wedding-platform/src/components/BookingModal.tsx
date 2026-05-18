@@ -71,6 +71,34 @@ const SELECT = INPUT + " appearance-none cursor-pointer";
 
 const ADVANCE = 2000;
 
+/* ── Razorpay types ── */
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+interface RazorpayOptions {
+  key: string; amount: number; currency: string; order_id: string;
+  name: string; description: string; prefill: { name: string; email: string; contact: string };
+  theme: { color: string };
+  handler: (r: RazorpayResponse) => void;
+  modal: { ondismiss: () => void };
+}
+declare global {
+  interface Window { Razorpay: new (opts: RazorpayOptions) => { open(): void } }
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise(resolve => {
+    if (typeof window !== "undefined" && window.Razorpay) { resolve(true); return; }
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload  = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
+
 function fmt(n: number) {
   return n.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 }
@@ -113,10 +141,76 @@ export function BookingModal({ vendor, onClose }: Props) {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [paying, setPaying] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
 
   if (!vendor) return null;
+
+  const handlePayWithRazorpay = async () => {
+    setError("");
+    setPaying(true);
+    try {
+      const orderRes = await fetch(`${BASE}/api/payments/razorpay/order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      if (!orderRes.ok) throw new Error("Could not create payment order. Please try again.");
+      const order = await orderRes.json() as {
+        orderId: string; amount: number; currency: string; keyId: string; demo?: boolean;
+      };
+
+      /* Demo mode (no Razorpay keys configured) — skip checkout UI */
+      if (order.demo) {
+        await handleBook(true);
+        return;
+      }
+
+      /* Load Razorpay checkout script */
+      const loaded = await loadRazorpayScript();
+      if (!loaded) throw new Error("Payment gateway failed to load. Please check your connection.");
+
+      await new Promise<void>((resolve, reject) => {
+        const rzp = new window.Razorpay({
+          key: order.keyId,
+          amount: order.amount,
+          currency: order.currency,
+          order_id: order.orderId,
+          name: "Book My Squad",
+          description: `Advance booking — ${vendor.name}`,
+          prefill: { name, email, contact: phone },
+          theme: { color: "#d4af37" },
+          handler: async (response) => {
+            try {
+              const verifyRes = await fetch(`${BASE}/api/payments/razorpay/verify`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                  orderId: response.razorpay_order_id,
+                  paymentId: response.razorpay_payment_id,
+                  signature: response.razorpay_signature,
+                }),
+              });
+              if (!verifyRes.ok) { reject(new Error("Payment could not be verified. Contact support.")); return; }
+              await handleBook(true);
+              resolve();
+            } catch (e) {
+              reject(e);
+            }
+          },
+          modal: { ondismiss: () => reject(new Error("__dismissed__")) },
+        });
+        rzp.open();
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg !== "__dismissed__") setError(msg || "Payment failed. Please try again.");
+    } finally {
+      setPaying(false);
+    }
+  };
 
   const cat = (vendor.category || "").trim().toUpperCase();
   const packages = PACKAGES[cat] ?? DEFAULT_PACKAGES;
@@ -507,14 +601,14 @@ export function BookingModal({ vendor, onClose }: Props) {
                       Pay a refundable advance of <strong className="text-primary">{fmt(ADVANCE)}</strong> to confirm your booking and lock in this vendor for your event date. Balance payable directly to the vendor.
                     </p>
                     <button
-                      onClick={() => void handleBook(true)}
-                      disabled={submitting}
+                      onClick={() => void handlePayWithRazorpay()}
+                      disabled={submitting || paying}
                       className="w-full py-4 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all disabled:opacity-60 disabled:cursor-not-allowed rounded-sm"
                       style={{ boxShadow: "0 4px 20px rgba(212,175,55,0.35)" }}
                     >
-                      {submitting ? "Processing…" : `Pay ${fmt(ADVANCE)} Advance & Confirm`}
+                      {paying ? "Opening Payment…" : submitting ? "Processing…" : `Pay ${fmt(ADVANCE)} Advance & Confirm`}
                     </button>
-                    <p className="text-center font-cinzel text-[8px] tracking-[0.12em] text-white/20 uppercase mt-3">Secured · 100% Refundable if cancelled 7 days prior</p>
+                    <p className="text-center font-cinzel text-[8px] tracking-[0.12em] text-white/20 uppercase mt-3">Powered by Razorpay · 100% Refundable if cancelled 7 days prior</p>
                   </div>
                 </div>
 

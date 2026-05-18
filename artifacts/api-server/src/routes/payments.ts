@@ -1,5 +1,16 @@
 import { Router, type IRouter } from "express";
 import { requireAdmin } from "../middlewares/auth.js";
+import Razorpay from "razorpay";
+import { createHmac } from "node:crypto";
+
+const ADVANCE_PAISE = 200000; // ₹2,000 in paise
+
+const rzp = process.env["RAZORPAY_KEY_ID"] && process.env["RAZORPAY_KEY_SECRET"]
+  ? new Razorpay({
+      key_id:    process.env["RAZORPAY_KEY_ID"] as string,
+      key_secret: process.env["RAZORPAY_KEY_SECRET"] as string,
+    })
+  : null;
 
 const router: IRouter = Router();
 
@@ -95,6 +106,53 @@ router.get("/admin/payments", requireAdmin, (_req, res) => {
     recentTransactions,
     totalRevenue: recentTransactions.reduce((s, t) => s + t.amount, 0),
   });
+});
+
+/* ── Razorpay: create order ── */
+router.post("/payments/razorpay/order", async (_req, res) => {
+  if (!rzp) {
+    /* Demo mode — no keys set, simulate a successful order */
+    res.json({ orderId: `demo_${Date.now()}`, amount: ADVANCE_PAISE, currency: "INR", keyId: "", demo: true });
+    return;
+  }
+  try {
+    const order = await rzp.orders.create({
+      amount: ADVANCE_PAISE,
+      currency: "INR",
+      receipt: `bms_${Date.now()}`,
+    });
+    res.json({ orderId: order.id, amount: ADVANCE_PAISE, currency: "INR", keyId: process.env["RAZORPAY_KEY_ID"] });
+  } catch {
+    res.status(500).json({ error: "Unable to create payment order. Please try again." });
+  }
+});
+
+/* ── Razorpay: verify signature ── */
+router.post("/payments/razorpay/verify", (req, res) => {
+  const { orderId, paymentId, signature } = req.body as {
+    orderId?: string; paymentId?: string; signature?: string;
+  };
+
+  if (!process.env["RAZORPAY_KEY_SECRET"]) {
+    /* Demo mode — always succeed */
+    res.json({ success: true, demo: true });
+    return;
+  }
+
+  if (!orderId || !paymentId || !signature) {
+    res.status(400).json({ error: "Missing required fields." });
+    return;
+  }
+
+  const expected = createHmac("sha256", process.env["RAZORPAY_KEY_SECRET"])
+    .update(`${orderId}|${paymentId}`)
+    .digest("hex");
+
+  if (expected === signature) {
+    res.json({ success: true });
+  } else {
+    res.status(400).json({ error: "Payment verification failed." });
+  }
 });
 
 export default router;
