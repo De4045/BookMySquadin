@@ -129,8 +129,8 @@ export function Navbar() {
             <img
               src={bmsLogo}
               alt="Book My Squad"
-              className="h-20 w-20 object-contain drop-shadow-lg"
-              style={{ mixBlendMode: "screen", filter: "brightness(1.4) saturate(1.3) contrast(1.15)" }}
+              className="h-24 w-24 object-contain flex-shrink-0"
+              style={{ filter: "drop-shadow(0 0 10px rgba(212,175,55,0.75)) drop-shadow(0 0 22px rgba(212,175,55,0.35)) brightness(1.15) saturate(1.25)" }}
             />
             <span className="font-cormorant text-3xl md:text-4xl font-semibold tracking-wide text-white hidden sm:block">
               <span className="text-primary italic">Book</span> My Squad
@@ -468,8 +468,8 @@ export function Navbar() {
             <img
               src={bmsLogo}
               alt="BMS"
-              className="h-12 w-12 object-contain"
-              style={{ mixBlendMode: "screen", filter: "brightness(1.3) saturate(1.2)" }}
+              className="h-14 w-14 object-contain flex-shrink-0"
+              style={{ filter: "drop-shadow(0 0 8px rgba(212,175,55,0.7)) brightness(1.15) saturate(1.25)" }}
             />
             <span className="font-cormorant text-xl text-white font-semibold">
               <span className="text-primary italic">Book</span> My Squad
