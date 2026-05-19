@@ -7,7 +7,6 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { ChatBot } from "@/components/ChatBot";
 import { SplashScreen } from "@/components/SplashScreen";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { PageTransition } from "@/components/PageTransition";
 import { AuthProvider } from "@/context/AuthContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
@@ -101,7 +100,6 @@ function App() {
                     </Suspense>
                     <ChatBot />
                     <MobileBottomNav />
-                    <FloatingWhatsApp />
                   </WouterRouter>
                 </SmoothScroll>
               </ShortlistProvider>
