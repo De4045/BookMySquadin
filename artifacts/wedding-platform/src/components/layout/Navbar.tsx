@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell, MapPin, Sparkles } from "lucide-react";
+import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell, MapPin, Sparkles, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 import { useAuth } from "@/context/AuthContext";
@@ -158,11 +158,11 @@ export function Navbar() {
             {/* Plan Your Dream Event — sticky CTA */}
             <motion.button
               onClick={() => setConsultOpen(true)}
-              className="hidden xl:flex items-center gap-2 px-5 py-2 bg-primary text-black font-cinzel font-bold text-[9px] tracking-[0.22em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow whitespace-nowrap"
+              className="hidden xl:flex items-center gap-2 px-7 py-3 bg-primary text-black font-cinzel font-bold text-[10px] tracking-[0.22em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow whitespace-nowrap"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="w-3.5 h-3.5" />
               Plan Your Dream Event
             </motion.button>
 
@@ -341,7 +341,7 @@ export function Navbar() {
 
             <Link
               href="/list-your-business"
-              className="hidden lg:block font-cinzel text-[11px] tracking-[0.15em] uppercase bg-primary text-black px-5 py-2.5 hover:bg-primary/85 transition-colors font-bold"
+              className="hidden lg:block font-cinzel text-[11px] tracking-[0.15em] uppercase bg-primary text-black px-6 py-3 hover:bg-primary/85 transition-colors font-bold"
             >
               List Business
             </Link>
@@ -464,122 +464,125 @@ export function Navbar() {
       </AnimatePresence>
 
       {/* Mobile Overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            key="mob-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Mobile Drawer */}
-      <div
-        className={`fixed top-0 right-0 z-[101] h-full w-[80vw] max-w-sm bg-[#0a0806] border-l border-white/8 flex flex-col transition-transform duration-400 ease-out ${
-          mobileOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/8">
-          <div className="flex items-center gap-3">
-            <img
-              src={bmsLogo}
-              alt="BMS"
-              className="h-14 w-14 object-contain flex-shrink-0"
-              style={{ filter: "drop-shadow(0 0 8px rgba(212,175,55,0.7)) brightness(1.15) saturate(1.25)" }}
-            />
-            <span className="font-cormorant text-xl text-white font-semibold">
-              <span className="text-primary italic">Book</span> My Squad
-            </span>
-          </div>
-          <button
-            className="text-white/60 hover:text-primary transition-colors"
-            onClick={() => setMobileOpen(false)}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            key="mob-drawer"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", ease: [0.32, 0, 0.67, 0], duration: 0.32 }}
+            className="fixed top-0 right-0 z-[101] h-full w-[78vw] max-w-[340px] bg-[#0c0907] border-l border-white/8 flex flex-col shadow-[−20px_0_60px_rgba(0,0,0,0.8)]"
           >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* User info in mobile drawer */}
-        {user && (
-          <div className="px-6 py-4 border-b border-white/8 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/40 flex items-center justify-center">
-              <span className="font-cinzel text-sm text-primary font-bold">{getInitials(user.name)}</span>
-            </div>
-            <div>
-              <p className="font-cinzel text-xs text-white font-semibold">{user.name}</p>
-              <p className="font-manrope text-[10px] text-white/40">{user.email}</p>
-              <span className="font-cinzel text-[8px] text-primary/60 uppercase tracking-wider">{user.role}</span>
-            </div>
-          </div>
-        )}
-
-        <nav className="flex flex-col px-6 py-6 gap-5 flex-1 overflow-y-auto">
-          {navLinks.map((link, i) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors border-b border-white/5 pb-5"
-              onClick={() => setMobileOpen(false)}
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              {link.label}
-            </Link>
-          ))}
-
-          {user ? (
-            <>
-              {/* Portal link for non-customer roles */}
-              {portalMeta && (
-                <Link href={portalMeta.href} onClick={() => setMobileOpen(false)}
-                  className={`font-cinzel text-sm tracking-[0.25em] uppercase border-b border-white/5 pb-5 flex items-center gap-2 ${portalMeta.color}`}>
-                  <portalMeta.icon className="w-4 h-4 opacity-70" />
-                  {portalMeta.label}
-                </Link>
-              )}
-              <Link href="/portal/profile" onClick={() => setMobileOpen(false)}
-                className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors border-b border-white/5 pb-5">
-                My Profile
-              </Link>
+            {/* Header */}
+            <div className="flex items-center justify-between px-7 py-6 border-b border-white/8">
+              <img
+                src={bmsLogo}
+                alt="BMS"
+                className="h-12 w-12 object-contain"
+                style={{ filter: "drop-shadow(0 0 8px rgba(212,175,55,0.7)) brightness(1.15) saturate(1.2)" }}
+              />
               <button
-                onClick={async () => { setMobileOpen(false); await handleLogout(); }}
-                className="font-cinzel text-sm tracking-[0.25em] uppercase text-red-400/70 hover:text-red-400 transition-colors text-left"
+                className="w-9 h-9 flex items-center justify-center border border-white/12 text-white/50 hover:text-primary hover:border-primary/40 transition-colors"
+                onClick={() => setMobileOpen(false)}
+                aria-label="Close menu"
               >
-                Sign Out
+                <X className="w-4 h-4" />
               </button>
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="font-cinzel text-sm tracking-[0.25em] uppercase text-white/75 hover:text-primary transition-colors border-b border-white/5 pb-5"
-              onClick={() => setMobileOpen(false)}
-            >
-              Login
-            </Link>
-          )}
+            </div>
 
-          <Link
-            href="/list-your-business"
-            className="font-cinzel text-sm tracking-[0.25em] uppercase text-primary hover:text-white transition-colors"
-            onClick={() => setMobileOpen(false)}
-          >
-            ✦ List Your Business
-          </Link>
-        </nav>
+            {/* User chip */}
+            {user && (
+              <div className="px-7 py-4 border-b border-white/6 flex items-center gap-3 bg-primary/4">
+                <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
+                  <span className="font-cinzel text-[11px] text-primary font-bold">{getInitials(user.name)}</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="font-cinzel text-[11px] text-white truncate">{user.name}</p>
+                  <p className="font-cinzel text-[8px] text-primary/60 uppercase tracking-wider">{user.role}</p>
+                </div>
+              </div>
+            )}
 
-        {/* Mobile CTA */}
-        <div className="px-6 pb-4">
-          <button
-            onClick={() => { setMobileOpen(false); setConsultOpen(true); }}
-            className="w-full py-3.5 bg-primary text-black font-cinzel font-bold text-[9px] tracking-[0.25em] uppercase flex items-center justify-center gap-2"
-          >
-            <Sparkles className="w-3 h-3" />
-            Plan Your Dream Event
-          </button>
-        </div>
+            {/* Nav links */}
+            <nav className="flex-1 overflow-y-auto px-7 py-8 flex flex-col gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="font-cinzel text-[13px] tracking-[0.22em] uppercase text-white/65 hover:text-primary transition-colors py-3.5 border-b border-white/5 flex items-center justify-between group"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all text-primary" />
+                </Link>
+              ))}
 
-        <div className="px-6 py-6 border-t border-white/8">
-          <p className="font-manrope text-[11px] text-white/35">✦ India's Finest Event Planning Platform ✦</p>
-          <p className="font-manrope text-[10px] text-white/25 mt-2">📞 +91 8796318282</p>
-        </div>
-      </div>
+              <div className="pt-6 mt-2 flex flex-col gap-1">
+                {user ? (
+                  <>
+                    {portalMeta && (
+                      <Link href={portalMeta.href} onClick={() => setMobileOpen(false)}
+                        className={`font-cinzel text-[12px] tracking-[0.18em] uppercase py-3 flex items-center gap-2.5 border-b border-white/5 ${portalMeta.color}`}>
+                        <portalMeta.icon className="w-3.5 h-3.5 opacity-70 shrink-0" />
+                        {portalMeta.label}
+                      </Link>
+                    )}
+                    <Link href="/portal/profile" onClick={() => setMobileOpen(false)}
+                      className="font-cinzel text-[12px] tracking-[0.18em] uppercase text-white/55 hover:text-primary transition-colors py-3 border-b border-white/5 flex items-center gap-2.5">
+                      <User className="w-3.5 h-3.5 opacity-60 shrink-0" />
+                      My Profile
+                    </Link>
+                    <button
+                      onClick={async () => { setMobileOpen(false); await handleLogout(); }}
+                      className="font-cinzel text-[12px] tracking-[0.18em] uppercase text-red-400/60 hover:text-red-400 transition-colors py-3 text-left flex items-center gap-2.5"
+                    >
+                      <LogOut className="w-3.5 h-3.5 opacity-60 shrink-0" />
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/login" onClick={() => setMobileOpen(false)}
+                    className="font-cinzel text-[12px] tracking-[0.18em] uppercase text-white/55 hover:text-primary transition-colors py-3 border-b border-white/5">
+                    Login / Register
+                  </Link>
+                )}
+
+                <Link href="/list-your-business" onClick={() => setMobileOpen(false)}
+                  className="font-cinzel text-[11px] tracking-[0.2em] uppercase text-primary/70 hover:text-primary transition-colors pt-4 flex items-center gap-1.5">
+                  <span className="text-[8px]">✦</span> List Your Business
+                </Link>
+              </div>
+            </nav>
+
+            {/* CTA */}
+            <div className="px-7 py-6 border-t border-white/8">
+              <button
+                onClick={() => { setMobileOpen(false); setConsultOpen(true); }}
+                className="w-full py-4 bg-primary text-black font-cinzel font-bold text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2.5 hover:bg-primary/90 transition-colors gold-glow"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Plan Your Dream Event
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <ConsultationModal isOpen={consultOpen} onClose={() => setConsultOpen(false)} />
     </>

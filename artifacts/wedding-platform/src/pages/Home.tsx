@@ -288,7 +288,7 @@ export default function Home() {
               {/* CTA */}
               <button
                 onClick={handleSearch}
-                className="px-8 py-3.5 bg-primary text-black font-cinzel font-semibold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow"
+                className="px-10 py-5 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow shrink-0"
               >
                 Search
               </button>
@@ -344,7 +344,7 @@ export default function Home() {
       </div>
 
       {/* SECTION 3: POPULAR VENUE SEARCHES */}
-      <section className="py-28 px-6 md:px-12" style={{background: '#080604'}}>
+      <section className="py-32 px-6 md:px-12" style={{background: '#080604'}}>
         <div className="max-w-7xl mx-auto">
           <div ref={venueHeadRef} className="mb-16 text-center">
             <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Curated For You ✦</p>
@@ -499,9 +499,9 @@ export default function Home() {
       </section>
 
       {/* SECTION 4: INHOUSE SERVICES */}
-      <section className="py-24 px-6 md:px-12 bg-[#0a0804]">
+      <section className="py-32 px-6 md:px-12 bg-[#0a0804]">
         <div className="max-w-7xl mx-auto">
-          <div ref={inhouseHeadRef} className="mb-16 text-center">
+          <div ref={inhouseHeadRef} className="mb-20 text-center">
             <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
             <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
@@ -537,9 +537,9 @@ export default function Home() {
       </section>
 
       {/* SECTION 5: BROWSE BY CATEGORY */}
-      <section className="py-28 px-6 md:px-12 bg-[#080604] border-t border-white/5">
+      <section className="py-32 px-6 md:px-12 bg-[#080604] border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div ref={catHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
+          <div ref={catHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-20">
             <div className="flex-1">
               <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Vendor Categories ✦</p>
               <div className="gold-line w-16 mb-6" />
@@ -591,9 +591,9 @@ export default function Home() {
       </section>
 
       {/* SECTION 6: DREAM WEDDINGS */}
-      <section className="py-28 px-6 md:px-12 bg-[#0d0a07]">
+      <section className="py-32 px-6 md:px-12 bg-[#0d0a07]">
         <div className="max-w-7xl mx-auto">
-          <div ref={dreamHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
+          <div ref={dreamHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-20">
             <div className="flex-1">
               <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,27 +14,33 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
 import { ComparisonProvider } from "@/context/ComparisonContext";
 import { NotificationProvider } from "@/context/NotificationContext";
+
 import Home from "@/pages/Home";
-import Vendors from "@/pages/Vendors";
-import Venues from "@/pages/Venues";
-import Login from "@/pages/Login";
-import Weddings from "@/pages/Weddings";
-import Blog from "@/pages/Blog";
-import Photos from "@/pages/Photos";
-import ListYourBusiness from "@/pages/ListYourBusiness";
-import WhyChooseUs from "@/pages/WhyChooseUs";
-import CityLanding from "@/pages/CityLanding";
-import Checklist from "@/pages/Checklist";
-import EventPortfolio from "@/pages/EventPortfolio";
-import CaseStudy from "@/pages/CaseStudy";
-import VendorPortalDemo from "@/pages/demos/VendorPortalDemo";
-import BookingPaymentDemo from "@/pages/demos/BookingPaymentDemo";
-import NotFound from "@/pages/not-found";
-import AdminPortal from "@/pages/portal/AdminPortal";
-import VendorPortal from "@/pages/portal/VendorPortal";
-import VenuePortal from "@/pages/portal/VenuePortal";
-import Profile from "@/pages/portal/Profile";
-import SavedFavorites from "@/pages/portal/SavedFavorites";
+
+const Vendors          = lazy(() => import("@/pages/Vendors"));
+const Venues           = lazy(() => import("@/pages/Venues"));
+const Login            = lazy(() => import("@/pages/Login"));
+const Weddings         = lazy(() => import("@/pages/Weddings"));
+const Blog             = lazy(() => import("@/pages/Blog"));
+const Photos           = lazy(() => import("@/pages/Photos"));
+const ListYourBusiness = lazy(() => import("@/pages/ListYourBusiness"));
+const WhyChooseUs      = lazy(() => import("@/pages/WhyChooseUs"));
+const CityLanding      = lazy(() => import("@/pages/CityLanding"));
+const Checklist        = lazy(() => import("@/pages/Checklist"));
+const EventPortfolio   = lazy(() => import("@/pages/EventPortfolio"));
+const CaseStudy        = lazy(() => import("@/pages/CaseStudy"));
+const VendorPortalDemo = lazy(() => import("@/pages/demos/VendorPortalDemo"));
+const BookingPaymentDemo = lazy(() => import("@/pages/demos/BookingPaymentDemo"));
+const NotFound         = lazy(() => import("@/pages/not-found"));
+const AdminPortal      = lazy(() => import("@/pages/portal/AdminPortal"));
+const VendorPortal     = lazy(() => import("@/pages/portal/VendorPortal"));
+const VenuePortal      = lazy(() => import("@/pages/portal/VenuePortal"));
+const Profile          = lazy(() => import("@/pages/portal/Profile"));
+const SavedFavorites   = lazy(() => import("@/pages/portal/SavedFavorites"));
+
+function PageLoader() {
+  return <div className="fixed inset-0 bg-[#080604]" />;
+}
 
 const queryClient = new QueryClient();
 
@@ -92,7 +98,9 @@ function App() {
                   <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
                     <PageTransition />
                     <CursorGlow />
-                    <Router />
+                    <Suspense fallback={<PageLoader />}>
+                      <Router />
+                    </Suspense>
                     <ChatBot />
                     <MobileBottomNav />
                     <FloatingWhatsApp />
