@@ -329,7 +329,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 2: MARQUEE STRIP */}
-      <div className="bg-primary py-3 overflow-hidden">
+      <div className="bg-primary py-3 overflow-hidden mt-16 md:mt-24">
         <motion.div
           animate={{ x: [0, -1000] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
