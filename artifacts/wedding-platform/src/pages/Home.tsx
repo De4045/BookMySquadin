@@ -143,7 +143,7 @@ export default function Home() {
       <Navbar />
 
       {/* SECTION 1: HERO */}
-      <section className="relative w-full h-screen min-h-screen overflow-hidden">
+      <section className="relative w-full h-screen min-h-screen overflow-hidden after:absolute after:bottom-0 after:left-0 after:right-0 after:h-32 after:bg-gradient-to-t after:from-[#080604] after:to-transparent after:z-[5] after:pointer-events-none">
         {/* Video BG with parallax */}
         <div ref={heroVideoRef} className="absolute inset-0 z-0 scale-[1.15] parallax-inner">
           <video
@@ -322,7 +322,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 2: MARQUEE STRIP */}
-      <div className="bg-primary py-3 overflow-hidden mt-16 md:mt-24">
+      <div className="bg-primary py-3 overflow-hidden mt-6 md:mt-8">
         <motion.div
           animate={{ x: [0, -1000] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
