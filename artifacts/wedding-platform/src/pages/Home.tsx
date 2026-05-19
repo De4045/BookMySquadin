@@ -169,7 +169,7 @@ export default function Home() {
         </div>
 
         {/* Hero text — parallax upward on scroll */}
-        <div ref={heroTextRef} className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center parallax-inner">
+        <div ref={heroTextRef} className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center parallax-inner pt-20 md:pt-24">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
