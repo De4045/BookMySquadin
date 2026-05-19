@@ -174,15 +174,15 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-12"
+            className="mb-6 md:mb-12"
           >
-            <div className="font-cinzel text-xs tracking-[0.5em] text-primary/80 uppercase mb-4">
+            <div className="font-cinzel text-[9px] sm:text-xs tracking-[0.2em] sm:tracking-[0.4em] text-primary/80 uppercase mb-3 md:mb-4 px-2">
               ✦ India's Finest Event Planning Platform ✦
             </div>
-            <div className="gold-line w-32 mx-auto mb-8" />
+            <div className="gold-line w-24 md:w-32 mx-auto mb-5 md:mb-8" />
           </motion.div>
 
-          <h1 className="text-6xl md:text-8xl lg:text-[100px] font-cormorant font-light text-white leading-[0.95] tracking-tight mb-6">
+          <h1 className="text-[38px] sm:text-5xl md:text-7xl lg:text-[100px] font-cormorant font-light text-white leading-[0.95] tracking-tight mb-4 md:mb-6">
             <SplitText
               text="Plan your"
               mode="words"
@@ -207,7 +207,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="font-manrope text-white text-base md:text-lg font-light max-w-xl mx-auto mb-12 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            className="font-manrope text-white text-sm sm:text-base md:text-lg font-light max-w-xs sm:max-w-md md:max-w-xl mx-auto mb-8 md:mb-12 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] px-2"
             style={{ textShadow: '0 2px 12px rgba(0,0,0,0.95), 0 1px 4px rgba(0,0,0,0.9)' }}
           >
             Every great love story deserves a perfect setting. India's finest vendors, curated for couples who refuse to settle.
@@ -222,7 +222,7 @@ export default function Home() {
           >
             <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-1.5 flex flex-col lg:flex-row gap-1.5 gold-border-glow">
               {/* City */}
-              <div className="flex-1 flex items-center px-5 py-3.5 border-r border-white/10 gap-2">
+              <div className="flex-1 flex items-center px-5 py-3.5 border-b lg:border-b-0 lg:border-r border-white/10 gap-2">
                 <MapPin className="w-4 h-4 text-primary shrink-0" />
                 <select
                   className="flex-1 bg-transparent border-none outline-none text-white/80 text-sm font-manrope font-light cursor-pointer min-w-0"
@@ -252,7 +252,7 @@ export default function Home() {
                 </button>
               </div>
               {/* Event Type */}
-              <div className="flex-1 flex items-center px-5 py-3.5 border-r border-white/10">
+              <div className="flex-1 flex items-center px-5 py-3.5 border-b lg:border-b-0 lg:border-r border-white/10">
                 <Search className="w-4 h-4 text-primary mr-3 shrink-0" />
                 <select
                   className="w-full bg-transparent border-none outline-none text-white/80 text-sm font-manrope font-light cursor-pointer"
@@ -266,7 +266,7 @@ export default function Home() {
                 </select>
               </div>
               {/* Date */}
-              <div className="flex-1 flex items-center px-5 py-3.5 border-r border-white/10">
+              <div className="flex-1 flex items-center px-5 py-3.5 border-b lg:border-b-0 lg:border-r border-white/10">
                 <Calendar className="w-4 h-4 text-primary mr-3 shrink-0" />
                 <input type="date" className="w-full bg-transparent border-none outline-none text-white/60 text-sm font-manrope font-light" />
               </div>
@@ -288,7 +288,7 @@ export default function Home() {
               {/* CTA */}
               <button
                 onClick={handleSearch}
-                className="px-10 py-5 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow shrink-0"
+                className="w-full lg:w-auto px-10 py-4 lg:py-5 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.2em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow shrink-0"
               >
                 Search
               </button>
@@ -345,12 +345,12 @@ export default function Home() {
       </div>
 
       {/* SECTION 3: POPULAR VENUE SEARCHES */}
-      <section className="py-32 px-6 md:px-12" style={{background: '#080604'}}>
+      <section className="py-16 md:py-32 px-6 md:px-12" style={{background: '#080604'}}>
         <div className="max-w-7xl mx-auto">
-          <div ref={venueHeadRef} className="mb-16 text-center">
-            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Curated For You ✦</p>
+          <div ref={venueHeadRef} className="mb-8 md:mb-16 text-center">
+            <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Curated For You ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
+            <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               Popular <span className="text-primary italic font-semibold">Venue</span> Searches
             </h2>
           </div>
@@ -500,12 +500,12 @@ export default function Home() {
       </section>
 
       {/* SECTION 4: INHOUSE SERVICES */}
-      <section className="py-32 px-6 md:px-12 bg-[#0a0804]">
+      <section className="py-16 md:py-32 px-6 md:px-12 bg-[#0a0804]">
         <div className="max-w-7xl mx-auto">
-          <div ref={inhouseHeadRef} className="mb-20 text-center">
-            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
+          <div ref={inhouseHeadRef} className="mb-10 md:mb-20 text-center">
+            <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Bespoke Offerings ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
+            <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               <span className="text-primary italic font-semibold">Signature</span> Services
             </h2>
           </div>
@@ -538,13 +538,13 @@ export default function Home() {
       </section>
 
       {/* SECTION 5: BROWSE BY CATEGORY */}
-      <section className="py-32 px-6 md:px-12 bg-[#080604] border-t border-white/5">
+      <section className="py-16 md:py-32 px-6 md:px-12 bg-[#080604] border-t border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div ref={catHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-20">
+          <div ref={catHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-20">
             <div className="flex-1">
-              <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Vendor Categories ✦</p>
+              <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Vendor Categories ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
+              <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
                 Explore <span className="text-primary italic font-semibold">Categories</span>
               </h2>
             </div>
@@ -592,13 +592,13 @@ export default function Home() {
       </section>
 
       {/* SECTION 6: DREAM WEDDINGS */}
-      <section className="py-32 px-6 md:px-12 bg-[#0d0a07]">
+      <section className="py-16 md:py-32 px-6 md:px-12 bg-[#0d0a07]">
         <div className="max-w-7xl mx-auto">
-          <div ref={dreamHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-20">
+          <div ref={dreamHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-10 md:mb-20">
             <div className="flex-1">
-              <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Inspiration ✦</p>
+              <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Inspiration ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
+              <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
                 Dream <span className="text-primary italic font-semibold">Weddings</span>
               </h2>
             </div>
@@ -731,14 +731,14 @@ export default function Home() {
       </section>
 
       {/* SECTION 6B: MOMENTS WE CREATED */}
-      <section className="py-32 px-6 md:px-12 bg-[#030201] relative overflow-hidden">
+      <section className="py-16 md:py-32 px-6 md:px-12 bg-[#030201] relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 30% 50%, rgba(212,175,55,0.05) 0%, transparent 65%)" }} />
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-16 gap-6 md:gap-8">
             <div>
-              <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Our Work ✦</p>
+              <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Our Work ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-playfair text-7xl md:text-[110px] lg:text-[130px] text-white font-normal italic leading-[0.9]">
+              <h2 className="font-playfair text-4xl sm:text-5xl md:text-7xl lg:text-[100px] text-white font-normal italic leading-[0.9]">
                 Moments<br />
                 <span className="text-primary">We Created</span>
               </h2>
@@ -749,8 +749,8 @@ export default function Home() {
           </div>
 
           {/* Asymmetric 4-image grid */}
-          <div className="grid grid-cols-3 grid-rows-2 gap-3" style={{ height: "680px" }}>
-            <div className="row-span-2 overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3" style={{ height: "clamp(360px, 55vw, 680px)" }}>
+            <div className="md:row-span-2 overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
               <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=90" className="w-full h-full object-cover brightness-95" alt="Royal Wedding" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5">
@@ -772,7 +772,7 @@ export default function Home() {
                 <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/50 px-2 py-1 border border-primary/40 backdrop-blur-sm">Photography</span>
               </div>
             </div>
-            <div className="col-span-2 overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
+            <div className="col-span-2 md:col-span-2 overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
               <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=90" className="w-full h-full object-cover brightness-100" alt="Destination Wedding" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
@@ -848,13 +848,13 @@ export default function Home() {
       </section>
 
       {/* SECTION 7B: HOW IT WORKS */}
-      <section className="py-28 px-6 md:px-12 bg-[#050403] relative overflow-hidden border-t border-white/5">
+      <section className="py-16 md:py-28 px-6 md:px-12 bg-[#050403] relative overflow-hidden border-t border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.05)_0%,transparent_60%)] pointer-events-none" />
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Journey ✦</p>
+          <div className="text-center mb-10 md:mb-20">
+            <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Journey ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
+            <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               How It <span className="text-primary italic font-semibold">Works</span>
             </h2>
             <p className="font-manrope text-white/72 text-base font-light mt-4 max-w-lg mx-auto leading-relaxed">
@@ -931,13 +931,13 @@ export default function Home() {
       </section>
 
       {/* SECTION 7C: STORIES BEHIND EVERY CELEBRATION */}
-      <section className="py-32 px-6 md:px-12 bg-[#080604] border-t border-white/5 relative overflow-hidden">
+      <section className="py-16 md:py-32 px-6 md:px-12 bg-[#080604] border-t border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 70% 30%, rgba(212,175,55,0.05) 0%, transparent 55%)" }} />
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Case Studies ✦</p>
+          <div className="text-center mb-10 md:mb-20">
+            <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Case Studies ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-playfair text-7xl md:text-[110px] lg:text-[130px] text-white font-normal italic leading-[0.9] mb-5">
+            <h2 className="font-playfair text-4xl sm:text-5xl md:text-7xl lg:text-[100px] text-white font-normal italic leading-[0.9] mb-5">
               Stories Behind Every<br />
               <span className="text-primary">Celebration</span>
             </h2>
@@ -1011,13 +1011,13 @@ export default function Home() {
       </section>
 
       {/* SECTION 8: WEDDING MAGAZINE */}
-      <section className="py-28 px-6 md:px-12 bg-[#080604]">
+      <section className="py-16 md:py-28 px-6 md:px-12 bg-[#080604]">
         <div className="max-w-7xl mx-auto">
-          <div ref={magazineHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-16">
+          <div ref={magazineHeadRef} className="flex flex-col md:flex-row justify-between items-end mb-8 md:mb-16">
             <div className="flex-1">
-              <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Editorial ✦</p>
+              <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.45em] text-primary/80 uppercase mb-4">✦ The Editorial ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
+              <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
                 Wedding <span className="text-primary italic font-semibold">Magazine</span>
               </h2>
             </div>
@@ -1122,14 +1122,14 @@ export default function Home() {
       </section>
 
       {/* SECTION 9: TESTIMONIALS */}
-      <section className="py-28 px-6 md:px-12 bg-[#050403] relative overflow-hidden">
+      <section className="py-16 md:py-28 px-6 md:px-12 bg-[#050403] relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <div ref={testHeadRef} className="mb-20 text-center">
-            <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Client Words ✦</p>
+          <div ref={testHeadRef} className="mb-10 md:mb-20 text-center">
+            <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Client Words ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-playfair text-7xl md:text-[110px] lg:text-[130px] text-white font-normal italic leading-[0.9] mb-6">
+            <h2 className="font-playfair text-4xl sm:text-5xl md:text-7xl lg:text-[100px] text-white font-normal italic leading-[0.9] mb-6">
               Turning Dreams<br />
               <span className="text-primary">Into Experiences</span>
             </h2>
@@ -1191,21 +1191,21 @@ export default function Home() {
       {/* SECTION 11: VENDOR CTA */}
       <section className="bg-[#080604] border-y border-white/10">
         <div className="flex flex-col md:flex-row">
-          <div ref={ctaTextRef} className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
+          <div ref={ctaTextRef} className="w-full md:w-1/2 p-8 sm:p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
-            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Join The Network ✦</p>
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal leading-tight mb-8 drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
+            <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.3em] sm:tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Join The Network ✦</p>
+            <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal leading-tight mb-6 md:mb-8 drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
               Are you a <span className="text-primary italic font-semibold">Premium</span> Vendor?
             </h2>
-            <ul className="space-y-4 mb-12">
+            <ul className="space-y-3 md:space-y-4 mb-8 md:mb-12">
               {[
                 "Showcase your portfolio to high-net-worth clients",
                 "Receive verified, quality leads",
                 "Join an exclusive network of luxury professionals"
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-4">
-                  <div className="w-1 h-1 bg-primary rounded-full mt-2.5 shadow-[0_0_8px_rgba(212,175,55,0.8)]" />
-                  <span className="font-manrope text-white/70 font-light text-lg">{item}</span>
+                <li key={i} className="flex items-start gap-3 md:gap-4">
+                  <div className="w-1 h-1 bg-primary rounded-full mt-2.5 shadow-[0_0_8px_rgba(212,175,55,0.8)] shrink-0" />
+                  <span className="font-manrope text-white/70 font-light text-base md:text-lg">{item}</span>
                 </li>
               ))}
             </ul>

@@ -34,6 +34,7 @@ const VendorPortal     = lazy(() => import("@/pages/portal/VendorPortal"));
 const VenuePortal      = lazy(() => import("@/pages/portal/VenuePortal"));
 const Profile          = lazy(() => import("@/pages/portal/Profile"));
 const SavedFavorites   = lazy(() => import("@/pages/portal/SavedFavorites"));
+const Checklist        = lazy(() => import("@/pages/Checklist"));
 
 function PageLoader() {
   return <div className="fixed inset-0 bg-[#080604]" />;
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/portal/saved" component={SavedFavorites} />
       <Route path="/events" component={EventPortfolio} />
       <Route path="/events/:slug" component={CaseStudy} />
+      <Route path="/checklist" component={Checklist} />
       <Route path="/vendors/:city" component={CityLanding} />
       <Route path="/demo/vendor-portal" component={VendorPortalDemo} />
       <Route path="/demo/booking-payment" component={BookingPaymentDemo} />
