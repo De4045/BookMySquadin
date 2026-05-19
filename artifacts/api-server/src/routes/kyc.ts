@@ -10,14 +10,6 @@ function sessionUserId(req: Parameters<Parameters<typeof router.get>[1]>[0]): nu
   return typeof uid === "number" ? uid : undefined;
 }
 
-function sessionRole(req: Parameters<Parameters<typeof router.get>[1]>[0]): string | undefined {
-  const uid = sessionUserId(req);
-  if (!uid) return undefined;
-  return getUserById(uid)?.role;
-}
-
-const VALID_DOC_TYPES: KycDocType[] = ["gst", "aadhaar", "pan", "portfolio_certificate"];
-
 router.get("/kyc", (req, res) => {
   const uid = sessionUserId(req);
   if (!uid) { res.status(401).json({ error: "Not authenticated" }); return; }
@@ -37,13 +29,19 @@ router.post("/kyc", (req, res) => {
   res.status(201).json({ doc });
 });
 
-router.get("/kyc/all", (req, res) => {
-  if (sessionRole(req) !== "admin") { res.status(403).json({ error: "Admin only" }); return; }
+router.get("/kyc/all", async (req, res) => {
+  const uid = sessionUserId(req);
+  if (!uid) { res.status(401).json({ error: "Not authenticated" }); return; }
+  const user = await getUserById(uid);
+  if (user?.role !== "admin") { res.status(403).json({ error: "Admin only" }); return; }
   res.json({ docs: getAllKycDocs() });
 });
 
-router.patch("/kyc/:id/status", (req, res) => {
-  if (sessionRole(req) !== "admin") { res.status(403).json({ error: "Admin only" }); return; }
+router.patch("/kyc/:id/status", async (req, res) => {
+  const uid = sessionUserId(req);
+  if (!uid) { res.status(401).json({ error: "Not authenticated" }); return; }
+  const user = await getUserById(uid);
+  if (user?.role !== "admin") { res.status(403).json({ error: "Admin only" }); return; }
   const docId = Number(req.params["id"]);
   if (isNaN(docId)) { res.status(400).json({ error: "Invalid id" }); return; }
   const { status } = req.body as { status?: string };
@@ -56,5 +54,7 @@ router.patch("/kyc/:id/status", (req, res) => {
   req.log.info({ docId, status }, "KYC doc reviewed");
   res.json({ doc });
 });
+
+const VALID_DOC_TYPES: KycDocType[] = ["gst", "aadhaar", "pan", "portfolio_certificate"];
 
 export default router;

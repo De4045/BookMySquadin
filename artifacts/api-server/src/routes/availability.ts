@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { getBlockedDates, blockDate, unblockDate } from "../lib/availabilityStore.js";
-import { users } from "../lib/usersStore.js";
+import { getAllUsers } from "../lib/usersStore.js";
 
 const router: IRouter = Router();
 
@@ -16,9 +16,10 @@ router.get("/availability", (req, res) => {
   res.json({ blockedDates: getBlockedDates(uid) });
 });
 
-router.get("/availability/public", (req, res) => {
+router.get("/availability/public", async (req, res) => {
   const name = (req.query["name"] as string | undefined)?.toLowerCase().trim() ?? "";
-  const vendor = users.find(u => u.role === "vendor" && u.name.toLowerCase().includes(name));
+  const allUsers = await getAllUsers();
+  const vendor = allUsers.find(u => u.role === "vendor" && u.name.toLowerCase().includes(name));
   if (!vendor) { res.json({ blockedDates: [] }); return; }
   res.json({ blockedDates: getBlockedDates(vendor.id) });
 });

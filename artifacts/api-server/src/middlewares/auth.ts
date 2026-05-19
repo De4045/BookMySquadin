@@ -10,20 +10,21 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     return;
   }
 
-  const user = getUserById(userId);
-  if (!user) {
-    req.session.destroy(() => {});
-    res.status(401).json({ error: "Session invalid. Please sign in again." });
-    return;
-  }
-
-  if (!user.isActive) {
-    req.session.destroy(() => {});
-    res.status(403).json({ error: "Your account has been deactivated. Please contact support." });
-    return;
-  }
-
-  next();
+  getUserById(userId).then((user) => {
+    if (!user) {
+      req.session.destroy(() => {});
+      res.status(401).json({ error: "Session invalid. Please sign in again." });
+      return;
+    }
+    if (!user.isActive) {
+      req.session.destroy(() => {});
+      res.status(403).json({ error: "Your account has been deactivated. Please contact support." });
+      return;
+    }
+    next();
+  }).catch(() => {
+    res.status(500).json({ error: "Internal server error." });
+  });
 }
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
@@ -35,13 +36,15 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction): v
     return;
   }
 
-  const user = getUserById(userId);
-  if (!user || user.role !== "admin") {
-    res.status(403).json({ error: "Admin access required." });
-    return;
-  }
-
-  next();
+  getUserById(userId).then((user) => {
+    if (!user || user.role !== "admin") {
+      res.status(403).json({ error: "Admin access required." });
+      return;
+    }
+    next();
+  }).catch(() => {
+    res.status(500).json({ error: "Internal server error." });
+  });
 }
 
 export function requireRole(...roles: string[]) {
@@ -54,12 +57,14 @@ export function requireRole(...roles: string[]) {
       return;
     }
 
-    const user = getUserById(userId);
-    if (!user || !roles.includes(user.role)) {
-      res.status(403).json({ error: `Access restricted to: ${roles.join(", ")}.` });
-      return;
-    }
-
-    next();
+    getUserById(userId).then((user) => {
+      if (!user || !roles.includes(user.role)) {
+        res.status(403).json({ error: `Access restricted to: ${roles.join(", ")}.` });
+        return;
+      }
+      next();
+    }).catch(() => {
+      res.status(500).json({ error: "Internal server error." });
+    });
   };
 }

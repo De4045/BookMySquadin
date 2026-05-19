@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { getPortfolio, addPhoto, deletePhoto } from "../lib/portfolioStore.js";
-import { users } from "../lib/usersStore.js";
+import { getAllUsers } from "../lib/usersStore.js";
 
 const router: IRouter = Router();
 
@@ -16,9 +16,10 @@ router.get("/portfolio", (req, res) => {
   res.json({ photos: getPortfolio(uid) });
 });
 
-router.get("/portfolio/public", (req, res) => {
+router.get("/portfolio/public", async (req, res) => {
   const name = (req.query["name"] as string | undefined)?.toLowerCase().trim() ?? "";
-  const vendor = users.find(u => u.role === "vendor" && u.name.toLowerCase().includes(name));
+  const allUsers = await getAllUsers();
+  const vendor = allUsers.find(u => u.role === "vendor" && u.name.toLowerCase().includes(name));
   if (!vendor) { res.json({ photos: [] }); return; }
   res.json({ photos: getPortfolio(vendor.id) });
 });

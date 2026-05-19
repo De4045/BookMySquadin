@@ -1,15 +1,15 @@
 import { Router, type IRouter } from "express";
 import bcrypt from "bcryptjs";
 import {
-  users,
   getUserById,
   getUserByEmail,
+  getAllUsers,
   createUser,
+  updateUser,
   safeUser,
   isLockedOut,
   recordFailedAttempt,
   resetLoginAttempts,
-  remainingAttempts,
   validatePasswordStrength,
   validateEmail,
 } from "../lib/usersStore.js";
@@ -41,7 +41,9 @@ router.post("/auth/register", async (req, res) => {
   }
 
   if (trimmedName.length < 2 || trimmedName.length > 80) {
-    res.status(400).json({ error: "Name must be between 2 and 80 characters." });
+    res
+      .status(400)
+      .json({ error: "Name must be between 2 and 80 characters." });
     return;
   }
 
@@ -51,8 +53,10 @@ router.post("/auth/register", async (req, res) => {
     return;
   }
 
-  if (getUserByEmail(emailLower)) {
-    res.status(409).json({ error: "An account with this email already exists." });
+  if (await getUserByEmail(emailLower)) {
+    res
+      .status(409)
+      .json({ error: "An account with this email already exists." });
     return;
   }
 
@@ -61,13 +65,11 @@ router.post("/auth/register", async (req, res) => {
   const assignedRole: "user" | "vendor" | "venue" =
     role === "vendor" ? "vendor" : role === "venue" ? "venue" : "user";
 
-  const user = createUser({
+  const user = await createUser({
     name: trimmedName,
     email: emailLower,
     passwordHash,
     role: assignedRole,
-    createdAt: new Date().toISOString(),
-    isActive: true,
   });
 
   const session = req.session as unknown as Record<string, unknown>;
@@ -100,7 +102,7 @@ router.post("/auth/login", async (req, res) => {
     return;
   }
 
-  const user = getUserByEmail(emailLower);
+  const user = await getUserByEmail(emailLower);
 
   if (!user) {
     recordFailedAttempt(emailLower);
@@ -126,7 +128,11 @@ router.post("/auth/login", async (req, res) => {
   }
 
   if (!user.isActive) {
-    res.status(403).json({ error: "Your account has been deactivated. Contact support." });
+    res
+      .status(403)
+      .json({
+        error: "Your account has been deactivated. Contact support.",
+      });
     return;
   }
 
@@ -152,7 +158,7 @@ router.post("/auth/logout", (req, res) => {
   });
 });
 
-router.get("/auth/me", (req, res) => {
+router.get("/auth/me", async (req, res) => {
   const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"] as number | undefined;
 
@@ -161,7 +167,7 @@ router.get("/auth/me", (req, res) => {
     return;
   }
 
-  const user = getUserById(userId);
+  const user = await getUserById(userId);
   if (!user || !user.isActive) {
     res.status(401).json({ error: "Session invalid." });
     return;
@@ -170,31 +176,30 @@ router.get("/auth/me", (req, res) => {
   res.json(safeUser(user));
 });
 
-router.get("/admin/users", requireAdmin, (_req, res) => {
-  res.json({
-    users: users.map(safeUser),
-    total: users.length,
-  });
+router.get("/admin/users", requireAdmin, async (_req, res) => {
+  const all = await getAllUsers();
+  res.json({ users: all.map(safeUser), total: all.length });
 });
 
-router.get("/admin/stats", requireAdmin, (_req, res) => {
+router.get("/admin/stats", requireAdmin, async (_req, res) => {
+  const all = await getAllUsers();
   const breakdown = {
-    admins:    users.filter((u) => u.role === "admin").length,
-    vendors:   users.filter((u) => u.role === "vendor").length,
-    venues:    users.filter((u) => u.role === "venue").length,
-    customers: users.filter((u) => u.role === "user").length,
+    admins:    all.filter((u) => u.role === "admin").length,
+    vendors:   all.filter((u) => u.role === "vendor").length,
+    venues:    all.filter((u) => u.role === "venue").length,
+    customers: all.filter((u) => u.role === "user").length,
   };
   res.json({
-    totalUsers: users.length,
+    totalUsers:    all.length,
     breakdown,
-    totalVenues: 436,
-    totalVendors: 255,
-    cities: 24,
+    totalVenues:   436,
+    totalVendors:  255,
+    cities:        24,
   });
 });
 
-router.patch("/admin/users/:id/deactivate", requireAdmin, (req, res) => {
-  const targetId = parseInt(String(req.params.id ?? ""), 10);
+router.patch("/admin/users/:id/deactivate", requireAdmin, async (req, res) => {
+  const targetId = parseInt(String(req.params["id"] ?? ""), 10);
   const session = req.session as unknown as Record<string, unknown>;
   const adminId = session["userId"] as number;
 
@@ -203,37 +208,56 @@ router.patch("/admin/users/:id/deactivate", requireAdmin, (req, res) => {
     return;
   }
 
-  const user = getUserById(targetId);
+  const user = await getUserById(targetId);
   if (!user) {
     res.status(404).json({ error: "User not found." });
     return;
   }
 
-  user.isActive = false;
+  await updateUser(targetId, { isActive: false });
   req.log.info({ adminId, targetId }, "User deactivated by admin");
-  res.json({ message: `User ${user.name} deactivated.`, user: safeUser(user) });
+  res.json({
+    message: `User ${user.name} deactivated.`,
+    user: safeUser({ ...user, isActive: false }),
+  });
 });
 
-router.patch("/admin/users/:id/activate", requireAdmin, (req, res) => {
-  const targetId = parseInt(String(req.params.id ?? ""), 10);
-  const user = getUserById(targetId);
+router.patch("/admin/users/:id/activate", requireAdmin, async (req, res) => {
+  const targetId = parseInt(String(req.params["id"] ?? ""), 10);
+  const user = await getUserById(targetId);
   if (!user) {
     res.status(404).json({ error: "User not found." });
     return;
   }
-  user.isActive = true;
+  await updateUser(targetId, { isActive: true });
   const session = req.session as unknown as Record<string, unknown>;
-  req.log.info({ adminId: session["userId"], targetId }, "User activated by admin");
-  res.json({ message: `User ${user.name} activated.`, user: safeUser(user) });
+  req.log.info(
+    { adminId: session["userId"], targetId },
+    "User activated by admin",
+  );
+  res.json({
+    message: `User ${user.name} activated.`,
+    user: safeUser({ ...user, isActive: true }),
+  });
 });
 
-router.patch("/auth/profile", requireAuth, (req, res) => {
+router.patch("/auth/profile", requireAuth, async (req, res) => {
   const session = req.session as unknown as Record<string, unknown>;
   const userId = session["userId"] as number;
-  const user = getUserById(userId);
-  if (!user) { res.status(401).json({ error: "Not authenticated." }); return; }
+  const user = await getUserById(userId);
+  if (!user) {
+    res.status(401).json({ error: "Not authenticated." });
+    return;
+  }
 
-  const { name, phone, city, bio } = req.body as { name?: string; phone?: string; city?: string; bio?: string };
+  const { name, phone, city, bio } = req.body as {
+    name?: string;
+    phone?: string;
+    city?: string;
+    bio?: string;
+  };
+
+  const fields: Parameters<typeof updateUser>[1] = {};
 
   if (name !== undefined) {
     const trimmed = name.trim();
@@ -241,14 +265,15 @@ router.patch("/auth/profile", requireAuth, (req, res) => {
       res.status(400).json({ error: "Name must be 2–80 characters." });
       return;
     }
-    user.name = trimmed;
+    fields.name = trimmed;
   }
-  if (phone !== undefined) user.phone = String(phone).trim().slice(0, 20);
-  if (city  !== undefined) user.city  = String(city ).trim().slice(0, 60);
-  if (bio   !== undefined) user.bio   = String(bio  ).trim().slice(0, 500);
+  if (phone !== undefined) fields.phone = String(phone).trim().slice(0, 20);
+  if (city !== undefined) fields.city = String(city).trim().slice(0, 60);
+  if (bio !== undefined) fields.bio = String(bio).trim().slice(0, 500);
 
+  const updated = await updateUser(userId, fields);
   req.log.info({ userId }, "User profile updated");
-  res.json(safeUser(user));
+  res.json(safeUser(updated ?? { ...user, ...fields }));
 });
 
 export { requireAuth };

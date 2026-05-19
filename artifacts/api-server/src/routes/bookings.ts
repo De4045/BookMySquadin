@@ -1,34 +1,12 @@
 import { Router, type IRouter } from "express";
+import { desc, eq } from "drizzle-orm";
+import { db, bookingsTable } from "@workspace/db";
 import { sendBookingConfirmation } from "../lib/mailer.js";
 import { requireAuth, requireAdmin } from "../middlewares/auth.js";
 
 const router: IRouter = Router();
 
-export interface Booking {
-  id: number;
-  userId?: number;
-  vendorName: string;
-  vendorCategory: string;
-  city: string;
-  packageName: string;
-  packagePrice: number;
-  eventDate: string;
-  eventType: string;
-  guestCount: number;
-  consultationDate?: string;
-  consultationTime?: string;
-  name: string;
-  email: string;
-  phone: string;
-  message?: string;
-  advancePaid: boolean;
-  advanceAmount: number;
-  status: "pending" | "confirmed" | "advance_paid" | "completed" | "cancelled";
-  createdAt: string;
-}
-
-const bookings: Booking[] = [];
-let nextId = 1;
+export type Booking = typeof bookingsTable.$inferSelect;
 
 function sessionUserId(
   req: Parameters<Parameters<typeof router.post>[1]>[0],
@@ -39,7 +17,7 @@ function sessionUserId(
 }
 
 /* ── Create booking ── */
-router.post("/bookings", (req, res) => {
+router.post("/bookings", async (req, res) => {
   const {
     vendorName, vendorCategory, city,
     packageName, packagePrice,
@@ -54,91 +32,114 @@ router.post("/bookings", (req, res) => {
     return;
   }
 
-  const booking: Booking = {
-    id: nextId++,
-    userId: sessionUserId(req),
-    vendorName: String(vendorName),
-    vendorCategory: String(vendorCategory || ""),
-    city: String(city || ""),
-    packageName: String(packageName),
-    packagePrice: Number(packagePrice) || 0,
-    eventDate: String(eventDate),
-    eventType: String(eventType || ""),
-    guestCount: Number(guestCount) || 0,
-    consultationDate: consultationDate ? String(consultationDate) : undefined,
-    consultationTime: consultationTime ? String(consultationTime) : undefined,
-    name: String(name),
-    email: String(email).toLowerCase().trim(),
-    phone: String(phone),
-    message: message ? String(message) : undefined,
-    advancePaid: Boolean(advancePaid),
-    advanceAmount: Number(advanceAmount) || 0,
-    status: advancePaid ? "advance_paid" : "pending",
-    createdAt: new Date().toISOString(),
-  };
+  const isPaid = Boolean(advancePaid);
 
-  bookings.push(booking);
-  req.log.info({ bookingId: booking.id, vendorName, status: booking.status }, "New booking created");
-  sendBookingConfirmation(booking.email, {
-    name: booking.name,
-    vendorName: booking.vendorName,
-    packageName: booking.packageName,
-    eventDate: booking.eventDate,
-    eventType: booking.eventType,
-    advancePaid: booking.advancePaid,
-    advanceAmount: booking.advanceAmount,
+  const [booking] = await db
+    .insert(bookingsTable)
+    .values({
+      userId:           sessionUserId(req) ?? null,
+      vendorName:       String(vendorName),
+      vendorCategory:   String(vendorCategory || ""),
+      city:             String(city || ""),
+      packageName:      String(packageName),
+      packagePrice:     Number(packagePrice) || 0,
+      eventDate:        String(eventDate),
+      eventType:        String(eventType || ""),
+      guestCount:       Number(guestCount) || 0,
+      consultationDate: consultationDate ? String(consultationDate) : null,
+      consultationTime: consultationTime ? String(consultationTime) : null,
+      name:             String(name),
+      email:            String(email).toLowerCase().trim(),
+      phone:            String(phone),
+      message:          message ? String(message) : null,
+      advancePaid:      isPaid,
+      advanceAmount:    Number(advanceAmount) || 0,
+      status:           isPaid ? "advance_paid" : "pending",
+    })
+    .returning();
+
+  req.log.info(
+    { bookingId: booking!.id, vendorName, status: booking!.status },
+    "New booking created",
+  );
+
+  sendBookingConfirmation(booking!.email, {
+    name:          booking!.name,
+    vendorName:    booking!.vendorName,
+    packageName:   booking!.packageName,
+    eventDate:     booking!.eventDate,
+    eventType:     booking!.eventType,
+    advancePaid:   booking!.advancePaid,
+    advanceAmount: booking!.advanceAmount,
   }).catch(() => {});
-  res.status(201).json({ success: true, booking, id: booking.id });
+
+  res.status(201).json({ success: true, booking, id: booking!.id });
 });
 
 /* ── Get all bookings (admin) ── */
-router.get("/bookings", requireAdmin, (_req, res) => {
-  const sorted = [...bookings].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  res.json({ bookings: sorted, total: sorted.length });
+router.get("/bookings", requireAdmin, async (_req, res) => {
+  const rows = await db
+    .select()
+    .from(bookingsTable)
+    .orderBy(desc(bookingsTable.createdAt));
+  res.json({ bookings: rows, total: rows.length });
 });
 
 /* ── Get current user's bookings ── */
-router.get("/bookings/my", requireAuth, (req, res) => {
+router.get("/bookings/my", requireAuth, async (req, res) => {
   const uid = sessionUserId(req);
-  const mine = uid
-    ? bookings.filter((b) => b.userId === uid)
-    : [];
-  const sorted = [...mine].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  res.json({ bookings: sorted, total: sorted.length });
+  if (!uid) {
+    res.json({ bookings: [], total: 0 });
+    return;
+  }
+  const rows = await db
+    .select()
+    .from(bookingsTable)
+    .where(eq(bookingsTable.userId, uid))
+    .orderBy(desc(bookingsTable.createdAt));
+  res.json({ bookings: rows, total: rows.length });
 });
 
 /* ── Get bookings for vendor/venue portal (auth required) ── */
-router.get("/bookings/portal", requireAuth, (_req, res) => {
-  const sorted = [...bookings].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  res.json({ bookings: sorted.slice(0, 100), total: sorted.length });
+router.get("/bookings/portal", requireAuth, async (_req, res) => {
+  const rows = await db
+    .select()
+    .from(bookingsTable)
+    .orderBy(desc(bookingsTable.createdAt))
+    .limit(100);
+  res.json({ bookings: rows, total: rows.length });
 });
 
 /* ── Update booking status (admin) ── */
-router.patch("/bookings/:id/status", requireAdmin, (req, res) => {
+router.patch("/bookings/:id/status", requireAdmin, async (req, res) => {
   const id = Number(req.params["id"]);
   const { status } = req.body as { status?: string };
-  const VALID = ["pending", "confirmed", "advance_paid", "completed", "cancelled"];
+  const VALID = [
+    "pending",
+    "confirmed",
+    "advance_paid",
+    "completed",
+    "cancelled",
+  ] as const;
 
-  if (!status || !VALID.includes(status)) {
+  if (!status || !VALID.includes(status as (typeof VALID)[number])) {
     res.status(400).json({ error: "Invalid status." });
     return;
   }
 
-  const booking = bookings.find((b) => b.id === id);
-  if (!booking) {
+  const [updated] = await db
+    .update(bookingsTable)
+    .set({ status: status as Booking["status"] })
+    .where(eq(bookingsTable.id, id))
+    .returning();
+
+  if (!updated) {
     res.status(404).json({ error: "Booking not found." });
     return;
   }
 
-  booking.status = status as Booking["status"];
   req.log.info({ bookingId: id, status }, "Booking status updated");
-  res.json({ success: true, booking });
+  res.json({ success: true, booking: updated });
 });
 
 export default router;

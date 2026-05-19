@@ -15,7 +15,7 @@ India's premium wedding & event planning marketplace connecting couples with top
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - Frontend: React + Vite + Tailwind v4, Framer Motion, GSAP 3.15 + Lenis 1.3.23, wouter routing
 - API: Express 5 on port 8080
-- Data: In-memory stores (no DB yet — vendors/venues loaded from Excel files)
+- Data: PostgreSQL via Drizzle ORM (`lib/db`) — users, bookings, enquiries, articles persisted; vendors/venues still loaded from Excel files at startup
 - Fonts: Cinzel, Cormorant Garamond, Playfair Display, Poppins, Inter, Manrope
 - Theme: dark luxury — `#080604` bg, `#d4af37` gold primary
 
