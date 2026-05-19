@@ -168,53 +168,51 @@ export function validateEmail(email: string): boolean {
 // ─── Seed ───────────────────────────────────────────────────────────────────
 
 export async function seedUsers(): Promise<void> {
-  const [adminHash, vendorHash, customerHash] = await Promise.all([
-    bcrypt.hash("Infinity@123", SALT_ROUNDS),
-    bcrypt.hash("Vendor@2025!", SALT_ROUNDS),
-    bcrypt.hash("Customer@2025!", SALT_ROUNDS),
-  ]);
+  // All demo accounts use the same password for simplicity
+  const sharedHash = await bcrypt.hash("Infinity@123", SALT_ROUNDS);
 
-  // Upsert demo/seed accounts — admin password is always forced to latest value
-  await db
-    .insert(usersTable)
-    .values([
-      {
-        name: "Book My Squad Admin",
-        email: "bookmysquad0@gmail.com",
-        passwordHash: adminHash,
-        role: "admin",
-        isActive: true,
-      },
-      {
-        name: "Royal Photography Studio",
-        email: "vendor@bookmysquad.in",
-        passwordHash: vendorHash,
-        role: "vendor",
-        isActive: true,
-        phone: "+91 98765 43210",
-        city: "Mumbai",
-        bio: "Premium wedding photography & cinematography. Serving couples across India since 2018. Specialising in candid moments, cinematic films and fine-art albums.",
-      },
-      {
-        name: "Anjali Mehta",
-        email: "customer@bookmysquad.in",
-        passwordHash: customerHash,
-        role: "user",
-        isActive: true,
-        phone: "+91 87654 32109",
-        city: "Delhi",
-      },
-    ])
-    .onConflictDoUpdate({
-      target: usersTable.email,
-      set: { passwordHash: adminHash },
-    });
+  const seedAccounts = [
+    {
+      name: "Book My Squad Admin",
+      email: "bookmysquad0@gmail.com",
+      passwordHash: sharedHash,
+      role: "admin" as const,
+      isActive: true,
+      phone: null,
+      city: null,
+      bio: null,
+    },
+    {
+      name: "Royal Photography Studio",
+      email: "vendor@bookmysquad.in",
+      passwordHash: sharedHash,
+      role: "vendor" as const,
+      isActive: true,
+      phone: "+91 98765 43210",
+      city: "Mumbai",
+      bio: "Premium wedding photography & cinematography. Serving couples across India since 2018. Specialising in candid moments, cinematic films and fine-art albums.",
+    },
+    {
+      name: "Anjali Mehta",
+      email: "customer@bookmysquad.in",
+      passwordHash: sharedHash,
+      role: "user" as const,
+      isActive: true,
+      phone: "+91 87654 32109",
+      city: "Delhi",
+      bio: null,
+    },
+  ];
 
-  // Force-update the admin password in case the row already existed
-  await db
-    .update(usersTable)
-    .set({ passwordHash: adminHash })
-    .where(eq(usersTable.email, "bookmysquad0@gmail.com"));
+  // Insert or ignore, then force-update each account's password individually
+  await db.insert(usersTable).values(seedAccounts).onConflictDoNothing();
+
+  for (const account of seedAccounts) {
+    await db
+      .update(usersTable)
+      .set({ passwordHash: sharedHash })
+      .where(eq(usersTable.email, account.email));
+  }
 
   // Remove old admin seed email if it still exists (idempotent migration)
   await db
@@ -222,6 +220,6 @@ export async function seedUsers(): Promise<void> {
     .where(eq(usersTable.email, "admin@dreamweddinghub.com"));
 
   logger.info(
-    "Seed: bookmysquad0@gmail.com / Infinity@123 | vendor@bookmysquad.in / Vendor@2025! | customer@bookmysquad.in / Customer@2025!",
+    "Seed accounts (all password: Infinity@123): bookmysquad0@gmail.com (admin) | vendor@bookmysquad.in (vendor) | customer@bookmysquad.in (user)",
   );
 }
