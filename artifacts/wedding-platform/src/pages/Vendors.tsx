@@ -261,6 +261,13 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
   ],
 };
 
+/* ── Per-vendor image overrides (keyed by uppercased name or company) ── */
+const VENDOR_IMAGE_OVERRIDES: Record<string, string> = {
+  "DEEPAK RAGHAV":     "https://images.pexels.com/photos/3992080/pexels-photo-3992080.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&fit=crop",
+  "WIDE ANGLE EVENTS": "https://images.pexels.com/photos/3992080/pexels-photo-3992080.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&fit=crop",
+  "ELINA":             "https://images.pexels.com/photos/14925306/pexels-photo-14925306.jpeg?auto=compress&cs=tinysrgb&w=800&h=520&fit=crop",
+};
+
 const DEFAULT_IMAGES = [
   `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
   `https://images.unsplash.com/photo-1606800052052-a08af7148866?${Q}`,
@@ -272,8 +279,12 @@ const DEFAULT_IMAGES = [
   `https://images.unsplash.com/photo-1583939003579-730e3918a45a?${Q}`,
 ];
 
-function getVendorImage(vendor: { image?: string }, cat: string, idx: number): string {
+function getVendorImage(vendor: { image?: string; name?: string; company?: string }, cat: string, idx: number): string {
   if (vendor.image) return vendor.image;
+  const nameKey    = (vendor.name    ?? "").trim().toUpperCase();
+  const companyKey = (vendor.company ?? "").trim().toUpperCase();
+  if (VENDOR_IMAGE_OVERRIDES[nameKey])    return VENDOR_IMAGE_OVERRIDES[nameKey];
+  if (VENDOR_IMAGE_OVERRIDES[companyKey]) return VENDOR_IMAGE_OVERRIDES[companyKey];
   const pool = CATEGORY_IMAGES[cat] ?? DEFAULT_IMAGES;
   return pool[idx % pool.length];
 }
