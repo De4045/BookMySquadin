@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { CursorGlow } from "@/components/CursorGlow";
 import { ChatBot } from "@/components/ChatBot";
 import { SplashScreen } from "@/components/SplashScreen";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -97,7 +96,6 @@ function App() {
                 <SmoothScroll>
                   <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
                     <PageTransition />
-                    <CursorGlow />
                     <Suspense fallback={<PageLoader />}>
                       <Router />
                     </Suspense>
