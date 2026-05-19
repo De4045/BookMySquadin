@@ -8,6 +8,8 @@ import { logger } from "./lib/logger.js";
 
 const app: Express = express();
 
+app.set("trust proxy", 1);
+
 const sessionSecret = process.env["SESSION_SECRET"];
 if (!sessionSecret) {
   throw new Error("SESSION_SECRET environment variable is required");
