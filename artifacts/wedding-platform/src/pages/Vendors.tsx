@@ -41,55 +41,58 @@ function normalizeCategory(raw: string): string {
   return s || "VENDOR";
 }
 
-const Q = "w=800&h=520&fit=crop&q=85&auto=format";
+const Q  = "w=800&h=520&fit=crop&q=85&auto=format";
+const PQ = "auto=compress&cs=tinysrgb&w=800&h=520&fit=crop";
+const P  = (id: string, path?: string) =>
+  `https://images.pexels.com/photos/${id}/${path ?? `pexels-photo-${id}`}.jpeg?${PQ}`;
 
 const CATEGORY_IMAGES: Record<string, string[]> = {
   /* ── Decorator / Decor ─────────────────────────────────────────── */
   "DECOR": [
-    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
-    `https://images.unsplash.com/photo-1563697873-fc42501a3e53?${Q}`,
-    `https://images.unsplash.com/photo-1525772764200-be829a350797?${Q}`,
-    `https://images.unsplash.com/photo-1531058020387-3be344556be6?${Q}`,
-    `https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?${Q}`,
-    `https://images.unsplash.com/photo-1510076857177-7470076d4098?${Q}`,
-    `https://images.unsplash.com/photo-1530103862676-de8c9debad1d?${Q}`,
-    `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
+    P("2788490"),
+    P("2788492"),
+    P("57980"),
+    P("1128782"),
+    P("16935899", "pexels-photo-16935899/free-photo-of-tables-decorated-with-flowers-in-luxury-restaurant"),
+    P("12954013"),
+    P("12876404"),
+    P("2970287"),
   ],
 
   /* ── Wedding Planners ──────────────────────────────────────────── */
   "WEDDING PLANNERS": [
-    `https://images.unsplash.com/photo-1606800052052-a08af7148866?${Q}`,
-    `https://images.unsplash.com/photo-1550005809-91ad75fb315f?${Q}`,
-    `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
-    `https://images.unsplash.com/photo-1583939003579-730e3918a45a?${Q}`,
-    `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
-    `https://images.unsplash.com/photo-1478146059778-26028b07395a?${Q}`,
-    `https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?${Q}`,
-    `https://images.unsplash.com/photo-1559827260-dc66d52bef19?${Q}`,
+    P("3696878"),
+    P("2970287"),
+    P("12954013"),
+    P("2788490"),
+    P("1128782"),
+    P("16935899", "pexels-photo-16935899/free-photo-of-tables-decorated-with-flowers-in-luxury-restaurant"),
+    P("2788492"),
+    P("12876404"),
   ],
 
   /* ── Makeup Artist ─────────────────────────────────────────────── */
   "MAKEUP ARTIST": [
-    `https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?${Q}`,
-    `https://images.unsplash.com/photo-1487412840181-71b61d8d3d7d?${Q}`,
-    `https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?${Q}`,
-    `https://images.unsplash.com/photo-1526045612212-70caf35c14df?${Q}`,
-    `https://images.unsplash.com/photo-1620916566398-39f1143ab7be?${Q}`,
-    `https://images.unsplash.com/photo-1519014816548-bf5fe059798b?${Q}`,
-    `https://images.unsplash.com/photo-1521561987953-e4e9c9ee8040?${Q}`,
-    `https://images.unsplash.com/photo-1571646034647-52e6ea84b28f?${Q}`,
+    P("2498430"),
+    P("17125530", "pexels-photo-17125530/free-photo-of-young-woman-in-a-glamour-makeup-look-and-traditional-jewelry"),
+    P("11742214"),
+    P("11742213"),
+    P("1229414"),
+    P("3992080"),
+    P("6304019"),
+    P("3787395"),
   ],
 
   /* ── Photography ───────────────────────────────────────────────── */
   "PHOTOGRAPHER": [
+    P("35325793", "pexels-photo-35325793/free-photo-of-capturing-wedding-moments-with-a-professional-camera"),
+    P("3992080"),
+    P("6304019"),
+    P("36098389", "pexels-photo-36098389/free-photo-of-traditional-indian-wedding-couple-in-vibrant-attire"),
+    P("3787395"),
     `https://images.unsplash.com/photo-1554048612-b6a482bc67e5?${Q}`,
     `https://images.unsplash.com/photo-1606216794074-735e91aa2c92?${Q}`,
-    `https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?${Q}`,
-    `https://images.unsplash.com/photo-1529543544282-ea669407fca3?${Q}`,
-    `https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?${Q}`,
-    `https://images.unsplash.com/photo-1460978812857-470ed1c77af0?${Q}`,
     `https://images.unsplash.com/photo-1537633552985-df8429e8048b?${Q}`,
-    `https://images.unsplash.com/photo-1426604966848-d7adac402bff?${Q}`,
   ],
 
   /* ── Catering ──────────────────────────────────────────────────── */
@@ -106,158 +109,158 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
 
   /* ── Music & DJ ────────────────────────────────────────────────── */
   "MUSIC & DJ": [
-    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
-    `https://images.unsplash.com/photo-1470225620780-dba8ba36b745?${Q}`,
-    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
-    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
-    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
-    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
-    `https://images.unsplash.com/photo-1571330735066-03aaa9429d89?${Q}`,
-    `https://images.unsplash.com/photo-1510797215324-95aa89f43c33?${Q}`,
+    P("14925306"),
+    P("13872120"),
+    P("9005465"),
+    P("7715596"),
+    P("7270006"),
+    P("9806458"),
+    P("1494665"),
+    P("11144787"),
   ],
 
-  /* ── Camera Team (reuses Photographer pool) ────────────────────── */
+  /* ── Camera Team ───────────────────────────────────────────────── */
   "CAMERA TEAM": [
+    P("35325793", "pexels-photo-35325793/free-photo-of-capturing-wedding-moments-with-a-professional-camera"),
+    P("3992080"),
     `https://images.unsplash.com/photo-1554048612-b6a482bc67e5?${Q}`,
     `https://images.unsplash.com/photo-1606216794074-735e91aa2c92?${Q}`,
     `https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?${Q}`,
     `https://images.unsplash.com/photo-1529543544282-ea669407fca3?${Q}`,
-    `https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?${Q}`,
-    `https://images.unsplash.com/photo-1460978812857-470ed1c77af0?${Q}`,
     `https://images.unsplash.com/photo-1537633552985-df8429e8048b?${Q}`,
     `https://images.unsplash.com/photo-1426604966848-d7adac402bff?${Q}`,
   ],
 
   /* ── Anchor / Host ─────────────────────────────────────────────── */
   "ANCHOR": [
-    `https://images.unsplash.com/photo-1540575467063-178a50c2df87?${Q}`,
-    `https://images.unsplash.com/photo-1475721027785-f74eccf877e2?${Q}`,
-    `https://images.unsplash.com/photo-1511578314322-379afb476865?${Q}`,
+    P("29708269", "pexels-photo-29708269/free-photo-of-male-speaker-at-indoor-conference-event"),
+    P("7807298"),
+    P("17722680", "pexels-photo-17722680/free-photo-of-a-microphone-is-shown-in-front-of-a-stage"),
+    P("16963920", "pexels-photo-16963920/free-photo-of-microphone-in-close-up"),
+    P("1494665"),
+    P("8942888"),
     `https://images.unsplash.com/photo-1459749411175-04bf5292ceea?${Q}`,
-    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
-    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
-    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
-    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
+    `https://images.unsplash.com/photo-1540575467063-178a50c2df87?${Q}`,
   ],
 
   /* ── Choreographer / Dance ─────────────────────────────────────── */
   "CHOREOGRAPHER": [
+    P("32285696", "pexels-photo-32285696/free-photo-of-traditional-indian-dance-performance-with-elegant-attire"),
+    P("34717652", "pexels-photo-34717652/free-photo-of-traditional-bharatanatyam-dancer-performing-in-india"),
+    P("18869864", "pexels-photo-18869864/free-photo-of-indian-dancer-in-a-costume-on-stage"),
+    P("18086358", "pexels-photo-18086358/free-photo-of-woman-in-a-colorful-traditional-costume-dancing-on-stage"),
+    P("34717625", "pexels-photo-34717625/free-photo-of-bharatanatyam-dancer-performing-on-stage"),
+    P("8673523"),
     `https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?${Q}`,
     `https://images.unsplash.com/photo-1518611012118-696072aa579a?${Q}`,
-    `https://images.unsplash.com/photo-1535525153412-5a42439a210d?${Q}`,
-    `https://images.unsplash.com/photo-1547153760-18fc86324498?${Q}`,
-    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
-    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
-    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
-    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
   ],
 
   /* ── Sound & Light ─────────────────────────────────────────────── */
   "SOUND & LIGHT": [
+    P("7709689"),
+    P("8942888"),
+    P("8937014"),
+    P("1494665"),
+    P("13230506"),
+    P("14925306"),
+    P("11144787"),
     `https://images.unsplash.com/photo-1514525253161-7a46d19cd819?${Q}`,
-    `https://images.unsplash.com/photo-1459749411175-04bf5292ceea?${Q}`,
-    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
-    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
-    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
-    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
-    `https://images.unsplash.com/photo-1470225620780-dba8ba36b745?${Q}`,
-    `https://images.unsplash.com/photo-1510797215324-95aa89f43c33?${Q}`,
   ],
 
   /* ── Production ────────────────────────────────────────────────── */
   "PRODUCTION": [
-    `https://images.unsplash.com/photo-1514525253161-7a46d19cd819?${Q}`,
-    `https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?${Q}`,
-    `https://images.unsplash.com/photo-1540575467063-178a50c2df87?${Q}`,
-    `https://images.unsplash.com/photo-1511578314322-379afb476865?${Q}`,
-    `https://images.unsplash.com/photo-1504680177321-2e6a879aac86?${Q}`,
-    `https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?${Q}`,
-    `https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?${Q}`,
-    `https://images.unsplash.com/photo-1545128485-c400e7702796?${Q}`,
+    P("11144787"),
+    P("8673523"),
+    P("3563172"),
+    P("4218027"),
+    P("11350410"),
+    P("7709689"),
+    P("8942888"),
+    P("1494665"),
   ],
 
   /* ── Fashion Designer / Bridal Wear ────────────────────────────── */
   "FASHION DESIGNER": [
-    `https://images.unsplash.com/photo-1585914924626-15adac1e6402?${Q}`,
-    `https://images.unsplash.com/photo-1594938298603-c8148c4b4d8e?${Q}`,
-    `https://images.unsplash.com/photo-1517751882-35566ec4d3fd?${Q}`,
-    `https://images.unsplash.com/photo-1583939003579-730e3918a45a?${Q}`,
-    `https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?${Q}`,
-    `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
-    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
-    `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
+    P("12062663"),
+    P("12796883"),
+    P("12959396"),
+    P("33343615", "pexels-photo-33343615/free-photo-of-elegant-indian-bride-in-pink-lehenga-portrait"),
+    P("33343579", "pexels-photo-33343579/free-photo-of-elegant-indian-bridal-portrait-outdoors"),
+    P("2498430"),
+    P("3992080"),
+    P("6304019"),
   ],
 
   /* ── Hospitality ───────────────────────────────────────────────── */
   "HOSPITALITY": [
+    P("2373201"),
+    P("3757640"),
+    P("1028379"),
+    P("17568098", "pexels-photo-17568098/free-photo-of-swimming-pool-at-a-luxury-hotel"),
+    P("31234753", "pexels-photo-31234753/free-photo-of-relaxing-spa-experience-at-luxury-hotel"),
+    P("6875529"),
     `https://images.unsplash.com/photo-1566073771259-6a8506099945?${Q}`,
     `https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?${Q}`,
-    `https://images.unsplash.com/photo-1582719508461-20c36d798ef3?${Q}`,
-    `https://images.unsplash.com/photo-1414235077428-338989a2e8c0?${Q}`,
-    `https://images.unsplash.com/photo-1567521464027-f127ff144326?${Q}`,
-    `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
-    `https://images.unsplash.com/photo-1478146059778-26028b07395a?${Q}`,
-    `https://images.unsplash.com/photo-1559827260-dc66d52bef19?${Q}`,
   ],
 
   /* ── Transport / Luxury Vehicles ───────────────────────────────── */
   "TRANSPORT": [
+    P("30196262", "pexels-photo-30196262/free-photo-of-vintage-rolls-royce-in-arched-hallway"),
+    P("2318049"),
+    P("3342697"),
+    P("1486101"),
     `https://images.unsplash.com/photo-1503376780353-7e6692767b70?${Q}`,
     `https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?${Q}`,
     `https://images.unsplash.com/photo-1568605114967-8130f3a36994?${Q}`,
     `https://images.unsplash.com/photo-1494976388531-d1058494cdd8?${Q}`,
-    `https://images.unsplash.com/photo-1517519014922-8fc06b814a0e?${Q}`,
-    `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?${Q}`,
-    `https://images.unsplash.com/photo-1502877338535-766e1452684a?${Q}`,
-    `https://images.unsplash.com/photo-1511919884226-fd3cad34687c?${Q}`,
   ],
 
   /* ── Travel ────────────────────────────────────────────────────── */
   "TRAVEL": [
+    P("6875529"),
+    P("6126935"),
+    P("16116486", "pexels-photo-16116486/free-photo-of-top-view-of-a-tourist-resort"),
+    P("6875522"),
+    P("4784507"),
+    P("2373201"),
     `https://images.unsplash.com/photo-1469474968028-56623f02e42e?${Q}`,
     `https://images.unsplash.com/photo-1476514525405-368ec0b6df7c?${Q}`,
-    `https://images.unsplash.com/photo-1502602503153-38219f6fef05?${Q}`,
-    `https://images.unsplash.com/photo-1530521954074-e64f6810b32d?${Q}`,
-    `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?${Q}`,
-    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
-    `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
-    `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
   ],
 
   /* ── Mehendi / Henna Art ───────────────────────────────────────── */
   "MEHENDI": [
+    P("4105332"),
+    P("1444441"),
+    P("12872537"),
+    P("12872535"),
+    P("7176343"),
+    P("2498430"),
     `https://images.unsplash.com/photo-1583391265042-f606bd38d3c6?${Q}`,
     `https://images.unsplash.com/photo-1617369120004-4806cc963f47?${Q}`,
-    `https://images.unsplash.com/photo-1594898254668-c77d62fba28a?${Q}`,
-    `https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?${Q}`,
-    `https://images.unsplash.com/photo-1487412840181-71b61d8d3d7d?${Q}`,
-    `https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?${Q}`,
-    `https://images.unsplash.com/photo-1519014816548-bf5fe059798b?${Q}`,
-    `https://images.unsplash.com/photo-1571646034647-52e6ea84b28f?${Q}`,
   ],
 
   /* ── Venue Styling ─────────────────────────────────────────────── */
   "VENUE STYLING": [
+    P("2788490"),
+    P("2788492"),
+    P("1128782"),
+    P("2970287"),
+    P("3696878"),
+    P("12954013"),
     `https://images.unsplash.com/photo-1519167758481-83f550bb49b3?${Q}`,
     `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
-    `https://images.unsplash.com/photo-1563697873-fc42501a3e53?${Q}`,
-    `https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?${Q}`,
-    `https://images.unsplash.com/photo-1510076857177-7470076d4098?${Q}`,
-    `https://images.unsplash.com/photo-1530103862676-de8c9debad1d?${Q}`,
-    `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
-    `https://images.unsplash.com/photo-1531058020387-3be344556be6?${Q}`,
   ],
 
   /* ── Printing / Stationery ─────────────────────────────────────── */
   "PRINTING": [
+    P("13106764"),
     `https://images.unsplash.com/photo-1512936040-7b76e51f1c10?${Q}`,
     `https://images.unsplash.com/photo-1586281380349-632531db7ed4?${Q}`,
+    P("2788490"),
+    P("1128782"),
     `https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?${Q}`,
-    `https://images.unsplash.com/photo-1519225421980-715cb0215aed?${Q}`,
     `https://images.unsplash.com/photo-1511795409834-ef04bbd61622?${Q}`,
     `https://images.unsplash.com/photo-1518998053901-5348d3961a04?${Q}`,
-    `https://images.unsplash.com/photo-1563697873-fc42501a3e53?${Q}`,
-    `https://images.unsplash.com/photo-1606800052052-a08af7148866?${Q}`,
   ],
 };
 
