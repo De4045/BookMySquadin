@@ -482,3 +482,113 @@
 /* ─── Parallax container ─────────────────────────────── */
 .parallax-wrap { overflow: hidden; }
 .parallax-inner { will-change: transform; }
+
+/* ─── Image zoom hover ───────────────────────────────── */
+.img-zoom { overflow: hidden; }
+.img-zoom img,
+.img-zoom .zoom-target {
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.85s ease,
+              brightness 0.85s ease;
+  will-change: transform;
+}
+.img-zoom:hover img,
+.img-zoom:hover .zoom-target {
+  transform: scale(1.09);
+  filter: brightness(1.06);
+}
+
+/* ─── Apple-style page entrance ─────────────────────── */
+@keyframes applePageEnter {
+  from { opacity: 0; transform: translateY(18px) scale(0.983); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);     }
+}
+.apple-page-enter {
+  animation: applePageEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─── Apple-style section transition ────────────────── */
+@keyframes appleReveal {
+  from { opacity: 0; transform: translateY(32px) scale(0.975); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);     filter: blur(0);   }
+}
+.apple-reveal {
+  animation: appleReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─── Counter shimmer pulse ──────────────────────────── */
+@keyframes counterPulse {
+  0%,100% { text-shadow: 0 0 20px rgba(212,175,55,0.4); }
+  50%      { text-shadow: 0 0 40px rgba(212,175,55,0.9), 0 0 80px rgba(212,175,55,0.3); }
+}
+.counter-pulse { animation: counterPulse 2.4s ease-in-out infinite; }
+
+/* ─── Clip-path wipe reveal ──────────────────────────── */
+@keyframes clipWipeLeft {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0%   0 0); }
+}
+.clip-wipe { animation: clipWipeLeft 1.1s cubic-bezier(0.76, 0, 0.24, 1) both; }
+
+/* ─── Split-text mask wrapper ────────────────────────── */
+.split-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.15;
+}
+
+/* ─── Blur-in fade ───────────────────────────────────── */
+@keyframes blurFadeIn {
+  from { opacity: 0; filter: blur(14px); transform: translateY(16px); }
+  to   { opacity: 1; filter: blur(0);    transform: translateY(0);    }
+}
+.blur-fade-in { animation: blurFadeIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ─── Skew-up reveal ─────────────────────────────────── */
+@keyframes skewUp {
+  from { opacity: 0; transform: translateY(40px) skewY(4deg); }
+  to   { opacity: 1; transform: translateY(0)    skewY(0deg); }
+}
+.skew-up { animation: skewUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ─── Rotate-in (3D perspective) ─────────────────────── */
+@keyframes rotateIn3d {
+  from { opacity: 0; transform: perspective(900px) rotateX(20deg) translateY(40px); }
+  to   { opacity: 1; transform: perspective(900px) rotateX(0deg)  translateY(0);    }
+}
+.rotate-in-3d { animation: rotateIn3d 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ─── Loading shimmer bar ────────────────────────────── */
+@keyframes shimmerSlide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%);  }
+}
+.shimmer-bar {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255,255,255,0.07);
+}
+.shimmer-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.6), transparent);
+  animation: shimmerSlide 1.4s ease-in-out infinite;
+}
+
+/* ─── Staggered char reveal (CSS-only fallback) ──────── */
+.split-chars > span {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.split-chars > span > span {
+  display: inline-block;
+  animation: slideUpChar 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes slideUpChar {
+  from { transform: translateY(110%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}

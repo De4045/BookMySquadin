@@ -9,6 +9,7 @@ import { ChatBot } from "@/components/ChatBot";
 import { SplashScreen } from "@/components/SplashScreen";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
+import { PageTransition } from "@/components/PageTransition";
 import { AuthProvider } from "@/context/AuthContext";
 import { ShortlistProvider } from "@/context/ShortlistContext";
 import { ComparisonProvider } from "@/context/ComparisonContext";
@@ -89,6 +90,7 @@ function App() {
 
                 <SmoothScroll>
                   <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                    <PageTransition />
                     <CursorGlow />
                     <Router />
                     <ChatBot />

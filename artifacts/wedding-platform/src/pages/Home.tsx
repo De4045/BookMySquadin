@@ -10,6 +10,8 @@ import { useScrollAnimation, useStaggerAnimation } from "@/hooks/useScrollAnimat
 import { useParallax } from "@/hooks/useParallax";
 import { TiltCard } from "@/components/TiltCard";
 import { AnimatedText } from "@/components/AnimatedText";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { SplitText } from "@/components/SplitText";
 import { FloatingParticles } from "@/components/FloatingParticles";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 
@@ -180,15 +182,26 @@ export default function Home() {
             <div className="gold-line w-32 mx-auto mb-8" />
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="text-6xl md:text-8xl lg:text-[100px] font-cormorant font-light text-white leading-[0.95] tracking-tight mb-6"
-          >
-            Plan your<br />
-            <span className="text-shimmer font-semibold italic pr-4">dream event</span>
-          </motion.h1>
+          <h1 className="text-6xl md:text-8xl lg:text-[100px] font-cormorant font-light text-white leading-[0.95] tracking-tight mb-6">
+            <SplitText
+              text="Plan your"
+              mode="words"
+              anim="load"
+              delay={0.3}
+              stagger={0.1}
+              duration={1.1}
+              className="block"
+            />
+            <SplitText
+              text="dream event"
+              mode="chars"
+              anim="load"
+              delay={0.55}
+              stagger={0.028}
+              duration={0.9}
+              className="text-shimmer font-semibold italic pr-4 block"
+            />
+          </h1>
 
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -736,7 +749,11 @@ export default function Home() {
               <TiltCard key={i} max={4} scale={1.03} glare>
                 <div className="glass-gold rounded-sm p-8 md:p-10 flex flex-col items-center justify-center text-center gap-3 h-full">
                   <span className="font-cinzel text-primary/50 text-lg mb-1">{stat.icon}</span>
-                  <div className="text-4xl md:text-5xl font-cinzel text-shimmer leading-none">{stat.num}</div>
+                  <AnimatedCounter
+                    value={stat.num}
+                    duration={2.4}
+                    className="text-4xl md:text-5xl font-cinzel text-shimmer leading-none counter-pulse"
+                  />
                   <div className="font-manrope text-white/65 text-[10px] uppercase tracking-[0.3em] font-medium">{stat.label}</div>
                 </div>
               </TiltCard>

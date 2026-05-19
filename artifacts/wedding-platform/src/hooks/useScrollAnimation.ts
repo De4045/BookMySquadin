@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type AnimationType = "fadeUp" | "fadeIn" | "imageReveal" | "textMask" | "slideLeft" | "slideRight" | "scaleIn";
+type AnimationType = "fadeUp" | "fadeIn" | "imageReveal" | "textMask" | "slideLeft" | "slideRight" | "scaleIn" | "blurIn" | "clipReveal" | "rotateIn" | "skewUp";
 
 interface ScrollAnimationOptions {
   type?: AnimationType;
@@ -101,6 +101,45 @@ export function useScrollAnimation<T extends HTMLElement = HTMLDivElement>(
           return;
         }
 
+        case "blurIn":
+          fromVars.filter  = "blur(18px)";
+          fromVars.opacity = 0;
+          toVars.filter    = "blur(0px)";
+          toVars.opacity   = 1;
+          toVars.ease      = "power2.out";
+          break;
+
+        case "clipReveal": {
+          gsap.set(el, { clipPath: "inset(0 100% 0 0)", webkitClipPath: "inset(0 100% 0 0)" });
+          toVars.clipPath        = "inset(0 0% 0 0)";
+          toVars.webkitClipPath  = "inset(0 0% 0 0)";
+          toVars.ease            = "power4.inOut";
+          toVars.duration        = duration * 1.15;
+          gsap.fromTo(el, {}, toVars);
+          return;
+        }
+
+        case "rotateIn":
+          fromVars.opacity    = 0;
+          fromVars.y          = distance;
+          fromVars.rotationX  = 22;
+          fromVars.transformPerspective = 900;
+          toVars.opacity      = 1;
+          toVars.y            = 0;
+          toVars.rotationX    = 0;
+          toVars.ease         = "power3.out";
+          break;
+
+        case "skewUp":
+          fromVars.opacity = 0;
+          fromVars.y       = distance;
+          fromVars.skewY   = 4;
+          toVars.opacity   = 1;
+          toVars.y         = 0;
+          toVars.skewY     = 0;
+          toVars.ease      = "power3.out";
+          break;
+
         case "textMask": {
           const lines = Array.from(el.querySelectorAll<HTMLElement>("[data-line]"));
           const animTargets = lines.length > 0 ? lines : [el];
@@ -183,6 +222,15 @@ export function useStaggerAnimation<T extends HTMLElement = HTMLDivElement>(
       } else if (type === "scaleIn") {
         fromVars.opacity = 0; fromVars.scale = 0.9;
         toVars.opacity = 1;   toVars.scale = 1;
+      } else if (type === "blurIn") {
+        fromVars.filter  = "blur(16px)"; fromVars.opacity = 0;
+        toVars.filter    = "blur(0px)";  toVars.opacity   = 1;
+      } else if (type === "rotateIn") {
+        fromVars.opacity = 0; fromVars.y = distance; fromVars.rotationX = 20;
+        toVars.opacity = 1;   toVars.y = 0;           toVars.rotationX = 0;
+      } else if (type === "skewUp") {
+        fromVars.opacity = 0; fromVars.y = distance; fromVars.skewY = 4;
+        toVars.opacity = 1;   toVars.y = 0;           toVars.skewY = 0;
       } else {
         fromVars.opacity = 0;
         toVars.opacity = 1;
