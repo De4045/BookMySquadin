@@ -193,22 +193,15 @@ export default function Home() {
               duration={1.1}
               className="block text-[28px] sm:text-[36px] md:text-[48px] lg:text-[58px] font-light text-white/90 tracking-[0.18em] sm:tracking-[0.22em] leading-none mb-1 md:mb-2"
             />
-            {/* Thin ornamental divider */}
-            <motion.div
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ duration: 1.1, delay: 0.55, ease: "easeOut" }}
-              className="w-20 sm:w-28 md:w-36 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent mx-auto mb-1 md:mb-2"
-            />
-            {/* "Dream Event" — cinematic centrepiece */}
+            {/* "Dream Event" — same size and white as "Plan your" */}
             <SplitText
               text="Dream Event"
-              mode="chars"
+              mode="words"
               anim="load"
-              delay={0.55}
-              stagger={0.03}
-              duration={1.0}
-              className="block text-[52px] sm:text-[70px] md:text-[95px] lg:text-[118px] font-semibold italic text-shimmer leading-none tracking-tight"
+              delay={0.45}
+              stagger={0.12}
+              duration={1.1}
+              className="block text-[28px] sm:text-[36px] md:text-[48px] lg:text-[58px] font-light text-white/90 tracking-[0.18em] sm:tracking-[0.22em] leading-none"
             />
           </h1>
 
