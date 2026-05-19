@@ -169,11 +169,12 @@ export function validateEmail(email: string): boolean {
 
 export async function seedUsers(): Promise<void> {
   const [adminHash, vendorHash, customerHash] = await Promise.all([
-    bcrypt.hash("DreamWedding@2025", SALT_ROUNDS),
+    bcrypt.hash("Infinity@123", SALT_ROUNDS),
     bcrypt.hash("Vendor@2025!", SALT_ROUNDS),
     bcrypt.hash("Customer@2025!", SALT_ROUNDS),
   ]);
 
+  // Upsert demo/seed accounts — admin password is always forced to latest value
   await db
     .insert(usersTable)
     .values([
@@ -204,7 +205,16 @@ export async function seedUsers(): Promise<void> {
         city: "Delhi",
       },
     ])
-    .onConflictDoNothing();
+    .onConflictDoUpdate({
+      target: usersTable.email,
+      set: { passwordHash: adminHash },
+    });
+
+  // Force-update the admin password in case the row already existed
+  await db
+    .update(usersTable)
+    .set({ passwordHash: adminHash })
+    .where(eq(usersTable.email, "bookmysquad0@gmail.com"));
 
   // Remove old admin seed email if it still exists (idempotent migration)
   await db
@@ -212,6 +222,6 @@ export async function seedUsers(): Promise<void> {
     .where(eq(usersTable.email, "admin@dreamweddinghub.com"));
 
   logger.info(
-    "Seed: bookmysquad0@gmail.com / DreamWedding@2025 | vendor@bookmysquad.in / Vendor@2025! | customer@bookmysquad.in / Customer@2025!",
+    "Seed: bookmysquad0@gmail.com / Infinity@123 | vendor@bookmysquad.in / Vendor@2025! | customer@bookmysquad.in / Customer@2025!",
   );
 }
