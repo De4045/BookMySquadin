@@ -14,7 +14,6 @@ import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { SplitText } from "@/components/SplitText";
 import { FloatingParticles } from "@/components/FloatingParticles";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
-import { ConsultationModal } from "@/components/ConsultationModal";
 
 const CITY_LIST = [
   "Agra","Alwar","Bangalore","Bareilly","Bikaner","Chennai","Dehradun","Delhi",
@@ -62,7 +61,6 @@ function matchToCity(raw: string): string {
 export default function Home() {
   useMeta();
   const [, navigate] = useLocation();
-  const [consultOpen, setConsultOpen] = useState(false);
   const [city, setCity] = useState("");
   const [eventType, setEventType] = useState("");
   const [service, setService] = useState("");
@@ -1226,7 +1224,6 @@ export default function Home() {
       </section>
 
       <Footer />
-      <ConsultationModal isOpen={consultOpen} onClose={() => setConsultOpen(false)} />
     </div>
   );
 }
