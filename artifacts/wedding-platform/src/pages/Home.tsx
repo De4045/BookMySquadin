@@ -182,24 +182,33 @@ export default function Home() {
             <div className="gold-line w-24 md:w-32 mx-auto mb-5 md:mb-8" />
           </motion.div>
 
-          <h1 className="text-[38px] sm:text-5xl md:text-7xl lg:text-[100px] font-cormorant font-light text-white leading-[0.95] tracking-tight mb-4 md:mb-6">
+          <h1 className="font-cormorant mb-5 md:mb-8 select-none" style={{ filter: 'drop-shadow(0 0 32px rgba(212,175,55,0.18)) drop-shadow(0 2px 16px rgba(0,0,0,0.85))' }}>
+            {/* "Plan your" — elegant light prelude */}
             <SplitText
               text="Plan your"
               mode="words"
               anim="load"
-              delay={0.3}
-              stagger={0.1}
+              delay={0.25}
+              stagger={0.12}
               duration={1.1}
-              className="block"
+              className="block text-[28px] sm:text-[36px] md:text-[48px] lg:text-[58px] font-light text-white/90 tracking-[0.18em] sm:tracking-[0.22em] leading-none mb-1 md:mb-2"
             />
+            {/* Thin ornamental divider */}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 1.1, delay: 0.55, ease: "easeOut" }}
+              className="w-20 sm:w-28 md:w-36 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent mx-auto mb-1 md:mb-2"
+            />
+            {/* "Dream Event" — cinematic centrepiece */}
             <SplitText
-              text="dream event"
+              text="Dream Event"
               mode="chars"
               anim="load"
               delay={0.55}
-              stagger={0.028}
-              duration={0.9}
-              className="text-shimmer font-semibold italic pr-4 block"
+              stagger={0.03}
+              duration={1.0}
+              className="block text-[52px] sm:text-[70px] md:text-[95px] lg:text-[118px] font-semibold italic text-shimmer leading-none tracking-tight"
             />
           </h1>
 
