@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell, MapPin, Sparkles, ArrowRight } from "lucide-react";
+import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell, MapPin, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationContext";
-import { ConsultationModal } from "@/components/ConsultationModal";
+
 
 const navLinks = [
   { label: "Venues", href: "/venues" },
@@ -38,7 +38,6 @@ export function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [consultOpen, setConsultOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<{
     cities: string[];
     vendors: { name: string; category: string; city: string }[];
@@ -154,16 +153,6 @@ export function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3 md:gap-4">
-            <motion.button
-              onClick={() => setConsultOpen(true)}
-              className="hidden xl:flex items-center gap-2 px-7 py-3 bg-primary text-black font-cinzel font-bold text-[10px] tracking-[0.22em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow whitespace-nowrap"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              Plan Your Dream Event
-            </motion.button>
-
             <button
               onClick={openSearch}
               className="hidden md:flex text-white/70 hover:text-primary transition-colors p-1"
@@ -568,21 +557,10 @@ export function Navbar() {
               </div>
             </nav>
 
-            <div className="px-7 py-6 border-t border-white/8">
-              <button
-                onClick={() => { setMobileOpen(false); setConsultOpen(true); }}
-                className="w-full py-4 bg-primary text-black font-cinzel font-bold text-[10px] tracking-[0.28em] uppercase flex items-center justify-center gap-2.5 hover:bg-primary/90 transition-colors gold-glow"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Plan Your Dream Event
-              </button>
-            </div>
-
           </motion.div>
         )}
       </AnimatePresence>
 
-      <ConsultationModal isOpen={consultOpen} onClose={() => setConsultOpen(false)} />
     </>
   );
 }

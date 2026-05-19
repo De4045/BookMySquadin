@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2 } from "lucide-react";
+import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useScrollAnimation, useStaggerAnimation } from "@/hooks/useScrollAnimation";
 import { useParallax } from "@/hooks/useParallax";
@@ -14,6 +14,7 @@ import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { SplitText } from "@/components/SplitText";
 import { FloatingParticles } from "@/components/FloatingParticles";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
+import { ConsultationModal } from "@/components/ConsultationModal";
 
 const CITY_LIST = [
   "Agra","Alwar","Bangalore","Bareilly","Bikaner","Chennai","Dehradun","Delhi",
@@ -61,6 +62,7 @@ function matchToCity(raw: string): string {
 export default function Home() {
   useMeta();
   const [, navigate] = useLocation();
+  const [consultOpen, setConsultOpen] = useState(false);
   const [city, setCity] = useState("");
   const [eventType, setEventType] = useState("");
   const [service, setService] = useState("");
@@ -313,6 +315,24 @@ export default function Home() {
                 </Link>
               ))}
             </div>
+
+            {/* Plan Your Dream Event CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 1.1 }}
+              className="mt-8 flex justify-center"
+            >
+              <motion.button
+                onClick={() => setConsultOpen(true)}
+                className="flex items-center gap-2.5 px-10 py-4 bg-primary text-black font-cinzel font-bold text-[10px] tracking-[0.28em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Plan Your Dream Event
+              </motion.button>
+            </motion.div>
           </motion.div>
         </div>
 
@@ -1223,6 +1243,7 @@ export default function Home() {
       </section>
 
       <Footer />
+      <ConsultationModal isOpen={consultOpen} onClose={() => setConsultOpen(false)} />
     </div>
   );
 }
