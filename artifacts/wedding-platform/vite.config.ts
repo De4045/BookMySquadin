@@ -26,9 +26,25 @@ if (!basePath) {
   );
 }
 
+// Canonical URL resolution order:
+//   1. VITE_CANONICAL_URL env var  (custom domain — set this in production secrets)
+//   2. First entry in REPLIT_DOMAINS  (auto-set by Replit for every deploy)
+//   3. Hard-coded fallback
+const replitDomain = process.env.REPLIT_DOMAINS?.split(",")[0]?.trim();
+const canonicalUrl =
+  process.env.VITE_CANONICAL_URL ||
+  (replitDomain ? `https://${replitDomain}` : "https://bookmysquad.in");
+
 export default defineConfig({
   base: basePath,
   plugins: [
+    // Inject canonical URL into every %VITE_CANONICAL_URL% token in index.html
+    {
+      name: "inject-canonical-url",
+      transformIndexHtml(html) {
+        return html.replaceAll("%VITE_CANONICAL_URL%", canonicalUrl);
+      },
+    },
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
