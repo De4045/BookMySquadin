@@ -430,7 +430,7 @@ export default function Home() {
                 cities: ["Jaipur", "Udaipur", "Jodhpur"],
               },
               {
-                img: "https://images.pexels.com/photos/8414416/pexels-photo-8414416.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                img: "https://images.pexels.com/photos/2403017/pexels-photo-2403017.jpeg?auto=compress&cs=tinysrgb&w=1200",
                 type: "Poolside",
                 title: "Poolside & Lawn Venues",
                 desc: "Lush lawns and shimmering poolside settings under open skies.",
