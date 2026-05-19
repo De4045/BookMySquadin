@@ -11,6 +11,9 @@ import bookingsRouter from "./bookings.js";
 import reviewsRouter from "./reviews.js";
 import articlesRouter from "./articles.js";
 import searchRouter from "./search.js";
+import portfolioRouter from "./portfolio.js";
+import availabilityRouter from "./availability.js";
+import kycRouter from "./kyc.js";
 import {
   authLimiter,
   registerLimiter,
@@ -44,5 +47,8 @@ router.use(bookingsRouter);
 router.use(reviewsRouter);
 router.use(articlesRouter);
 router.use(searchRouter);
+router.use(portfolioRouter);
+router.use(availabilityRouter);
+router.use(kycRouter);
 
 export default router;

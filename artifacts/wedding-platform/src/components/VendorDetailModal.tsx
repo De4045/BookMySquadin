@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Phone, MessageCircle, Heart, CheckCircle2, ChevronRight, Building2, Lock, BadgeCheck, CalendarDays, Star } from "lucide-react";
+import { X, MapPin, Phone, MessageCircle, Heart, CheckCircle2, ChevronRight, Building2, Lock, BadgeCheck, CalendarDays, Star, ChevronLeft, Image as ImageIcon, XCircle } from "lucide-react";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { isVendorVerified } from "@/data/subscriptions";
@@ -114,6 +114,10 @@ export function VendorDetailModal({ vendor, onClose, similarVendors, onSelect }:
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
 
+  const [portfolioPhotos, setPortfolioPhotos] = useState<{ id: number; url: string; caption: string }[]>([]);
+  const [portfolioIdx, setPortfolioIdx] = useState(0);
+  const [portfolioLightbox, setPortfolioLightbox] = useState(false);
+
   useEffect(() => {
     if (!vendor) return;
     setReviews([]);
@@ -121,6 +125,8 @@ export function VendorDetailModal({ vendor, onClose, similarVendors, onSelect }:
     setReviewTotal(0);
     setReviewSubmitted(false);
     setShowReviewForm(false);
+    setPortfolioPhotos([]);
+    setPortfolioIdx(0);
     fetch(`${BASE}/api/reviews?vendor=${encodeURIComponent(vendor.name)}`)
       .then(r => r.json())
       .then((d: { reviews: ReviewData[]; avgRating: number; total: number }) => {
@@ -128,6 +134,10 @@ export function VendorDetailModal({ vendor, onClose, similarVendors, onSelect }:
         setAvgRating(d.avgRating ?? 0);
         setReviewTotal(d.total ?? 0);
       })
+      .catch(() => {});
+    fetch(`${BASE}/api/portfolio/public?name=${encodeURIComponent(vendor.name.split(" ")[0])}`)
+      .then(r => r.ok ? r.json() : { photos: [] })
+      .then((d: { photos: { id: number; url: string; caption: string }[] }) => setPortfolioPhotos(d.photos ?? []))
       .catch(() => {});
   }, [vendor?.name]);
 
@@ -321,6 +331,71 @@ export function VendorDetailModal({ vendor, onClose, similarVendors, onSelect }:
               )
             )}
           </div>
+
+          {/* Portfolio Gallery */}
+          {portfolioPhotos.length > 0 && (
+            <div className="border-t border-white/8 pt-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/50 uppercase">Portfolio Gallery</p>
+                <span className="font-manrope text-[10px] text-white/30">{portfolioPhotos.length} photo{portfolioPhotos.length !== 1 ? "s" : ""}</span>
+              </div>
+              <div className="relative">
+                <div
+                  className="relative w-full aspect-video bg-black/40 overflow-hidden cursor-pointer group"
+                  onClick={() => setPortfolioLightbox(true)}
+                >
+                  <img
+                    key={portfolioIdx}
+                    src={portfolioPhotos[portfolioIdx]?.url}
+                    alt={portfolioPhotos[portfolioIdx]?.caption || "Portfolio"}
+                    className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-10 h-10 bg-black/60 border border-white/25 flex items-center justify-center">
+                      <ImageIcon className="w-4 h-4 text-white/80" />
+                    </div>
+                  </div>
+                  {portfolioPhotos[portfolioIdx]?.caption && (
+                    <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/80 to-transparent">
+                      <p className="font-manrope text-xs text-white/75 line-clamp-1">{portfolioPhotos[portfolioIdx].caption}</p>
+                    </div>
+                  )}
+                </div>
+                {portfolioPhotos.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setPortfolioIdx(i => (i - 1 + portfolioPhotos.length) % portfolioPhotos.length)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-black/60 border border-white/15 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setPortfolioIdx(i => (i + 1) % portfolioPhotos.length)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-black/60 border border-white/15 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                    <div className="absolute bottom-2 right-3 font-cinzel text-[8px] tracking-widest text-white/40">
+                      {portfolioIdx + 1}/{portfolioPhotos.length}
+                    </div>
+                  </>
+                )}
+              </div>
+              {portfolioPhotos.length > 1 && (
+                <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
+                  {portfolioPhotos.map((p, idx) => (
+                    <button
+                      key={p.id}
+                      onClick={() => setPortfolioIdx(idx)}
+                      className={`w-14 h-10 shrink-0 overflow-hidden border transition-all ${idx === portfolioIdx ? "border-primary/70" : "border-white/10 opacity-50 hover:opacity-75"}`}
+                    >
+                      <img src={p.url} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Why book through BMS */}
           <div className="border-t border-white/8 pt-5 space-y-2.5">
@@ -530,6 +605,56 @@ export function VendorDetailModal({ vendor, onClose, similarVendors, onSelect }:
         onClose={() => setShowBooking(false)}
       />
     )}
+
+    {/* Portfolio Lightbox */}
+    <AnimatePresence>
+      {portfolioLightbox && portfolioPhotos.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-4"
+          onClick={() => setPortfolioLightbox(false)}
+        >
+          <button
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-white/60 hover:text-white"
+            onClick={() => setPortfolioLightbox(false)}
+          >
+            <XCircle className="w-6 h-6" />
+          </button>
+          {portfolioPhotos.length > 1 && (
+            <>
+              <button
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 border border-white/15 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+                onClick={e => { e.stopPropagation(); setPortfolioIdx(i => (i - 1 + portfolioPhotos.length) % portfolioPhotos.length); }}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 border border-white/15 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+                onClick={e => { e.stopPropagation(); setPortfolioIdx(i => (i + 1) % portfolioPhotos.length); }}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
+          )}
+          <motion.img
+            key={portfolioIdx}
+            initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            src={portfolioPhotos[portfolioIdx]?.url}
+            alt={portfolioPhotos[portfolioIdx]?.caption}
+            className="max-w-3xl w-full max-h-[80vh] object-contain"
+            onClick={e => e.stopPropagation()}
+          />
+          {portfolioPhotos[portfolioIdx]?.caption && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 bg-black/70 border border-white/10">
+              <p className="font-manrope text-sm text-white/80">{portfolioPhotos[portfolioIdx].caption}</p>
+            </div>
+          )}
+          <div className="absolute bottom-4 right-4 font-cinzel text-[9px] tracking-widest text-white/30">
+            {portfolioIdx + 1} / {portfolioPhotos.length}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
     </>
   );
 }
