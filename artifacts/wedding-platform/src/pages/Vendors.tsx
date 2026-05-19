@@ -760,7 +760,16 @@ export default function Vendors() {
       </AnimatePresence>
 
       {/* Detail modal */}
-      {selected && <VendorDetailModal vendor={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <VendorDetailModal
+          vendor={selected}
+          onClose={() => setSelected(null)}
+          similarVendors={vendors
+            .filter(v => normalizeCategory(v.category) === normalizeCategory(selected.category) && v.name !== selected.name)
+            .slice(0, 3)}
+          onSelect={setSelected}
+        />
+      )}
     </div>
   );
 }

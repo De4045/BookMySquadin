@@ -15,12 +15,39 @@ function whatsappUrl(num: string) {
 }
 
 const CAT_IMAGES: Record<string, string> = {
-  "PHOTOGRAPHER":     "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1200&q=85",
-  "MAKEUP ARTIST":    "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&q=85",
+  "PHOTOGRAPHER":     "https://images.pexels.com/photos/3992080/pexels-photo-3992080.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "MAKEUP ARTIST":    "https://images.pexels.com/photos/2498430/pexels-photo-2498430.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
   "CATERER":          "https://images.unsplash.com/photo-1555244162-803834f70033?w=1200&q=85",
-  "DECOR":            "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=1200&q=85",
-  "WEDDING PLANNERS": "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1200&q=85",
-  "MUSIC & DJ":       "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&q=85",
+  "DECOR":            "https://images.pexels.com/photos/2788490/pexels-photo-2788490.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "WEDDING PLANNERS": "https://images.pexels.com/photos/3696878/pexels-photo-3696878.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "MUSIC & DJ":       "https://images.pexels.com/photos/14925306/pexels-photo-14925306.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "CHOREOGRAPHER":    "https://images.pexels.com/photos/32285696/pexels-photo-32285696/free-photo-of-traditional-indian-dance-performance-with-elegant-attire.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "FASHION DESIGNER": "https://images.pexels.com/photos/12062663/pexels-photo-12062663.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "MEHENDI":          "https://images.pexels.com/photos/4105332/pexels-photo-4105332.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "ANCHOR":           "https://images.pexels.com/photos/29708269/pexels-photo-29708269/free-photo-of-male-speaker-at-indoor-conference-event.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "SOUND & LIGHT":    "https://images.pexels.com/photos/7709689/pexels-photo-7709689.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "PRODUCTION":       "https://images.pexels.com/photos/11144787/pexels-photo-11144787.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "TRANSPORT":        "https://images.pexels.com/photos/2318049/pexels-photo-2318049.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "HOSPITALITY":      "https://images.pexels.com/photos/2373201/pexels-photo-2373201.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+  "TRAVEL":           "https://images.pexels.com/photos/6875529/pexels-photo-6875529.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop",
+};
+
+const SIMILAR_THUMB: Record<string, string> = {
+  "PHOTOGRAPHER":     "https://images.pexels.com/photos/3992080/pexels-photo-3992080.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "MAKEUP ARTIST":    "https://images.pexels.com/photos/2498430/pexels-photo-2498430.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "CATERER":          "https://images.unsplash.com/photo-1555244162-803834f70033?w=400&h=260&fit=crop&q=80",
+  "DECOR":            "https://images.pexels.com/photos/2788490/pexels-photo-2788490.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "WEDDING PLANNERS": "https://images.pexels.com/photos/3696878/pexels-photo-3696878.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "MUSIC & DJ":       "https://images.pexels.com/photos/14925306/pexels-photo-14925306.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "CHOREOGRAPHER":    "https://images.pexels.com/photos/32285696/pexels-photo-32285696/free-photo-of-traditional-indian-dance-performance-with-elegant-attire.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "FASHION DESIGNER": "https://images.pexels.com/photos/12062663/pexels-photo-12062663.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "MEHENDI":          "https://images.pexels.com/photos/4105332/pexels-photo-4105332.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "ANCHOR":           "https://images.pexels.com/photos/29708269/pexels-photo-29708269/free-photo-of-male-speaker-at-indoor-conference-event.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "SOUND & LIGHT":    "https://images.pexels.com/photos/7709689/pexels-photo-7709689.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "PRODUCTION":       "https://images.pexels.com/photos/11144787/pexels-photo-11144787.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "TRANSPORT":        "https://images.pexels.com/photos/2318049/pexels-photo-2318049.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "HOSPITALITY":      "https://images.pexels.com/photos/2373201/pexels-photo-2373201.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
+  "TRAVEL":           "https://images.pexels.com/photos/6875529/pexels-photo-6875529.jpeg?auto=compress&cs=tinysrgb&w=400&h=260&fit=crop",
 };
 
 const CAT_COLORS: Record<string, string> = {
@@ -41,11 +68,14 @@ export interface VendorLike {
   city?: string;
   state?: string;
   contact?: string;
+  image?: string;
 }
 
 interface Props {
   vendor: VendorLike | null;
   onClose: () => void;
+  similarVendors?: VendorLike[];
+  onSelect?: (v: VendorLike) => void;
 }
 
 interface ReviewData {
@@ -67,7 +97,7 @@ function normalizeCategory(raw: string): string {
   return s || "VENDOR";
 }
 
-export function VendorDetailModal({ vendor, onClose }: Props) {
+export function VendorDetailModal({ vendor, onClose, similarVendors, onSelect }: Props) {
   const { has, toggle } = useShortlist();
   const { user } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", phone: "", date: "", message: "" });
@@ -411,6 +441,40 @@ export function VendorDetailModal({ vendor, onClose }: Props) {
               </p>
             )}
           </div>
+
+          {/* Similar Vendors */}
+          {similarVendors && similarVendors.length > 0 && onSelect && (
+            <div className="border-t border-white/8 pt-5 mt-2">
+              <p className="font-cinzel text-[10px] tracking-[0.3em] text-primary/50 uppercase mb-3">You May Also Like</p>
+              <div className="flex flex-col gap-2">
+                {similarVendors.map(sv => {
+                  const svCat = normalizeCategory(sv.category);
+                  const thumb = sv.image || SIMILAR_THUMB[svCat] || SIMILAR_THUMB["PHOTOGRAPHER"];
+                  return (
+                    <button
+                      key={sv.name + (sv.city || "")}
+                      onClick={() => onSelect(sv)}
+                      className="flex items-center gap-3 p-2.5 bg-white/[0.03] border border-white/8 rounded-sm hover:border-primary/30 hover:bg-white/[0.05] transition-all text-left group w-full"
+                    >
+                      <div className="w-16 h-11 rounded-sm overflow-hidden flex-shrink-0">
+                        <img src={thumb} alt={sv.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-cormorant text-white text-sm font-semibold leading-tight truncate group-hover:text-primary transition-colors">{sv.name}</p>
+                        {sv.company && sv.company !== sv.name && (
+                          <p className="font-manrope text-white/40 text-[11px] truncate">{sv.company}</p>
+                        )}
+                        {sv.city && (
+                          <p className="font-manrope text-white/30 text-[10px] mt-0.5">{sv.city}</p>
+                        )}
+                      </div>
+                      <ChevronRight className="w-3.5 h-3.5 text-white/20 group-hover:text-primary/60 transition-colors flex-shrink-0" />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Book / Enquire */}
           <div className="border-t border-white/8 pt-5">
