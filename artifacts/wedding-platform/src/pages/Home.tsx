@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2, Sparkles } from "lucide-react";
+import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2 } from "lucide-react";
+import planCardBg from "@assets/image_1779201220568.png";
 import { Link, useLocation } from "wouter";
 import { useScrollAnimation, useStaggerAnimation } from "@/hooks/useScrollAnimation";
 import { useParallax } from "@/hooks/useParallax";
@@ -316,7 +317,7 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Plan Your Dream Event CTA */}
+            {/* Plan Your Dream Event CTA card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -325,12 +326,30 @@ export default function Home() {
             >
               <motion.button
                 onClick={() => setConsultOpen(true)}
-                className="flex items-center gap-2.5 px-10 py-4 bg-primary text-black font-cinzel font-bold text-[10px] tracking-[0.28em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow"
-                whileHover={{ scale: 1.04 }}
+                className="relative overflow-hidden group"
+                style={{ width: 180, height: 90 }}
+                whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.97 }}
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                Plan Your Dream Event
+                {/* background image */}
+                <img
+                  src={planCardBg}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                {/* dark overlay for text contrast */}
+                <div className="absolute inset-0 bg-black/45 group-hover:bg-black/30 transition-colors duration-300" />
+                {/* text */}
+                <div className="relative z-10 flex flex-col items-center justify-center h-full px-4">
+                  <span className="font-cinzel text-[10px] tracking-[0.28em] text-white uppercase leading-tight">
+                    Plan your
+                  </span>
+                  <span className="font-cormorant italic text-primary text-xl leading-tight border-b border-primary/60 pb-0.5">
+                    dream event
+                  </span>
+                </div>
+                {/* gold border shimmer on hover */}
+                <div className="absolute inset-0 border border-primary/0 group-hover:border-primary/60 transition-all duration-300" />
               </motion.button>
             </motion.div>
           </motion.div>

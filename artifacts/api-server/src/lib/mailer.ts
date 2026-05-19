@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
 import { logger } from "./logger.js";
 
-const SMTP_HOST = process.env["SMTP_HOST"] || "";
-const SMTP_PORT = Number(process.env["SMTP_PORT"] || 587);
-const SMTP_USER = process.env["SMTP_USER"] || "";
-const SMTP_PASS = process.env["SMTP_PASS"] || "";
+const SMTP_HOST  = process.env["SMTP_HOST"]  || "";
+const SMTP_PORT  = Number(process.env["SMTP_PORT"] || 587);
+const SMTP_USER  = process.env["SMTP_USER"]  || "";
+const SMTP_PASS  = process.env["SMTP_PASS"]  || "";
 const FROM_EMAIL = process.env["FROM_EMAIL"] || "noreply@bookmysquad.in";
+const ADMIN_EMAIL = "bookmysquad0@gmail.com";
 
 const isConfigured = Boolean(SMTP_HOST && SMTP_USER && SMTP_PASS);
 
@@ -75,6 +76,26 @@ export async function sendBookingConfirmation(to: string, booking: {
       `,
     });
     logger.info({ to, vendorName: booking.vendorName }, "Booking confirmation email sent");
+
+    // Admin notification
+    await transporter.sendMail({
+      from: `Book My Squad <${FROM_EMAIL}>`,
+      to: ADMIN_EMAIL,
+      subject: `[New Booking] ${booking.vendorName} — ${booking.name}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;background:#0d0b08;color:#e5e0d8;padding:32px;border:1px solid rgba(212,175,55,0.3);">
+          <h2 style="color:#d4af37;margin:0 0 16px;">New Booking Received</h2>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <tr><td style="padding:8px 0;color:#a89880;width:35%;">Customer</td><td>${booking.name} &lt;${to}&gt;</td></tr>
+            <tr><td style="padding:8px 0;color:#a89880;">Vendor</td><td>${booking.vendorName}</td></tr>
+            <tr><td style="padding:8px 0;color:#a89880;">Package</td><td>${booking.packageName}</td></tr>
+            <tr><td style="padding:8px 0;color:#a89880;">Event Type</td><td>${booking.eventType}</td></tr>
+            <tr><td style="padding:8px 0;color:#a89880;">Event Date</td><td>${booking.eventDate}</td></tr>
+            <tr><td style="padding:8px 0;color:#a89880;">Advance</td><td style="color:${booking.advancePaid ? "#50e3c2" : "#aaa"}">${booking.advancePaid ? `₹${booking.advanceAmount.toLocaleString("en-IN")} PAID` : "Not paid"}</td></tr>
+          </table>
+        </div>`,
+    });
+    logger.info({ admin: ADMIN_EMAIL }, "Admin booking alert sent");
   } catch (err) {
     logger.error({ err, to }, "Failed to send booking confirmation email");
   }
@@ -109,6 +130,25 @@ export async function sendEnquiryReceipt(to: string, enquiry: {
       `,
     });
     logger.info({ to, subject: enquiry.subject }, "Enquiry receipt email sent");
+
+    // Admin notification
+    await transporter.sendMail({
+      from: `Book My Squad <${FROM_EMAIL}>`,
+      to: ADMIN_EMAIL,
+      subject: `[New Enquiry] ${enquiry.subject} — ${enquiry.name}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;background:#0d0b08;color:#e5e0d8;padding:32px;border:1px solid rgba(212,175,55,0.3);">
+          <h2 style="color:#d4af37;margin:0 0 16px;">New Enquiry Received</h2>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <tr><td style="padding:8px 0;color:#a89880;width:30%;">From</td><td>${enquiry.name} &lt;${to}&gt;</td></tr>
+            <tr><td style="padding:8px 0;color:#a89880;">Type</td><td>${enquiry.subject}</td></tr>
+          </table>
+          <div style="margin-top:16px;background:rgba(212,175,55,0.05);border-left:2px solid #d4af37;padding:14px 18px;">
+            <p style="color:#ddd;font-size:13px;margin:0;line-height:1.6;">${enquiry.message}</p>
+          </div>
+        </div>`,
+    });
+    logger.info({ admin: ADMIN_EMAIL }, "Admin enquiry alert sent");
   } catch (err) {
     logger.error({ err, to }, "Failed to send enquiry receipt email");
   }

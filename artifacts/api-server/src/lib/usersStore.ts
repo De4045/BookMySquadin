@@ -178,8 +178,8 @@ export async function seedUsers(): Promise<void> {
     .insert(usersTable)
     .values([
       {
-        name: "Dream Wedding Hub Admin",
-        email: "admin@dreamweddinghub.com",
+        name: "Book My Squad Admin",
+        email: "bookmysquad0@gmail.com",
         passwordHash: adminHash,
         role: "admin",
         isActive: true,
@@ -206,7 +206,12 @@ export async function seedUsers(): Promise<void> {
     ])
     .onConflictDoNothing();
 
+  // Remove old admin seed email if it still exists (idempotent migration)
+  await db
+    .delete(usersTable)
+    .where(eq(usersTable.email, "admin@dreamweddinghub.com"));
+
   logger.info(
-    "Seed: admin@dreamweddinghub.com / DreamWedding@2025 | vendor@bookmysquad.in / Vendor@2025! | customer@bookmysquad.in / Customer@2025!",
+    "Seed: bookmysquad0@gmail.com / DreamWedding@2025 | vendor@bookmysquad.in / Vendor@2025! | customer@bookmysquad.in / Customer@2025!",
   );
 }

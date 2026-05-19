@@ -7,7 +7,7 @@ India's premium wedding & event planning marketplace connecting couples with top
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
 - `pnpm --filter @workspace/wedding-platform run dev` — run the frontend (reads PORT from env)
 - `pnpm run typecheck` — full typecheck across all packages
-- Admin login: `admin@dreamweddinghub.com` / `DreamWedding@2025`
+- Admin login: `bookmysquad0@gmail.com` / `DreamWedding@2025`
 - Session cookie name: `bms_sid`
 
 ## Stack
