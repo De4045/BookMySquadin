@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import poolsideImg from "@assets/image_1779175302809.png";
 import { useMeta } from "@/hooks/useMeta";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
@@ -430,7 +431,7 @@ export default function Home() {
                 cities: ["Jaipur", "Udaipur", "Jodhpur"],
               },
               {
-                img: "https://images.unsplash.com/photo-1540541338537-d5d77a6c8c0c?w=800&q=85",
+                img: poolsideImg,
                 type: "Poolside",
                 title: "Poolside & Lawn Venues",
                 desc: "Lush lawns and shimmering poolside settings under open skies.",
