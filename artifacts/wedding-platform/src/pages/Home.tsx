@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useScrollAnimation, useStaggerAnimation } from "@/hooks/useScrollAnimation";
+import { useParallax } from "@/hooks/useParallax";
+import { TiltCard } from "@/components/TiltCard";
+import { AnimatedText } from "@/components/AnimatedText";
+import { FloatingParticles } from "@/components/FloatingParticles";
+import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 
 const CITY_LIST = [
   "Agra","Alwar","Bangalore","Bareilly","Bikaner","Chennai","Dehradun","Delhi",
@@ -109,6 +114,10 @@ export default function Home() {
     }
   };
 
+  /* ── Parallax refs ── */
+  const heroTextRef     = useParallax<HTMLDivElement>({ speed: -0.18, scrub: 2 });
+  const heroVideoRef    = useParallax<HTMLDivElement>({ speed: 0.12,  scrub: 2 });
+
   /* ── GSAP scroll animation refs ── */
   const venueHeadRef    = useScrollAnimation<HTMLDivElement>({ type: "fadeUp", duration: 1 });
   const venueGridRef    = useStaggerAnimation<HTMLDivElement>({ type: "scaleIn", stagger: 0.08, start: "top 90%" });
@@ -128,29 +137,37 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#080604] w-full overflow-x-hidden font-sans pb-mobile-nav lg:pb-0">
+      <ScrollProgressBar />
       <Navbar />
 
       {/* SECTION 1: HERO */}
       <section className="relative w-full h-screen min-h-screen overflow-hidden">
-        <div className="absolute inset-0 z-0">
+        {/* Video BG with parallax */}
+        <div ref={heroVideoRef} className="absolute inset-0 z-0 scale-[1.15] parallax-inner">
           <video
             autoPlay
             muted
             loop
             playsInline
-            className="w-full h-full object-cover scale-[1.05]"
+            className="w-full h-full object-cover"
             poster="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=1920&q=80"
           >
             <source src="https://assets.mixkit.co/videos/preview/mixkit-wedding-ceremony-decoration-4707-large.mp4" type="video/mp4" />
             <source src="https://assets.mixkit.co/videos/preview/mixkit-couple-dancing-at-a-wedding-party-4780-large.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 video-overlay" />
-          <div className="absolute inset-0" style={{background: 'radial-gradient(ellipse at 50% 60%, rgba(212,175,55,0.08) 0%, transparent 60%)'}} />
+          <div className="absolute inset-0" style={{background: 'radial-gradient(ellipse at 50% 60%, rgba(212,175,55,0.09) 0%, transparent 60%)'}} />
         </div>
 
         <div className="absolute inset-0 z-[1] opacity-20 pointer-events-none grain-overlay" />
 
-        <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center">
+        {/* Floating gold particles */}
+        <div className="absolute inset-0 z-[2]">
+          <FloatingParticles count={22} />
+        </div>
+
+        {/* Hero text — parallax upward on scroll */}
+        <div ref={heroTextRef} className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center parallax-inner">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -486,18 +503,20 @@ export default function Home() {
               { img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=700&q=80", title: "Bridal Artistry", desc: "Top makeup artists curating your flawless special day look", href: "/vendors" },
             ].map((svc, i) => (
               <Link key={i} href={svc.href}>
-                <div className="luxury-card p-6 flex flex-col group cursor-pointer hover:gold-glow rounded-sm">
-                  <div className="w-full aspect-square mb-6 overflow-hidden border border-primary/20 group-hover:border-primary/50 transition-colors">
-                    <img src={svc.img} alt={svc.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <TiltCard className="h-full" max={5} glare>
+                  <div className="luxury-card glass-card p-6 flex flex-col group cursor-pointer h-full rounded-sm overflow-hidden">
+                    <div className="w-full aspect-square mb-6 overflow-hidden border border-primary/20 group-hover:border-primary/50 transition-colors">
+                      <img src={svc.img} alt={svc.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108" />
+                    </div>
+                    <div className="flex flex-col flex-1 text-center items-center justify-center">
+                      <h3 className="text-white font-cormorant text-3xl font-semibold mb-3">{svc.title}</h3>
+                      <p className="font-manrope text-white/75 font-light text-sm mb-6">{svc.desc}</p>
+                      <span className="mt-auto font-cinzel text-primary text-[10px] tracking-[0.2em] font-semibold flex items-center gap-2 group-hover:gap-3 transition-all uppercase">
+                        Discover More <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col flex-1 text-center items-center justify-center">
-                    <h3 className="text-white font-cormorant text-3xl font-semibold mb-3">{svc.title}</h3>
-                    <p className="font-manrope text-white/75 font-light text-sm mb-6">{svc.desc}</p>
-                    <span className="mt-auto font-cinzel text-primary text-[10px] tracking-[0.2em] font-semibold flex items-center gap-2 group-hover:gap-3 transition-all uppercase">
-                      Discover More <ArrowRight className="w-3 h-3" />
-                    </span>
-                  </div>
-                </div>
+                </TiltCard>
               </Link>
             ))}
           </div>
@@ -700,21 +719,27 @@ export default function Home() {
       {/* SECTION 7: STATS COUNTER */}
       <section className="py-24 bg-black relative border-y border-primary/20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_60%)] pointer-events-none" />
+        {/* Ambient video overlay */}
+        <div className="absolute inset-0 opacity-[0.07] pointer-events-none overflow-hidden">
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover scale-110">
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-golden-confetti-falling-1-large.mp4" type="video/mp4" />
+          </video>
+        </div>
         <div ref={statsRef} className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-          <div className="flex flex-col md:flex-row justify-between divide-y md:divide-y-0 md:divide-x divide-primary/20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { num: "6,346+", label: "Verified Vendors" },
-              { num: "76+", label: "Cities Covered" },
-              { num: "63,346+", label: "Happy Couples" },
-              { num: "436", label: "Wedding Venues" }
+              { num: "6,346+", label: "Verified Vendors",  icon: "✦" },
+              { num: "76+",    label: "Cities Covered",    icon: "◈" },
+              { num: "63,346+",label: "Happy Couples",     icon: "♡" },
+              { num: "436",    label: "Wedding Venues",    icon: "◇" },
             ].map((stat, i) => (
-              <div
-                key={i}
-                className="flex-1 py-8 md:py-0 text-center flex flex-col items-center justify-center"
-              >
-                <div className="text-4xl md:text-6xl font-cinzel text-shimmer mb-3">{stat.num}</div>
-                <div className="font-manrope text-white/72 text-[10px] uppercase tracking-[0.3em] font-medium">{stat.label}</div>
-              </div>
+              <TiltCard key={i} max={4} scale={1.03} glare>
+                <div className="glass-gold rounded-sm p-8 md:p-10 flex flex-col items-center justify-center text-center gap-3 h-full">
+                  <span className="font-cinzel text-primary/50 text-lg mb-1">{stat.icon}</span>
+                  <div className="text-4xl md:text-5xl font-cinzel text-shimmer leading-none">{stat.num}</div>
+                  <div className="font-manrope text-white/65 text-[10px] uppercase tracking-[0.3em] font-medium">{stat.label}</div>
+                </div>
+              </TiltCard>
             ))}
           </div>
         </div>
@@ -933,19 +958,18 @@ export default function Home() {
               { text: "Finding vendors through BMS was the best decision. The platform's luxury partners delivered beyond our wildest expectations. A truly 5-star experience from start to finish.", name: "Vikram & Aisha", date: "Married in Udaipur" },
               { text: "They understood our vision for a minimalist yet opulent celebration immediately. The venue recommendation was breathtaking and the execution was pure perfection.", name: "Karan & Meera", date: "Married in Goa" }
             ].map((review, i) => (
-              <div
-                key={i}
-                className="luxury-card p-10 flex flex-col items-center text-center rounded-sm relative"
-              >
-                <div className="font-cormorant text-8xl text-primary/20 absolute top-4 left-6 leading-none">"</div>
-                <div className="flex gap-1 mb-8 mt-4">
-                  {[1,2,3,4,5].map(star => <span key={star} className="text-primary text-sm">★</span>)}
+              <TiltCard key={i} max={5} scale={1.02} glare>
+                <div className="luxury-card glass-card p-10 flex flex-col items-center text-center rounded-sm relative overflow-hidden h-full">
+                  <div className="font-cormorant text-8xl text-primary/20 absolute top-4 left-6 leading-none">"</div>
+                  <div className="flex gap-1 mb-8 mt-4">
+                    {[1,2,3,4,5].map(star => <span key={star} className="text-primary text-sm">★</span>)}
+                  </div>
+                  <p className="font-cormorant italic text-xl text-white/80 leading-relaxed mb-10 flex-grow relative z-10">{review.text}</p>
+                  <div className="w-16 h-px bg-primary/40 mb-6" />
+                  <h4 className="font-cinzel text-sm text-primary uppercase tracking-[0.1em] mb-1">{review.name}</h4>
+                  <p className="font-manrope text-xs text-white/65 font-light">{review.date}</p>
                 </div>
-                <p className="font-cormorant italic text-xl text-white/80 leading-relaxed mb-10 flex-grow relative z-10">{review.text}</p>
-                <div className="w-16 h-px bg-primary/40 mb-6" />
-                <h4 className="font-cinzel text-sm text-primary uppercase tracking-[0.1em] mb-1">{review.name}</h4>
-                <p className="font-manrope text-xs text-white/65 font-light">{review.date}</p>
-              </div>
+              </TiltCard>
             ))}
           </div>
         </div>
