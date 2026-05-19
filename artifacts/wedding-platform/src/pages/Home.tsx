@@ -936,7 +936,7 @@ export default function Home() {
           <div className="text-center mb-20">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Case Studies ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-playfair text-5xl md:text-7xl text-white font-normal italic leading-tight mb-5">
+            <h2 className="font-playfair text-7xl md:text-[110px] lg:text-[130px] text-white font-normal italic leading-[0.9] mb-5">
               Stories Behind Every<br />
               <span className="text-primary">Celebration</span>
             </h2>
@@ -1128,7 +1128,7 @@ export default function Home() {
           <div ref={testHeadRef} className="mb-20 text-center">
             <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Client Words ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-playfair text-6xl md:text-8xl text-white font-normal italic leading-[0.92] mb-6">
+            <h2 className="font-playfair text-7xl md:text-[110px] lg:text-[130px] text-white font-normal italic leading-[0.9] mb-6">
               Turning Dreams<br />
               <span className="text-primary">Into Experiences</span>
             </h2>
@@ -1163,7 +1163,7 @@ export default function Home() {
       {/* SECTION 10: PARTNER BRANDS MARQUEE */}
       <section className="py-16 bg-[#0a0806] border-y border-white/5 overflow-hidden">
         <div className="text-center mb-10">
-          <p className="font-cinzel text-[9px] tracking-[0.5em] text-primary/50 uppercase">✦ Trusted By India's Finest ✦</p>
+          <p className="font-cinzel text-sm tracking-[0.4em] text-primary/70 uppercase">✦ Trusted By India's Finest ✦</p>
         </div>
         {[
           ["Taj Hotels","The Oberoi","ITC Hotels","The Leela","JW Marriott","Hyatt India","Rambagh Palace","Umaid Bhawan","Samode Palace","RAAS Hotels","Aman Resorts","Suryagarh"],
