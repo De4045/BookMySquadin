@@ -210,7 +210,7 @@ export default function Home() {
             className="font-manrope text-white text-base md:text-lg font-light max-w-xl mx-auto mb-12 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
             style={{ textShadow: '0 2px 12px rgba(0,0,0,0.95), 0 1px 4px rgba(0,0,0,0.9)' }}
           >
-            Find the best vendors for weddings, events & celebrations — with thousands of trusted reviews
+            Every great love story deserves a perfect setting. India's finest vendors, curated for couples who refuse to settle.
           </motion.p>
 
           {/* 4-field Search Bar */}
@@ -729,6 +729,90 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SECTION 6B: MOMENTS WE CREATED */}
+      <section className="py-32 px-6 md:px-12 bg-[#030201] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 30% 50%, rgba(212,175,55,0.05) 0%, transparent 65%)" }} />
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+            <div>
+              <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Our Work ✦</p>
+              <div className="gold-line w-16 mb-6" />
+              <h2 className="font-playfair text-6xl md:text-8xl text-white font-normal italic leading-[0.92]">
+                Moments<br />
+                <span className="text-primary">We Created</span>
+              </h2>
+            </div>
+            <p className="font-poppins text-white/45 text-sm leading-relaxed max-w-xs">
+              Every celebration is a story. Every photograph, a memory sealed in gold. We don't plan events — we craft chapters that last forever.
+            </p>
+          </div>
+
+          {/* Asymmetric 4-image grid */}
+          <div className="grid grid-cols-3 grid-rows-2 gap-3" style={{ height: "620px" }}>
+            <div className="row-span-2 overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=85" className="w-full h-full object-cover" alt="Royal Wedding" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5">
+                <span className="font-cinzel text-[8px] tracking-[0.3em] uppercase text-primary bg-black/60 px-2.5 py-1 border border-primary/30 backdrop-blur-sm">Royal Wedding</span>
+                <p className="font-cormorant italic text-2xl text-white mt-3 leading-tight">Udaipur Palace</p>
+              </div>
+            </div>
+            <div className="overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800&q=85" className="w-full h-full object-cover" alt="Floral Décor" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+              <div className="absolute bottom-3 left-3">
+                <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/60 px-2 py-1 border border-primary/30 backdrop-blur-sm">Floral Décor</span>
+              </div>
+            </div>
+            <div className="overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=85" className="w-full h-full object-cover" alt="Photography" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+              <div className="absolute bottom-3 left-3">
+                <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/60 px-2 py-1 border border-primary/30 backdrop-blur-sm">Photography</span>
+              </div>
+            </div>
+            <div className="col-span-2 overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1200&q=85" className="w-full h-full object-cover" alt="Destination Wedding" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
+                <div>
+                  <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/60 px-2.5 py-1 border border-primary/30 backdrop-blur-sm">Destination Wedding</span>
+                  <p className="font-cormorant italic text-2xl text-white mt-2">Goa Beach Ceremony</p>
+                </div>
+                <Link href="/events">
+                  <button className="font-cinzel text-[9px] tracking-[0.2em] uppercase px-4 py-2.5 border border-primary/60 text-primary hover:bg-primary hover:text-black transition-all duration-300 backdrop-blur-sm">
+                    View Story
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Impact numbers */}
+          <div className="mt-8 grid grid-cols-3 border border-white/8">
+            {[
+              { num: "500+", label: "Events Created",     note: "Across India & abroad" },
+              { num: "98%",  label: "Client Satisfaction", note: "Verified post-event surveys" },
+              { num: "63K+", label: "Lives Touched",       note: "Couples, families & guests" },
+            ].map((s, i) => (
+              <div key={i} className={`py-8 px-6 text-center ${i < 2 ? "border-r border-white/8" : ""}`}>
+                <div className="font-playfair text-4xl md:text-5xl text-primary italic mb-1">{s.num}</div>
+                <div className="font-cinzel text-[9px] tracking-[0.2em] text-white uppercase mb-1">{s.label}</div>
+                <div className="font-poppins text-xs text-white/30">{s.note}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link href="/events">
+              <button className="px-12 py-4 border border-primary/50 text-primary font-cinzel font-semibold text-[10px] tracking-[0.28em] uppercase hover:bg-primary hover:text-black transition-all duration-300 inline-flex items-center gap-3">
+                Explore Our Full Portfolio <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* SECTION 7: STATS COUNTER */}
       <section className="py-24 bg-black relative border-y border-primary/20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_60%)] pointer-events-none" />
@@ -839,6 +923,86 @@ export default function Home() {
             <Link href="/vendors">
               <button className="px-10 py-4 bg-primary text-black font-cinzel font-bold text-xs tracking-[0.25em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow rounded-sm">
                 Start Your Search
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 7C: STORIES BEHIND EVERY CELEBRATION */}
+      <section className="py-32 px-6 md:px-12 bg-[#080604] border-t border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 70% 30%, rgba(212,175,55,0.05) 0%, transparent 55%)" }} />
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Case Studies ✦</p>
+            <div className="gold-line w-16 mx-auto mb-6" />
+            <h2 className="font-playfair text-5xl md:text-7xl text-white font-normal italic leading-tight mb-5">
+              Stories Behind Every<br />
+              <span className="text-primary">Celebration</span>
+            </h2>
+            <p className="font-poppins text-white/40 text-base max-w-lg mx-auto leading-relaxed">
+              Not just events. Chapters in love stories, milestones, and memories that outlast every season.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                img: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=85",
+                tag: "Destination Wedding",
+                title: "A Rajasthani Love Story",
+                names: "Priya & Rahul",
+                city: "Rambagh Palace, Jaipur",
+                excerpt: "Two souls, 400 guests, one palace. We turned a royal dream into a night the world envied.",
+                href: "/events/royal-rajasthani-wedding",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=85",
+                tag: "Beach Wedding",
+                title: "Where the Ocean Said I Do",
+                names: "Aisha & Vikram",
+                city: "Goa Coastline",
+                excerpt: "Sunset vows, barefoot dances, and a ceremony written in sea-salt and starlight.",
+                href: "/events/goa-beach-wedding",
+              },
+              {
+                img: "https://images.unsplash.com/photo-1478146059778-26028b07395a?w=800&q=85",
+                tag: "Corporate Gala",
+                title: "A Night of Pure Elegance",
+                names: "Fortune 500 Annual",
+                city: "Taj Mahal Palace, Mumbai",
+                excerpt: "600 leaders. One night. We orchestrated an awards gala that redefined corporate prestige.",
+                href: "/events",
+              },
+            ].map((story, i) => (
+              <Link key={i} href={story.href}>
+                <TiltCard max={4} glare>
+                  <div className="group cursor-pointer overflow-hidden border border-white/6 hover:border-primary/25 transition-colors duration-500">
+                    <div className="relative h-64 overflow-hidden img-zoom">
+                      <img src={story.img} alt={story.title} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#080604]/90 via-black/20 to-transparent" />
+                      <div className="absolute top-4 left-4">
+                        <span className="font-cinzel text-[8px] tracking-[0.25em] uppercase text-primary bg-black/70 border border-primary/30 px-2.5 py-1 backdrop-blur-sm">{story.tag}</span>
+                      </div>
+                    </div>
+                    <div className="p-7 bg-[#0a0806]">
+                      <p className="font-cinzel text-[9px] tracking-[0.22em] text-primary/60 uppercase mb-2">{story.names} · {story.city}</p>
+                      <h3 className="font-playfair text-2xl text-white italic mb-3 leading-tight group-hover:text-primary transition-colors">{story.title}</h3>
+                      <p className="font-poppins text-sm text-white/40 leading-relaxed mb-5">{story.excerpt}</p>
+                      <div className="flex items-center gap-2 font-cinzel text-[9px] tracking-[0.2em] uppercase text-primary font-semibold group-hover:gap-3 transition-all">
+                        Read This Story <ArrowRight className="w-3 h-3" />
+                      </div>
+                    </div>
+                  </div>
+                </TiltCard>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-14 text-center">
+            <Link href="/events">
+              <button className="px-12 py-4 bg-primary text-black font-cinzel font-bold text-[10px] tracking-[0.28em] uppercase hover:bg-primary/90 transition-all gold-glow inline-flex items-center gap-3">
+                Explore All 9 Stories <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
           </div>
@@ -962,11 +1126,15 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div ref={testHeadRef} className="mb-20 text-center">
-            <p className="font-cinzel text-[15px] tracking-[0.45em] text-primary/80 uppercase mb-4">✦ Love Stories ✦</p>
+            <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Client Words ✦</p>
             <div className="gold-line w-16 mx-auto mb-6" />
-            <h2 className="font-cormorant text-6xl md:text-7xl text-white font-normal drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]">
-              Words of <span className="text-primary italic font-semibold">Praise</span>
+            <h2 className="font-playfair text-6xl md:text-8xl text-white font-normal italic leading-[0.92] mb-6">
+              Turning Dreams<br />
+              <span className="text-primary">Into Experiences</span>
             </h2>
+            <p className="font-poppins text-white/40 text-base max-w-xl mx-auto leading-relaxed">
+              Don't take our word for it — hear from the couples who trusted us with the most important day of their lives.
+            </p>
           </div>
 
           <div ref={testGridRef} className="grid grid-cols-1 md:grid-cols-3 gap-8">
