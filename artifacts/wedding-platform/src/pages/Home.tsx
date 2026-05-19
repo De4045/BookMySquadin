@@ -191,9 +191,9 @@ export default function Home() {
               delay={0.25}
               stagger={0.12}
               duration={1.1}
-              className="block text-[28px] sm:text-[36px] md:text-[48px] lg:text-[58px] font-light text-white/90 tracking-[0.18em] sm:tracking-[0.22em] leading-none mb-1 md:mb-2"
+              className="block text-[42px] sm:text-[56px] md:text-[76px] lg:text-[96px] font-extralight text-white/90 tracking-[0.12em] sm:tracking-[0.16em] leading-[1.05] mb-0"
             />
-            {/* "Dream Event" — same size and white as "Plan your" */}
+            {/* "Dream Event" — italic for elegance */}
             <SplitText
               text="Dream Event"
               mode="words"
@@ -201,7 +201,7 @@ export default function Home() {
               delay={0.45}
               stagger={0.12}
               duration={1.1}
-              className="block text-[28px] sm:text-[36px] md:text-[48px] lg:text-[58px] font-light text-white/90 tracking-[0.18em] sm:tracking-[0.22em] leading-none"
+              className="block text-[42px] sm:text-[56px] md:text-[76px] lg:text-[96px] font-light italic text-white tracking-[0.08em] sm:tracking-[0.1em] leading-[1.05]"
             />
           </h1>
 
