@@ -642,7 +642,7 @@ export default function Home() {
                 aspect: "aspect-square",
               },
               {
-                img: "https://images.unsplash.com/photo-1521339246620-34873ccf2999?w=700&q=85",
+                img: "https://images.pexels.com/photos/25742763/pexels-photo-25742763/free-photo-of-creative-pre-wedding-photoshoot-fotographiya.jpeg?auto=compress&cs=tinysrgb&w=800",
                 title: "Heritage Wedding",
                 names: "Meera & Rohan",
                 city: "Udaipur",

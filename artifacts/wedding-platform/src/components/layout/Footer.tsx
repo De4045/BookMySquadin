@@ -221,7 +221,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-center md:text-left">
           <p className="font-manrope text-[11px] text-white/45 tracking-wider">
             © 2025 Book My Squad. All rights reserved. | Copyright{" "}
-            <span className="text-primary/70">Namrata Muralidharan</span>
+            <span className="text-primary/70">Namrata Muralidharan &amp; Deepika Vats</span>
           </p>
           <div className="flex flex-wrap justify-center gap-5">
             {(["Privacy Policy", "Terms of Service", "Cookie Policy"] as const).map(link => (
