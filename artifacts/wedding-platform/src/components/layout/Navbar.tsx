@@ -1,19 +1,20 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell, MapPin } from "lucide-react";
+import { Search, Menu, X, ChevronDown, User, LogOut, Heart, LayoutDashboard, ShieldCheck, Briefcase, Building2, Bell, MapPin, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import bmsLogo from "@assets/WhatsApp_Image_2026-05-06_at_4.23.32_PM-removebg-preview_1778229042227.png";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationContext";
+import { ConsultationModal } from "@/components/ConsultationModal";
 
 const navLinks = [
   { label: "Venues", href: "/venues" },
   { label: "Vendors", href: "/vendors" },
+  { label: "Events", href: "/events" },
   { label: "Photos", href: "/photos" },
   { label: "Weddings", href: "/weddings" },
   { label: "Blog", href: "/blog" },
   { label: "Checklist", href: "/checklist" },
-  { label: "Why Us", href: "/why-choose-us" },
 ];
 
 const PORTAL_META: Record<string, { label: string; href: string; icon: React.ElementType; color: string }> = {
@@ -38,6 +39,7 @@ export function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [consultOpen, setConsultOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<{
     cities: string[];
     vendors: { name: string; category: string; city: string }[];
@@ -153,6 +155,17 @@ export function Navbar() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3 md:gap-4">
+            {/* Plan Your Dream Event — sticky CTA */}
+            <motion.button
+              onClick={() => setConsultOpen(true)}
+              className="hidden xl:flex items-center gap-2 px-5 py-2 bg-primary text-black font-cinzel font-bold text-[9px] tracking-[0.22em] uppercase hover:bg-primary/90 transition-all duration-300 gold-glow whitespace-nowrap"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Sparkles className="w-3 h-3" />
+              Plan Your Dream Event
+            </motion.button>
+
             <button
               onClick={openSearch}
               className="hidden md:flex text-white/70 hover:text-primary transition-colors p-1"
@@ -551,11 +564,24 @@ export function Navbar() {
           </Link>
         </nav>
 
+        {/* Mobile CTA */}
+        <div className="px-6 pb-4">
+          <button
+            onClick={() => { setMobileOpen(false); setConsultOpen(true); }}
+            className="w-full py-3.5 bg-primary text-black font-cinzel font-bold text-[9px] tracking-[0.25em] uppercase flex items-center justify-center gap-2"
+          >
+            <Sparkles className="w-3 h-3" />
+            Plan Your Dream Event
+          </button>
+        </div>
+
         <div className="px-6 py-6 border-t border-white/8">
           <p className="font-manrope text-[11px] text-white/35">✦ India's Finest Event Planning Platform ✦</p>
           <p className="font-manrope text-[10px] text-white/25 mt-2">📞 +91 8796318282</p>
         </div>
       </div>
+
+      <ConsultationModal isOpen={consultOpen} onClose={() => setConsultOpen(false)} />
     </>
   );
 }

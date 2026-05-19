@@ -26,15 +26,23 @@ India's premium wedding & event planning marketplace connecting couples with top
   - `components/VendorDetailModal.tsx` — vendor side panel with "Book Now" + quick enquiry
   - `components/VenueDetailModal.tsx` — venue side panel with availability calendar
   - `components/MobileBottomNav.tsx` — mobile sticky nav (5 tabs, gold indicator)
-  - `pages/portal/AdminPortal.tsx` — admin dashboard (Overview, Bookings, Enquiries, Users, Payments, Saved)
+  - `components/FloatingWhatsApp.tsx` — global WhatsApp deep-link button (pulse, tooltip, dismiss)
+  - `components/ConsultationModal.tsx` — 3-mode modal: Book Consultation / Get Instant Quote / Check Availability
+  - `components/TiltCard.tsx` — 3D perspective tilt with glare, wraps any children
+  - `pages/EventPortfolio.tsx` — `/events` portfolio hub: 9 case studies, category filter, stats, CTA band
+  - `pages/CaseStudy.tsx` — `/events/:slug` full case study: hero, meta, gallery lightbox, timeline, vendor team, testimonial, related
+  - `pages/portal/AdminPortal.tsx` — admin dashboard (Overview+recharts, Bookings, Enquiries, Users, Payments, Blog CMS)
   - `pages/portal/Profile.tsx` — user profile (Account, Bookings, Enquiries, Saved, Membership)
+  - `pages/portal/VendorPortal.tsx` — vendor dashboard with self-edit (name/phone/city/bio)
+  - `data/caseStudies.ts` — 9 case studies: 3 weddings, 2 corporate, 2 birthday, 2 destination
 - `artifacts/api-server/src/routes/` — Express routes
   - `bookings.ts` — POST /api/bookings, GET /api/bookings (admin), GET /api/bookings/my, PATCH /api/bookings/:id/status
   - `enquiry.ts` — vendor/venue/contact/listing enquiries
   - `venues.ts` — venue listing + availability + enquiries
   - `vendors.ts` — vendor listing from Excel
   - `payments.ts` — subscription management
-  - `auth.ts` — register/login/logout/me
+  - `auth.ts` — register/login/logout/me, PATCH /api/auth/profile (self-edit)
+  - `articles.ts` — GET/POST/DELETE /api/articles (Blog CMS, seeded with 4+ articles)
 
 ## Architecture decisions
 
@@ -43,6 +51,9 @@ India's premium wedding & event planning marketplace connecting couples with top
 - Packages are defined statically per vendor category (6 categories × 3 tiers). Prices are illustrative but realistic for the Indian wedding market.
 - Admin auth uses session middleware (`requireAdmin`); no JWT. Session stored in express-session (in-memory).
 - The `BASE_URL` pattern `import.meta.env.BASE_URL?.replace(/\/$/, "") || ""` is used for all API calls across the frontend.
+- ConsultationModal is instantiated in Navbar (global) and in each portfolio page — no prop-drilling context needed.
+- FloatingWhatsApp renders globally in App.tsx inside WouterRouter, appears 3.5s after splash completes.
+- CaseStudy gallery uses a client-side paginator (4 per page) with a lightbox overlay at z-[9900].
 
 ## Product
 
@@ -50,7 +61,18 @@ India's premium wedding & event planning marketplace connecting couples with top
 - Vendor/venue detail modals with availability calendar
 - 4-step booking flow: package selection → event details + optional consultation scheduling → contact info → advance payment (₹2,000 refundable)
 - Quick enquiry form for casual leads
-- Admin portal: booking management, enquiry inbox, user management, payment stats, GST config
+- Event Portfolio at `/events`: 9 case studies (weddings, corporate, birthday, destination) with category filter
+- Case Study pages at `/events/:slug`: full story — budget, theme, gallery, planning timeline, vendor team, testimonial
+- Three CTA surfaces: "Book Consultation", "Get Instant Quote", "Check Availability" — all open ConsultationModal
+- Floating WhatsApp button: deep-links to WhatsApp with pre-filled message, pulse animation, tooltip
+- Sticky Navbar CTA: "Plan Your Dream Event" button (desktop + mobile menu)
+- Admin portal: booking management, enquiry inbox, user management, payment stats, GST config, Blog CMS (recharts analytics)
+- Blog CMS: admin can create/delete articles, frontend fetches from /api/articles
+- Vendor Comparison Tool: add up to 3 vendors from Vendors page, side-by-side modal
+- Price Range Filter on Vendors page
+- Wedding Checklist at `/checklist`: localStorage-backed with pre-populated tasks by category
+- Vendor self-edit: name, phone, city, bio in Vendor Portal
+- In-app notifications: bell icon with unread badge, dropdown panel
 - User profile: my bookings, my enquiries, shortlist, membership
 
 ## User preferences
@@ -68,6 +90,8 @@ India's premium wedding & event planning marketplace connecting couples with top
 - The splash screen runs for ~3.3s; screenshot tools always catch it — the app itself is fine
 - GST verification works in format-only mode by default; add `MASTERS_INDIA_API_KEY` secret to enable live status checks
 - Rate limiter may warn about X-Forwarded-For — benign, not blocking
+- FloatingWhatsApp has a 3.5s delay before appearing (intentional, post-splash)
+- CaseStudy lightbox is at z-[9900]; ConsultationModal is at z-[9800]; FloatingWhatsApp is at z-[9990]
 
 ## Pointers
 
