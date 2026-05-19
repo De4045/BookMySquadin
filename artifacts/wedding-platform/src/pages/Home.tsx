@@ -992,7 +992,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 10: VENDOR CTA */}
+      {/* SECTION 10: PARTNER BRANDS MARQUEE */}
+      <section className="py-16 bg-[#0a0806] border-y border-white/5 overflow-hidden">
+        <div className="text-center mb-10">
+          <p className="font-cinzel text-[9px] tracking-[0.5em] text-primary/50 uppercase">✦ Trusted By India's Finest ✦</p>
+        </div>
+        {[
+          ["Taj Hotels","The Oberoi","ITC Hotels","The Leela","JW Marriott","Hyatt India","Rambagh Palace","Umaid Bhawan","Samode Palace","RAAS Hotels","Aman Resorts","Suryagarh"],
+          ["Wilderness Resorts","Joseph Radhik","Tasveer Studios","Wizcraft Events","Percept Live","Ambika Pillai Studio","Mickey Contractor","E-Factor Events","The Park Hotels","Conrad Hotels","Shaadi Squad","Sabyasachi"],
+        ].map((row, rowIdx) => (
+          <div key={rowIdx} className="relative mb-4 last:mb-0">
+            <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none" style={{ background: "linear-gradient(90deg,#0a0806,transparent)" }} />
+            <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none" style={{ background: "linear-gradient(270deg,#0a0806,transparent)" }} />
+            <div className="marquee-outer">
+              <div className={`marquee-track${rowIdx % 2 === 1 ? " marquee-reverse" : ""}`}>
+                {[...row, ...row].map((brand, i) => (
+                  <div key={i} className="marquee-item">
+                    <span className="font-cinzel text-[11px] tracking-[0.28em] uppercase text-white/25 hover:text-primary/70 transition-colors duration-300 whitespace-nowrap cursor-default">
+                      {brand}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* SECTION 11: VENDOR CTA */}
       <section className="bg-[#080604] border-y border-white/10">
         <div className="flex flex-col md:flex-row">
           <div ref={ctaTextRef} className="w-full md:w-1/2 p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">

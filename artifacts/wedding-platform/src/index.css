@@ -592,3 +592,44 @@
   from { transform: translateY(110%); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
+
+/* ─── Partner Brands Marquee ─────────────────────────── */
+.marquee-outer {
+  overflow: hidden;
+  width: 100%;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 38s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+.marquee-track.marquee-reverse {
+  animation-name: marqueeScrollReverse;
+  animation-duration: 44s;
+}
+.marquee-item {
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.marquee-item::after {
+  content: "✦";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 8px;
+  color: rgba(212, 175, 55, 0.2);
+}
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marqueeScrollReverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
