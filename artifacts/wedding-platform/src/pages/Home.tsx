@@ -737,7 +737,7 @@ export default function Home() {
             <div>
               <p className="font-cinzel text-[10px] tracking-[0.5em] text-primary/70 uppercase mb-4">✦ Our Work ✦</p>
               <div className="gold-line w-16 mb-6" />
-              <h2 className="font-playfair text-6xl md:text-8xl text-white font-normal italic leading-[0.92]">
+              <h2 className="font-playfair text-7xl md:text-[110px] lg:text-[130px] text-white font-normal italic leading-[0.9]">
                 Moments<br />
                 <span className="text-primary">We Created</span>
               </h2>
@@ -748,39 +748,39 @@ export default function Home() {
           </div>
 
           {/* Asymmetric 4-image grid */}
-          <div className="grid grid-cols-3 grid-rows-2 gap-3" style={{ height: "620px" }}>
-            <div className="row-span-2 overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
-              <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=85" className="w-full h-full object-cover" alt="Royal Wedding" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+          <div className="grid grid-cols-3 grid-rows-2 gap-3" style={{ height: "680px" }}>
+            <div className="row-span-2 overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=90" className="w-full h-full object-cover brightness-95" alt="Royal Wedding" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
               <div className="absolute bottom-5 left-5 right-5">
-                <span className="font-cinzel text-[8px] tracking-[0.3em] uppercase text-primary bg-black/60 px-2.5 py-1 border border-primary/30 backdrop-blur-sm">Royal Wedding</span>
-                <p className="font-cormorant italic text-2xl text-white mt-3 leading-tight">Udaipur Palace</p>
+                <span className="font-cinzel text-[8px] tracking-[0.3em] uppercase text-primary bg-black/50 px-2.5 py-1 border border-primary/40 backdrop-blur-sm">Royal Wedding</span>
+                <p className="font-cormorant italic text-2xl text-white mt-3 leading-tight drop-shadow-lg">Udaipur Palace</p>
               </div>
             </div>
-            <div className="overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
-              <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800&q=85" className="w-full h-full object-cover" alt="Floral Décor" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+            <div className="overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=900&q=90" className="w-full h-full object-cover brightness-100" alt="Floral Décor" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
               <div className="absolute bottom-3 left-3">
-                <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/60 px-2 py-1 border border-primary/30 backdrop-blur-sm">Floral Décor</span>
+                <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/50 px-2 py-1 border border-primary/40 backdrop-blur-sm">Floral Décor</span>
               </div>
             </div>
-            <div className="overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
-              <img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=85" className="w-full h-full object-cover" alt="Photography" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+            <div className="overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=900&q=90" className="w-full h-full object-cover brightness-100" alt="Photography" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
               <div className="absolute bottom-3 left-3">
-                <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/60 px-2 py-1 border border-primary/30 backdrop-blur-sm">Photography</span>
+                <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/50 px-2 py-1 border border-primary/40 backdrop-blur-sm">Photography</span>
               </div>
             </div>
-            <div className="col-span-2 overflow-hidden relative group img-zoom border border-white/5 hover:border-primary/30 transition-colors duration-500">
-              <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1200&q=85" className="w-full h-full object-cover" alt="Destination Wedding" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            <div className="col-span-2 overflow-hidden relative group img-zoom border border-white/10 hover:border-primary/40 transition-colors duration-500">
+              <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1400&q=90" className="w-full h-full object-cover brightness-100" alt="Destination Wedding" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
                 <div>
-                  <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/60 px-2.5 py-1 border border-primary/30 backdrop-blur-sm">Destination Wedding</span>
-                  <p className="font-cormorant italic text-2xl text-white mt-2">Goa Beach Ceremony</p>
+                  <span className="font-cinzel text-[7px] tracking-[0.28em] uppercase text-primary bg-black/50 px-2.5 py-1 border border-primary/40 backdrop-blur-sm">Destination Wedding</span>
+                  <p className="font-cormorant italic text-2xl text-white mt-2 drop-shadow-lg">Goa Beach Ceremony</p>
                 </div>
                 <Link href="/events">
-                  <button className="font-cinzel text-[9px] tracking-[0.2em] uppercase px-4 py-2.5 border border-primary/60 text-primary hover:bg-primary hover:text-black transition-all duration-300 backdrop-blur-sm">
+                  <button className="font-cinzel text-[9px] tracking-[0.2em] uppercase px-4 py-2.5 border border-primary/70 text-primary hover:bg-primary hover:text-black transition-all duration-300 backdrop-blur-sm">
                     View Story
                   </button>
                 </Link>
