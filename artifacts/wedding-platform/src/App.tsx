@@ -24,7 +24,6 @@ const Photos           = lazy(() => import("@/pages/Photos"));
 const ListYourBusiness = lazy(() => import("@/pages/ListYourBusiness"));
 const WhyChooseUs      = lazy(() => import("@/pages/WhyChooseUs"));
 const CityLanding      = lazy(() => import("@/pages/CityLanding"));
-const Checklist        = lazy(() => import("@/pages/Checklist"));
 const EventPortfolio   = lazy(() => import("@/pages/EventPortfolio"));
 const CaseStudy        = lazy(() => import("@/pages/CaseStudy"));
 const VendorPortalDemo = lazy(() => import("@/pages/demos/VendorPortalDemo"));
@@ -60,7 +59,6 @@ function Router() {
       <Route path="/portal/venue" component={VenuePortal} />
       <Route path="/portal/profile" component={Profile} />
       <Route path="/portal/saved" component={SavedFavorites} />
-      <Route path="/checklist" component={Checklist} />
       <Route path="/events" component={EventPortfolio} />
       <Route path="/events/:slug" component={CaseStudy} />
       <Route path="/vendors/:city" component={CityLanding} />
