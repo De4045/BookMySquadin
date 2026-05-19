@@ -650,6 +650,15 @@ export default function Home() {
                 span: "",
                 aspect: "aspect-square",
               },
+              {
+                img: "https://images.pexels.com/photos/169214/pexels-photo-169214.jpeg?auto=compress&cs=tinysrgb&w=800",
+                title: "Sunset Ceremony",
+                names: "Aisha & Ishaan",
+                city: "Goa",
+                style: "Coastal",
+                span: "",
+                aspect: "aspect-square",
+              },
             ].map((wedding, i) => (
               <Link key={i} href="/weddings" className={wedding.span}>
                 <div className="group cursor-pointer h-full">
