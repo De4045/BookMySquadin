@@ -14,7 +14,6 @@ const navLinks = [
   { label: "Photos", href: "/photos" },
   { label: "Weddings", href: "/weddings" },
   { label: "Blog", href: "/blog" },
-  { label: "Checklist", href: "/checklist" },
 ];
 
 const PORTAL_META: Record<string, { label: string; href: string; icon: React.ElementType; color: string }> = {
