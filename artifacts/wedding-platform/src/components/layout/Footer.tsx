@@ -22,8 +22,10 @@ const COMPANY_LINKS: Record<string, string> = {
   "About Us": "/about",
   "Careers": "/careers",
   "Press": "/press",
-  "Contact Us": "/contact",
-  "Privacy Policy": "/privacy",
+  "Contact Us": "/support",
+  "Privacy Policy": "/privacy-policy",
+  "Terms & Conditions": "/terms-of-service",
+  "Cookie Policy": "/cookie-policy",
 };
 
 const CITY_LINKS: Record<string, string> = {
@@ -62,10 +64,10 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 export function Footer() {
   return (
-    <footer className="relative bg-[#050403] text-white overflow-hidden">
-      {/* Background watermark logo */}
+    <footer className="relative bg-black/95 text-white overflow-hidden backdrop-blur-xl border-t border-white/5">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.08),transparent_30%),radial-gradient(circle_at_bottom,rgba(255,190,70,0.05),transparent_20%)] pointer-events-none" />
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-        <span className="font-cinzel text-[18vw] font-black tracking-wider text-white/[0.02]">BMS</span>
+        <span className="font-cinzel text-[18vw] font-black tracking-wider text-white/[0.015]">BMS</span>
       </div>
 
       {/* Top glow line */}
@@ -143,25 +145,36 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact & Offices */}
+          {/* Contact & Support */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
-            <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Contact Us</h4>
+            <h4 className="font-cinzel text-[10px] tracking-[0.4em] text-primary/80 uppercase mb-5">Customer Support</h4>
 
-            <div className="space-y-5">
-              <a href="tel:XXXXXXXXXX" className="flex items-center gap-2 font-manrope text-sm text-white/65 hover:text-primary transition-colors group">
-                <Phone className="w-3.5 h-3.5 text-primary/60 group-hover:text-primary shrink-0" />
-                XXXXXXXXXX
+            <div className="space-y-4">
+              <a href="mailto:support@bookmysquad.com" className="block font-manrope text-sm text-white/65 hover:text-primary transition-colors">
+                <span className="block font-semibold text-white">support@bookmysquad.com</span>
+                <span className="text-white/45 text-xs">General support</span>
               </a>
 
-              <div>
-                <p className="font-cinzel text-[9px] tracking-[0.3em] text-primary/55 uppercase mb-2">Registered Office</p>
+              <a href="tel:+91XXXXXXXXXX" className="block font-manrope text-sm text-white/65 hover:text-primary transition-colors">
+                <span className="block font-semibold text-white">+91 XXXXX XXXXX</span>
+                <span className="text-white/45 text-xs">Customer care</span>
+              </a>
+
+              <a href="mailto:business@bookmysquad.com" className="block font-manrope text-sm text-white/65 hover:text-primary transition-colors">
+                <span className="block font-semibold text-white">business@bookmysquad.com</span>
+                <span className="text-white/45 text-xs">Business enquiries</span>
+              </a>
+
+              <div className="text-white/50 text-sm leading-relaxed space-y-1">
+                <p>Mon–Sat | 10 AM – 7 PM</p>
+                <p>Typically responds within 24 hours</p>
               </div>
 
               <Link
-                href="/list-your-business"
-                className="inline-block mt-2 font-cinzel text-[9px] tracking-[0.25em] uppercase border border-primary/40 text-primary px-4 py-2.5 hover:bg-primary hover:text-black transition-all duration-300"
+                href="/support"
+                className="inline-flex items-center justify-center mt-2 font-cinzel text-[9px] tracking-[0.25em] uppercase border border-primary/40 text-primary px-4 py-2.5 hover:bg-primary hover:text-black transition-all duration-300"
               >
-                List Your Business
+                Contact Support
               </Link>
             </div>
           </div>

@@ -16,10 +16,10 @@ import { FloatingParticles } from "@/components/FloatingParticles";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 
 const CITY_LIST = [
-  "Agra","Alwar","Bangalore","Bareilly","Bikaner","Chennai","Dehradun","Delhi",
-  "Faridabad","Ghaziabad","Goa","Gurgaon","Hyderabad","Jaipur","Jaisalmer",
-  "Jhansi","Jodhpur","Kanpur","Leh","Lucknow","Manali","Meerut","Mumbai",
-  "Noida","Prayagraj","Ramnagar","Rishikesh","Shimla","Udaipur","Varanasi",
+  "North Goa","South Goa","Agra","Ahmedabad","Amritsar","Bangalore","Chandigarh",
+  "Chennai","Dehradun","Delhi","Faridabad","Ghaziabad","Hyderabad","Jaipur",
+  "Jaisalmer","Jodhpur","Kanpur","Kochi","Lucknow","Manali","Mumbai",
+  "Noida","Pondicherry","Prayagraj","Rishikesh","Shimla","Udaipur","Varanasi","Pune",
 ];
 
 const SERVICE_LIST = [
@@ -97,17 +97,26 @@ export default function Home() {
     );
   };
 
+  const normalizeSearchCity = (value: string) => {
+    const raw = value.trim();
+    if (!raw) return "";
+    const normalized = raw.toLowerCase();
+    if (normalized.includes("goa")) return "Goa";
+    return value;
+  };
+
   const handleSearch = () => {
+    const selectedCity = normalizeSearchCity(city);
     if (service === "venues") {
       const params = new URLSearchParams();
-      if (city) params.set("city", city.toUpperCase());
+      if (selectedCity) params.set("city", selectedCity.toUpperCase());
       if (geoLat !== null) params.set("lat", geoLat.toFixed(4));
       if (geoLon !== null) params.set("lon", geoLon.toFixed(4));
       const qs = params.toString();
       navigate(`/venues${qs ? `?${qs}` : ""}`);
     } else {
       const params = new URLSearchParams();
-      if (city) params.set("city", city);
+      if (selectedCity) params.set("city", selectedCity);
       if (service) params.set("category", service);
       if (geoLat !== null) params.set("lat", geoLat.toFixed(4));
       if (geoLon !== null) params.set("lon", geoLon.toFixed(4));
@@ -209,8 +218,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="font-manrope text-white text-sm sm:text-base md:text-lg font-light max-w-xs sm:max-w-md md:max-w-xl mx-auto mb-8 md:mb-12 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] px-2"
-            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.95), 0 1px 4px rgba(0,0,0,0.9)' }}
+            className="text-white text-sm sm:text-base md:text-lg font-light max-w-xs sm:max-w-md md:max-w-xl mx-auto mb-8 md:mb-12 tracking-wide drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] px-2"
+            style={{
+              fontFamily: "'Gabriola', 'Cormorant Garamond', serif",
+              textShadow: '0 2px 18px rgba(0,0,0,0.9), 0 0 18px rgba(212,175,55,0.30)',
+            }}
           >
             Every great love story deserves a perfect setting. India's finest vendors, curated for couples who refuse to settle.
           </motion.p>
@@ -365,7 +377,7 @@ export default function Home() {
                 <div className="absolute bottom-8 left-8 right-8">
                   <span className="font-cinzel text-[9px] tracking-[0.45em] text-primary/65 uppercase block mb-2">Hotels</span>
                   <h3 className="font-cormorant text-[2.1rem] text-white font-semibold leading-tight mb-3">
-                    4 Star &amp; Above Hotels
+                    Luxury Wedding Hotels
                   </h3>
                   <p className="font-manrope text-sm text-white/70 font-light leading-relaxed mb-5">
                     Grand ballrooms and pool-side lawns in India's finest luxury hotel properties.
@@ -388,7 +400,7 @@ export default function Home() {
               {
                 img: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&q=85",
                 type: "Banquet",
-                title: "Banquet Halls",
+                title: "Premium Banquet Venues",
                 cities: ["Mumbai", "Delhi", "Jaipur"],
               },
               {

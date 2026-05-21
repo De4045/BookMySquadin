@@ -120,8 +120,8 @@ export function Navbar() {
         <div
           className={`w-full ${
             scrolled
-              ? "bg-black/95 backdrop-blur-xl border-b border-white/8"
-              : "bg-black/30 backdrop-blur-sm"
+              ? "bg-black/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.18)]"
+              : "bg-black/70 backdrop-blur-2xl border-b border-white/5"
           } px-4 md:px-8 flex items-center justify-between transition-all duration-500`}
           style={{ height: "88px" }}
         >

@@ -24,11 +24,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  async function parseJson<T>(response: Response): Promise<T | null> {
+    const text = await response.text();
+    if (!text) return null;
+    try {
+      return JSON.parse(text) as T;
+    } catch {
+      return null;
+    }
+  }
+
   const fetchMe = useCallback(async () => {
     try {
       const res = await fetch(`${BASE}/api/auth/me`, { credentials: "include" });
       if (res.ok) {
-        const data = await res.json() as User;
+        const data = (await parseJson<User>(res)) ?? null;
         setUser(data);
       } else {
         setUser(null);
@@ -52,10 +62,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ email, password }),
     });
     if (!res.ok) {
-      const err = await res.json() as { error?: string };
+      const err = (await parseJson<{ error?: string }>(res)) ?? {
+        error: res.statusText || "Login failed",
+      };
       throw new Error(err.error ?? "Login failed");
     }
-    const data = await res.json() as User;
+    const data = (await parseJson<User>(res)) as User;
+    if (!data) {
+      throw new Error("Login response was not valid JSON.");
+    }
     setUser(data);
     return data;
   };
@@ -68,10 +83,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ name, email, password, role }),
     });
     if (!res.ok) {
-      const err = await res.json() as { error?: string };
+      const err = (await parseJson<{ error?: string }>(res)) ?? {
+        error: res.statusText || "Registration failed",
+      };
       throw new Error(err.error ?? "Registration failed");
     }
-    const data = await res.json() as User;
+    const data = (await parseJson<User>(res)) as User;
+    if (!data) {
+      throw new Error("Registration response was not valid JSON.");
+    }
     setUser(data);
     return data;
   };

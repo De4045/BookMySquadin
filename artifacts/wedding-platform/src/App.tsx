@@ -23,6 +23,12 @@ const Blog             = lazy(() => import("@/pages/Blog"));
 const Photos           = lazy(() => import("@/pages/Photos"));
 const ListYourBusiness = lazy(() => import("@/pages/ListYourBusiness"));
 const WhyChooseUs      = lazy(() => import("@/pages/WhyChooseUs"));
+const PrivacyPolicy    = lazy(() => import("@/pages/PrivacyPolicy"));
+const TermsOfService   = lazy(() => import("@/pages/TermsOfService"));
+const CookiePolicy     = lazy(() => import("@/pages/CookiePolicy"));
+const ContactUs        = lazy(() => import("@/pages/ContactUs"));
+const Support          = lazy(() => import("@/pages/Support"));
+const RefundPolicy     = lazy(() => import("@/pages/RefundPolicy"));
 const CityLanding      = lazy(() => import("@/pages/CityLanding"));
 const EventPortfolio   = lazy(() => import("@/pages/EventPortfolio"));
 const CaseStudy        = lazy(() => import("@/pages/CaseStudy"));
@@ -55,6 +61,13 @@ function Router() {
       <Route path="/photos" component={Photos} />
       <Route path="/list-your-business" component={ListYourBusiness} />
       <Route path="/why-choose-us" component={WhyChooseUs} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/cookie-policy" component={CookiePolicy} />
+      <Route path="/contact-us" component={ContactUs} />
+      <Route path="/support" component={Support} />
+      <Route path="/contact" component={Support} />
+      <Route path="/refund-policy" component={RefundPolicy} />
       <Route path="/portal/admin" component={AdminPortal} />
       <Route path="/portal/vendor" component={VendorPortal} />
       <Route path="/portal/venue" component={VenuePortal} />

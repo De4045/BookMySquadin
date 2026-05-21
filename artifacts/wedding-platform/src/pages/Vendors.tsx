@@ -4,12 +4,13 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Search, MapPin, ChevronDown, ArrowRight, ArrowUpDown, Phone, Building2, X, Heart, Star, Lock, BadgeCheck, Scale } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { type Vendor } from "@/data/vendors";
+import { type Vendor, VENDORS as STATIC_VENDORS } from "@/data/vendors";
 import { VendorDetailModal, type VendorLike } from "@/components/VendorDetailModal";
 import { useShortlist } from "@/context/ShortlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { isVendorVerified } from "@/data/subscriptions";
 import { useComparison } from "@/context/ComparisonContext";
+import { loadVendorDataFromExcel } from "@/lib/excel";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -38,7 +39,16 @@ function normalizeCategory(raw: string): string {
   if (s.includes("PHOTO"))            return "PHOTOGRAPHER";
   if (s.includes("CATER"))            return "CATERER";
   if (s.includes("MUSIC") || s.includes("DJ") || s.includes("ENTERTAIN")) return "MUSIC & DJ";
+  if (s.includes("FLOR"))             return "FLORIST";
+  if (s.includes("MEHEND"))           return "MEHENDI";
   return s || "VENDOR";
+}
+
+function normalizeVendorCityFilter(value: string) {
+  const raw = (value || "").trim().toLowerCase();
+  if (!raw) return "";
+  if (raw.includes("goa")) return "goa";
+  return raw;
 }
 
 const Q  = "w=800&h=520&fit=crop&q=85&auto=format";
@@ -336,12 +346,35 @@ export default function Vendors() {
   const [showCompare, setShowCompare]   = useState(false);
   const [selected, setSelected]         = useState<VendorLike | null>(null);
 
-  // Fetch vendors from API on mount
+  // Load vendor data from Excel or fallback to API/static data
   useEffect(() => {
-    fetch(`${BASE}/api/vendors`, { credentials: "include" })
-      .then((r) => r.json())
-      .then((d) => setVendors(d.vendors ?? []))
-      .catch(() => {});
+    let active = true;
+    const loadVendors = async () => {
+      try {
+        const excelVendors = await loadVendorDataFromExcel(`${BASE}/excel/vendors.xlsx`);
+        if (active && excelVendors.length > 0) {
+          setVendors(excelVendors);
+          return;
+        }
+      } catch {
+        // fallback
+      }
+
+      try {
+        const response = await fetch(`${BASE}/api/vendors`, { credentials: "include" });
+        const data = await response.json();
+        if (active && Array.isArray(data?.vendors) && data.vendors.length > 0) {
+          setVendors(data.vendors);
+          return;
+        }
+      } catch {
+        // ignore
+      }
+
+      if (active) setVendors(STATIC_VENDORS);
+    };
+    loadVendors();
+    return () => { active = false; };
   }, []);
 
   // Read URL params on mount
@@ -350,7 +383,7 @@ export default function Vendors() {
     const cat  = params.get("category");
     const city = params.get("city");
     if (cat) setFilterCategory(normalizeCategory(cat));
-    if (city) setCityFilter(city);
+    if (city) setCityFilter(normalizeVendorCityFilter(city));
   }, []);
 
   const uniqueCategories = useMemo(() =>
@@ -371,7 +404,9 @@ export default function Vendors() {
         (v.city    || "").toLowerCase().includes(q) ||
         cat.toLowerCase().includes(q);
       const matchCat   = !filterCategory || cat === filterCategory;
-      const matchCity  = !cityFilter     || v.city === cityFilter;
+      const normalizedCityFilter = normalizeVendorCityFilter(cityFilter);
+      const normalizedVendorCity = normalizeVendorCityFilter(v.city);
+      const matchCity  = !normalizedCityFilter || normalizedVendorCity === normalizedCityFilter;
       const startPrice = CATEGORY_PRICE[cat] ?? 25000;
       const matchPrice = !priceFilter || (
         priceFilter === "under50k" ? startPrice < 50000 :

@@ -8,8 +8,10 @@ import { useMeta } from "@/hooks/useMeta";
 import { VenueDetailModal } from "@/components/VenueDetailModal";
 import { useShortlist } from "@/context/ShortlistContext";
 import { type Venue } from "@/data/venues";
+import { VENUES as STATIC_VENUES } from "@/data/venues";
 import { useAuth } from "@/context/AuthContext";
 import { isVenueVerified } from "@/data/subscriptions";
+import { loadVenueDataFromExcel } from "@/lib/excel";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
@@ -72,6 +74,13 @@ function normalizeType(t: string) {
   return (t || "").toUpperCase().trim();
 }
 
+function normalizeVenueCityFilter(value: string) {
+  const raw = (value || "").trim().toLowerCase();
+  if (!raw) return "";
+  if (raw.includes("goa")) return "GOA";
+  return raw.toUpperCase();
+}
+
 export default function Venues() {
   const { has, toggle } = useShortlist();
   const { user } = useAuth();
@@ -85,12 +94,35 @@ export default function Venues() {
 
   useMeta({ title: "Venues", description: "Discover India's most exquisite wedding venues. Browse hotels, banquet halls, resorts and more across all major cities.", keywords: "wedding venues india, banquet halls, wedding venues" });
 
-  // Fetch venues from API on mount
+  // Load venue data from Excel or fallback to API/static data
   useEffect(() => {
-    fetch(`${BASE}/api/venues`, { credentials: "include" })
-      .then((r) => r.json())
-      .then((d) => setVenues(d.venues ?? []))
-      .catch(() => {});
+    let active = true;
+    const loadVenues = async () => {
+      try {
+        const excelVenues = await loadVenueDataFromExcel(`${BASE}/excel/venue2.xlsx`);
+        if (active && excelVenues.length > 0) {
+          setVenues(excelVenues);
+          return;
+        }
+      } catch {
+        // fallback to API/static data
+      }
+
+      try {
+        const response = await fetch(`${BASE}/api/venues`, { credentials: "include" });
+        const data = await response.json();
+        if (active && Array.isArray(data?.venues) && data.venues.length > 0) {
+          setVenues(data.venues);
+          return;
+        }
+      } catch {
+        // ignore
+      }
+
+      if (active) setVenues(STATIC_VENUES);
+    };
+    loadVenues();
+    return () => { active = false; };
   }, []);
 
   // Read URL params on mount
@@ -98,7 +130,7 @@ export default function Venues() {
     const params = new URLSearchParams(window.location.search);
     const city = params.get("city");
     const type = params.get("type");
-    if (city) setCityFilter(city.toUpperCase());
+    if (city) setCityFilter(normalizeVenueCityFilter(city));
     if (type) setTypeFilter(type.toUpperCase());
   }, []);
 
@@ -117,7 +149,8 @@ export default function Venues() {
         (v.property_name || "").toLowerCase().includes(q) ||
         (v.location      || "").toLowerCase().includes(q) ||
         (v.city_sheet    || "").toLowerCase().includes(q);
-      const matchCity = !cityFilter || v.city_sheet === cityFilter;
+      const normalizedCityFilter = normalizeVenueCityFilter(cityFilter);
+      const matchCity = !normalizedCityFilter || normalizeVenueCityFilter(v.city_sheet) === normalizedCityFilter;
       const matchType = !typeFilter || normalizeType(v.type) === typeFilter;
       return matchSearch && matchCity && matchType;
     });
