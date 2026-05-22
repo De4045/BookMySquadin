@@ -38,6 +38,9 @@ const CaseStudy        = lazy(() => import("@/pages/CaseStudy"));
 const VendorPortalDemo = lazy(() => import("@/pages/demos/VendorPortalDemo"));
 const BookingPaymentDemo = lazy(() => import("@/pages/demos/BookingPaymentDemo"));
 const NotFound         = lazy(() => import("@/pages/not-found"));
+const About            = lazy(() => import("@/pages/About"));
+const Careers          = lazy(() => import("@/pages/Careers"));
+const Press            = lazy(() => import("@/pages/Press"));
 const AdminPortal      = lazy(() => import("@/pages/portal/AdminPortal"));
 const VendorPortal     = lazy(() => import("@/pages/portal/VendorPortal"));
 const VenuePortal      = lazy(() => import("@/pages/portal/VenuePortal"));
@@ -65,6 +68,9 @@ function Router() {
       <Route path="/the-edit/:slug" component={TheEditArticle} />
       <Route path="/planning-tool/:slug" component={PlanningTool} />
       <Route path="/photos" component={Photos} />
+      <Route path="/about" component={About} />
+      <Route path="/careers" component={Careers} />
+      <Route path="/press" component={Press} />
       <Route path="/list-your-business" component={ListYourBusiness} />
       <Route path="/why-choose-us" component={WhyChooseUs} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />

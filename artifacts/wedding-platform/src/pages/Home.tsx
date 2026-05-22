@@ -47,14 +47,14 @@ const PLANNING_TOOLS = [
   },
   {
     slug: "my-wedding-profile",
-    title: "My Wedding Profile",
-    description: "Save preferences, shortlisted venues, and planning details in one place.",
+    title: "My Event Profile",
+    description: "Save event preferences, shortlisted venues, and celebration planning details in one place.",
     icon: Sparkles,
     features: [
-      "Couple names & wedding date",
-      "Budget range and city details",
-      "Saved venues, vendors & articles",
-      "Personalized planning recommendations",
+      "Event type & celebration date",
+      "Budget range and city preferences",
+      "Saved venues, vendors & inspirations",
+      "Personalized event planning recommendations",
     ],
   },
   {
@@ -449,7 +449,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10 md:mb-16">
             <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.35em] uppercase text-primary/80 mb-4">
-              ✦ WEDDING PLANNING TOOLS ✦
+              ✦ EVENT PLANNING TOOLS ✦
             </p>
             <div className="gold-line w-20 mx-auto mb-6" />
             <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_32px_rgba(212,175,55,0.35)]">

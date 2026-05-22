@@ -127,18 +127,33 @@ export function Navbar() {
           className={`w-full ${
             scrolled
               ? "bg-black/95 backdrop-blur-2xl border-b border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.18)]"
-              : "bg-black/70 backdrop-blur-2xl border-b border-white/5"
+              : "bg-black/80 backdrop-blur-3xl border-b border-white/8"
           } px-4 md:px-8 flex items-center justify-between transition-all duration-500`}
           style={{ height: "88px" }}
         >
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 cursor-pointer flex-shrink-0">
-            <img
-              src={bmsLogo}
-              alt="Book My Squad"
-              className="h-24 w-24 object-contain flex-shrink-0"
-              style={{ filter: "drop-shadow(0 0 10px rgba(212,175,55,0.75)) drop-shadow(0 0 22px rgba(212,175,55,0.35)) brightness(1.15) saturate(1.25)" }}
-            />
+          <Link href="/" className="flex items-center gap-4 cursor-pointer flex-shrink-0">
+            <div
+              className="relative rounded-3xl p-2 flex items-center justify-center"
+              style={{
+                background: 'rgba(35,24,12,0.45)',
+                WebkitBackdropFilter: 'blur(16px)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(212,175,55,0.08)',
+                boxShadow: '0 6px 18px rgba(0,0,0,0.28), 0 0 24px rgba(212,175,55,0.06)'
+              }}
+            >
+              {/* subtle warm radial glow behind logo */}
+              <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: 220, height: 220, pointerEvents: 'none', borderRadius: '9999px' }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '9999px', background: 'radial-gradient(circle at 50% 45%, rgba(212,175,55,0.12) 0%, rgba(35,24,12,0.0) 45%)', filter: 'blur(18px)' }} />
+              </div>
+              <img
+                src={bmsLogo}
+                alt="Book My Squad"
+                className="h-28 w-28 object-contain flex-shrink-0"
+                style={{ filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.38)) drop-shadow(0 0 10px rgba(212,175,55,0.08)) brightness(1.18) contrast(1.06) saturate(1.12)", mixBlendMode: 'normal' }}
+              />
+            </div>
             <span className="font-cormorant text-3xl md:text-4xl font-semibold tracking-wide text-white hidden sm:block">
               <span className="text-primary italic">Book</span> My Squad
             </span>

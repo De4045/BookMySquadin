@@ -77,16 +77,24 @@ export function Footer() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 pt-16 md:pt-20 pb-10">
 
         {/* Logo + Tagline */}
-        <div className="text-center mb-14 md:mb-20">
+        <div className="text-center mb-16 md:mb-24">
           <div className="font-cinzel text-[10px] tracking-[0.5em] text-primary/60 uppercase mb-4">✦ Est. 2024 ✦</div>
-          <Link href="/" className="flex flex-col items-center gap-3 mb-4 cursor-pointer">
-            <img
-              src={bmsLogo}
-              alt="Book My Squad"
-              className="h-24 w-24 object-contain"
-              style={{ mixBlendMode: "screen", filter: "brightness(1.3) saturate(1.2) contrast(1.1)" }}
-            />
-            <h2 className="font-cormorant text-4xl md:text-6xl text-white font-light">
+          <Link href="/" className="flex flex-col items-center gap-4 md:gap-6 mb-6 md:mb-8 cursor-pointer group">
+            <div className="relative flex items-center justify-center" style={{ width: 'max-content' }}>
+              {/* radial gold ambient glow behind logo */}
+              <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -40%)', width: 240, height: 240, pointerEvents: 'none', borderRadius: 9999 }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '9999px', background: 'radial-gradient(circle at 50% 45%, rgba(212,175,55,0.12) 0%, rgba(35,24,12,0) 45%)', filter: 'blur(28px)' }} />
+              </div>
+
+              <img
+                src={bmsLogo}
+                alt="Book My Squad"
+                className="h-36 w-36 md:h-40 md:w-40 object-contain"
+                style={{ mixBlendMode: "screen", filter: "brightness(1.32) saturate(1.2) contrast(1.12)", transition: 'filter 220ms ease, transform 220ms ease' }}
+              />
+            </div>
+
+            <h2 className="font-cormorant text-4xl md:text-7xl lg:text-8xl text-white font-light leading-tight">
               <span className="text-primary italic">Book</span> My Squad
             </h2>
           </Link>
