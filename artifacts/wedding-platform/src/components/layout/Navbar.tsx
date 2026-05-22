@@ -35,6 +35,8 @@ export function Navbar() {
   const [, navigate] = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [discoverOpen, setDiscoverOpen] = useState(false);
+  const [mobileDiscoverOpen, setMobileDiscoverOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,6 +46,7 @@ export function Navbar() {
     venues: { name: string; city: string; type: string }[];
   } | null>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const discoverRef = useRef<HTMLDivElement>(null);
   const notifRef    = useRef<HTMLDivElement>(null);
   const searchRef   = useRef<HTMLInputElement>(null);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -92,6 +95,9 @@ export function Navbar() {
     const handleClick = (e: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
+      }
+      if (discoverRef.current && !discoverRef.current.contains(e.target as Node)) {
+        setDiscoverOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClick);
@@ -149,6 +155,55 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <div
+              ref={discoverRef}
+              className="relative"
+              onMouseEnter={() => setDiscoverOpen(true)}
+              onMouseLeave={() => setDiscoverOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setDiscoverOpen((open) => !open)}
+                className="relative flex items-center gap-2 font-cinzel text-[12px] tracking-[0.2em] uppercase text-white/90 hover:text-primary transition-colors duration-300 whitespace-nowrap pb-1"
+              >
+                DISCOVER
+                <ChevronDown className={`w-3 h-3 text-white/70 transition-transform duration-200 ${discoverOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              <AnimatePresence>
+                {discoverOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute right-0 top-full z-50 mt-4 w-[240px] overflow-hidden rounded-[28px] border border-white/10 bg-black/85 backdrop-blur-xl shadow-[0_40px_80px_rgba(0,0,0,0.28)]"
+                  >
+                    <div className="border-b border-white/10 px-4 py-3">
+                      <p className="font-cinzel text-[9px] uppercase tracking-[0.34em] text-primary/70">Discover</p>
+                    </div>
+                    <div className="flex flex-col px-2 py-2">
+                      {[
+                        { label: "The Edit", href: "/the-edit" },
+                        { label: "Wedding Trends", href: "/blog?tag=wedding-trends" },
+                        { label: "Destination Stories", href: "/blog?tag=destination-stories" },
+                        { label: "Luxury Venues", href: "/blog?tag=luxury-venues" },
+                        { label: "Celebrity Weddings", href: "/blog?tag=celebrity-weddings" },
+                      ].map((item) => (
+                        <Link
+                          key={item.label}
+                          href={item.href}
+                          className="group rounded-3xl px-4 py-3 text-left text-sm font-cormorant text-white/90 hover:bg-white/5 hover:text-primary transition duration-200"
+                          onClick={() => setDiscoverOpen(false)}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
           {/* Right Actions */}
@@ -519,6 +574,37 @@ export function Navbar() {
                   <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all text-primary" />
                 </Link>
               ))}
+
+              <div className="pt-4 mt-4 border-t border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setMobileDiscoverOpen((open) => !open)}
+                  className="w-full flex items-center justify-between font-cinzel text-[13px] tracking-[0.22em] uppercase text-white/65 hover:text-primary transition-colors py-4"
+                >
+                  <span>Discover</span>
+                  <ChevronDown className={`w-3 h-3 text-white/70 transition-transform duration-200 ${mobileDiscoverOpen ? "rotate-180" : ""}`} />
+                </button>
+                {mobileDiscoverOpen && (
+                  <div className="mt-2 flex flex-col gap-1 rounded-3xl border border-white/10 bg-black/70 p-3">
+                    {[
+                      { label: "The Edit", href: "/the-edit" },
+                      { label: "Wedding Trends", href: "/blog?tag=wedding-trends" },
+                      { label: "Destination Stories", href: "/blog?tag=destination-stories" },
+                      { label: "Luxury Venues", href: "/blog?tag=luxury-venues" },
+                      { label: "Celebrity Weddings", href: "/blog?tag=celebrity-weddings" },
+                    ].map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        onClick={() => { setMobileOpen(false); setMobileDiscoverOpen(false); }}
+                        className="font-cormorant text-sm text-white/80 hover:text-primary transition-colors px-4 py-3 rounded-3xl"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <div className="pt-6 mt-2 flex flex-col gap-1">
                 {user ? (

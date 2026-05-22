@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2 } from "lucide-react";
+import { MapPin, Calendar, Search, ChevronDown, ArrowRight, LocateFixed, Loader2, Sparkles, ClipboardList, Bookmark, Wallet, Users, Headphones, Hash, Monitor } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useScrollAnimation, useStaggerAnimation } from "@/hooks/useScrollAnimation";
 import { useParallax } from "@/hooks/useParallax";
@@ -30,6 +30,117 @@ const SERVICE_LIST = [
   { label: "Decorator", value: "decorator" },
   { label: "Entertainment", value: "entertainment" },
   { label: "Music / DJ", value: "music" },
+];
+
+const PLANNING_TOOLS = [
+  {
+    slug: "find-vendors",
+    title: "Find Vendors",
+    description: "Discover curated venues, decorators, photographers, makeup artists, and planners.",
+    icon: Search,
+    features: [
+      "Search vendors by category",
+      "Filter by city & compare",
+      "View ratings, reviews, portfolios",
+      "Save favorites and contact directly",
+    ],
+  },
+  {
+    slug: "my-wedding-profile",
+    title: "My Wedding Profile",
+    description: "Save preferences, shortlisted venues, and planning details in one place.",
+    icon: Sparkles,
+    features: [
+      "Couple names & wedding date",
+      "Budget range and city details",
+      "Saved venues, vendors & articles",
+      "Personalized planning recommendations",
+    ],
+  },
+  {
+    slug: "guest-manager",
+    title: "Guest Manager",
+    description: "Organize invitations, RSVPs, and guest lists effortlessly.",
+    icon: Users,
+    features: [
+      "Add guests and track RSVPs",
+      "Meal preferences and seating notes",
+      "VIP tagging and event separation",
+      "Download guest list instantly",
+    ],
+  },
+  {
+    slug: "planning-checklist",
+    title: "Planning Checklist",
+    description: "Track every wedding task with a smart celebration checklist.",
+    icon: ClipboardList,
+    features: [
+      "Timeline-based task planning",
+      "Booking reminders & vendor deadlines",
+      "Outfit prep and ceremony milestones",
+      "Wedding week task overview",
+    ],
+  },
+  {
+    slug: "budget-planner",
+    title: "Budget Planner",
+    description: "Estimate and manage your wedding expenses with ease.",
+    icon: Wallet,
+    features: [
+      "Total budget input and balance",
+      "Expense breakdown by category",
+      "Luxury wedding cost guidance",
+      "Category-wise spending insights",
+    ],
+  },
+  {
+    slug: "saved-shortlists",
+    title: "Saved Shortlists",
+    description: "Keep all your favorite venues and vendors together.",
+    icon: Bookmark,
+    features: [
+      "Saved venues, vendors and inspirations",
+      "Compare favorites side-by-side",
+      "Share lists and contact sellers",
+      "Review recently viewed listings",
+    ],
+  },
+  {
+    slug: "expert-consultation",
+    title: "Expert Consultation",
+    description: "Connect with wedding specialists for personalized guidance.",
+    icon: Headphones,
+    features: [
+      "Book luxury planning consultations",
+      "Destination wedding support",
+      "Vendor recommendations and advice",
+      "Preferred callback timing options",
+    ],
+  },
+  {
+    slug: "wedding-hashtag-ideas",
+    title: "Wedding Hashtag Ideas",
+    description: "Generate creative and memorable hashtags for your celebration.",
+    icon: Hash,
+    features: [
+      "Romantic, fun and luxury hashtags",
+      "Bride name, groom name and year input",
+      "Copy and refresh idea buttons",
+      "Memorable wedding social branding",
+    ],
+  },
+  {
+    slug: "virtual-bridal-preview",
+    title: "Virtual Bridal Preview",
+    description: "Explore bridal styling inspirations and fashion concepts digitally.",
+    icon: Monitor,
+    features: [
+      "Bridal inspiration gallery",
+      "Outfit, makeup and jewelry trends",
+      "Moodboards and color palettes",
+      "Save and share bridal looks",
+    ],
+  },
 ];
 
 function matchToCity(raw: string): string {
@@ -331,6 +442,84 @@ export default function Home() {
           </motion.div>
         </div>
 
+      </section>
+
+      {/* SECTION 2: WEDDING PLANNING TOOLS */}
+      <section className="py-16 md:py-28 px-6 md:px-12 bg-[#080604] border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10 md:mb-16">
+            <p className="font-cinzel text-[11px] sm:text-[13px] tracking-[0.35em] uppercase text-primary/80 mb-4">
+              ✦ WEDDING PLANNING TOOLS ✦
+            </p>
+            <div className="gold-line w-20 mx-auto mb-6" />
+            <h2 className="font-cormorant text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-normal drop-shadow-[0_0_32px_rgba(212,175,55,0.35)]">
+              Plan Every Celebration Beautifully
+            </h2>
+            <p className="mx-auto mt-5 max-w-3xl font-manrope text-[18px] sm:text-[19px] md:text-[20px] text-white/70 leading-[1.85]">
+              Elegant tools designed to simplify your wedding journey — from discovering venues to organizing guests, budgets, and inspirations.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {PLANNING_TOOLS.map((tool, index) => {
+              const Icon = tool.icon;
+              return (
+                <Link key={tool.slug} href={`/planning-tool/${tool.slug}`}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.7, delay: index * 0.06 }}
+                    className="group relative overflow-hidden rounded-[30px] border border-white/10 bg-white/5 backdrop-blur-2xl shadow-[0_24px_80px_rgba(0,0,0,0.28)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_30px_90px_rgba(212,175,55,0.18)]"
+                  >
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40 pointer-events-none" />
+                  <div className="absolute inset-0 border border-white/5 rounded-[30px] pointer-events-none" />
+                  <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-primary/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <div className="relative p-8 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="rounded-3xl border border-white/10 bg-black/40 p-3 text-primary shadow-[0_0_24px_rgba(212,175,55,0.12)]">
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <span className="font-cinzel text-[9px] tracking-[0.32em] uppercase text-primary/75 bg-black/30 border border-white/10 px-3 py-1 rounded-full">
+                        Tool
+                      </span>
+                    </div>
+
+                    <h3 className="font-cormorant text-2xl text-white font-semibold leading-tight mb-4">
+                      {tool.title}
+                    </h3>
+                    <p className="font-manrope text-[16px] text-white/70 leading-[1.9] mb-6">
+                      {tool.description}
+                    </p>
+
+                    <div className="mt-auto space-y-3">
+                      {tool.features.map(feature => (
+                        <div key={feature} className="flex gap-3 items-start">
+                          <div className="mt-2 h-2.5 w-2.5 rounded-full bg-primary" />
+                          <p className="font-manrope text-sm text-white/70 leading-7">{feature}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+              );
+            })}
+          </div>
+
+          <div className="mt-12 text-center">
+            <h3 className="font-cormorant text-3xl sm:text-4xl text-white font-semibold leading-tight mb-4">
+              Begin Planning Your Celebration
+            </h3>
+            <p className="mx-auto max-w-2xl font-manrope text-[18px] text-white/70 leading-[1.85] mb-8">
+              Explore curated venues, trusted vendors, and premium wedding experiences crafted for unforgettable moments.
+            </p>
+            <Link href="/venues" className="inline-flex items-center justify-center gap-3 rounded-full bg-primary px-10 py-4 text-black font-cinzel text-[11px] tracking-[0.25em] uppercase shadow-[0_22px_60px_rgba(208,169,78,0.18)] transition-all duration-300 hover:bg-primary/90">
+              EXPLORE NOW →
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* SECTION 2: MARQUEE STRIP */}

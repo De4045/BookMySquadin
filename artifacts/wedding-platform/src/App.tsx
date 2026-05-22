@@ -20,6 +20,9 @@ const Venues           = lazy(() => import("@/pages/Venues"));
 const Login            = lazy(() => import("@/pages/Login"));
 const Weddings         = lazy(() => import("@/pages/Weddings"));
 const Blog             = lazy(() => import("@/pages/Blog"));
+const TheEdit          = lazy(() => import("@/pages/TheEdit"));
+const TheEditArticle   = lazy(() => import("@/pages/TheEditArticle"));
+const PlanningTool     = lazy(() => import("@/pages/PlanningTool"));
 const Photos           = lazy(() => import("@/pages/Photos"));
 const ListYourBusiness = lazy(() => import("@/pages/ListYourBusiness"));
 const WhyChooseUs      = lazy(() => import("@/pages/WhyChooseUs"));
@@ -58,6 +61,9 @@ function Router() {
       <Route path="/weddings" component={Weddings} />
       <Route path="/real-weddings" component={Weddings} />
       <Route path="/blog" component={Blog} />
+      <Route path="/the-edit" component={TheEdit} />
+      <Route path="/the-edit/:slug" component={TheEditArticle} />
+      <Route path="/planning-tool/:slug" component={PlanningTool} />
       <Route path="/photos" component={Photos} />
       <Route path="/list-your-business" component={ListYourBusiness} />
       <Route path="/why-choose-us" component={WhyChooseUs} />
